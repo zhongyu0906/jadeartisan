@@ -27,6 +27,28 @@
         border-radius: 12px;
         margin-top: 2rem;
     }
+    .pagination-button {
+        background: linear-gradient(to right, rgb(104, 128, 69), rgb(124, 148, 89));
+        color: white;
+        padding: 0.5rem 1rem;
+        margin: 0 0.25rem;
+        border-radius: 0.25rem;
+        text-decoration: none;
+        transition: all 0.3s ease;
+    }
+    .pagination-button:hover {
+        background: linear-gradient(to right, rgb(84, 108, 49), rgb(104, 128, 69));
+        transform: scale(1.05);
+    }
+    .pagination-button.active {
+        background: linear-gradient(to right, rgb(64, 88, 29), rgb(84, 108, 49));
+        font-weight: bold;
+    }
+    .pagination-button:disabled {
+        background: gray;
+        cursor: not-allowed;
+        transform: none;
+    }
 </style>
 </head>
 <body class="bg-[#fdfcf7] font-serif text-gray-800">
@@ -71,6 +93,9 @@ body {
 <div id="imageGrid" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 text-center">
 <!-- 圖片將由 JavaScript 動態生成 -->
 </div>
+<div id="pagination" class="text-center mt-8">
+<!-- 分頁按鈕將由 JavaScript 動態生成 -->
+</div>
 </main>
 <!-- 頁腳 -->
 <div class="footer-bg">
@@ -84,9 +109,16 @@ body {
 <script>
 document.addEventListener('DOMContentLoaded', () => {
     const imageGrid = document.getElementById('imageGrid');
-    const maxImages = 100; // 最大編號
+    const pagination = document.getElementById('pagination');
+    const imagesPerPage = 50;
+    const totalPages = 5; // 頁面1: 1-50, 頁面2: 51-100, 頁面3: 101-150, 頁面4: 151-200, 頁面5: 201-250
     const prefix = 'creation_';
     const extension = '.jpg';
+
+    // 從 URL 獲取當前頁面
+    const urlParams = new URLSearchParams(window.location.search);
+    let currentPage = parseInt(urlParams.get('page')) || 1;
+    if (currentPage < 1 || currentPage > totalPages) currentPage = 1;
 
     // 檢查圖片是否存在的函數
     function checkImageExists(url) {
@@ -99,8 +131,12 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     // 動態生成圖片
-    async function loadImages() {
-        for (let i = 1; i <= maxImages; i++) {
+    async function loadImages(page) {
+        imageGrid.innerHTML = ''; // 清空現有圖片
+        const start = (page - 1) * imagesPerPage + 1;
+        const end = page * imagesPerPage;
+
+        for (let i = start; i <= end; i++) {
             const paddedNumber = i.toString().padStart(2, '0'); // 補零，如 01, 02
             const imageUrl = `${prefix}${paddedNumber}${extension}`;
 
@@ -115,10 +151,64 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    // 執行圖片載入
-    loadImages().catch(err => {
+    // 生成分頁按鈕
+    function renderPagination() {
+        pagination.innerHTML = '';
+
+        // Previous 按鈕
+        const prevButton = document.createElement('button');
+        prevButton.className = 'pagination-button';
+        prevButton.textContent = '上一頁';
+        prevButton.disabled = currentPage === 1;
+        prevButton.addEventListener('click', () => {
+            if (currentPage > 1) {
+                currentPage--;
+                updatePage();
+            }
+        });
+        pagination.appendChild(prevButton);
+
+        // 頁數按鈕
+        for (let i = 1; i <= totalPages; i++) {
+            const pageButton = document.createElement('button');
+            pageButton.className = `pagination-button ${i === currentPage ? 'active' : ''}`;
+            pageButton.textContent = i;
+            pageButton.addEventListener('click', () => {
+                currentPage = i;
+                updatePage();
+            });
+            pagination.appendChild(pageButton);
+        }
+
+        // Next 按鈕
+        const nextButton = document.createElement('button');
+        nextButton.className = 'pagination-button';
+        nextButton.textContent = '下一頁';
+        nextButton.disabled = currentPage === totalPages;
+        nextButton.addEventListener('click', () => {
+            if (currentPage < totalPages) {
+                currentPage++;
+                updatePage();
+            }
+        });
+        pagination.appendChild(nextButton);
+    }
+
+    // 更新頁面
+    function updatePage() {
+        // 更新 URL
+        const newUrl = `${window.location.pathname}?page=${currentPage}`;
+        window.history.pushState({}, '', newUrl);
+        // 加載圖片和分頁
+        loadImages(currentPage);
+        renderPagination();
+    }
+
+    // 初始加載
+    loadImages(currentPage).catch(err => {
         console.error('載入圖片時發生錯誤:', err);
     });
+    renderPagination();
 });
 </script>
 </body>
