@@ -1,0 +1,228 @@
+
+<!DOCTYPE html>
+
+<html lang="zh-Hant">
+<head>
+<meta content="google-site-verification: google7372aff244c06d84.html" name="google-site-verification"/>
+<meta content="石中玉工作室，位於花蓮東海岸，專注於玉石創作、雕刻、原石欣賞與多元複合創作。" name="description"/>
+<meta content="石中玉, 玉石, 花蓮, 東海岸, 玉石雕刻, 原石欣賞, 台灣玉, 石藝, 原礦, 台灣藍寶" name="keywords"/>
+<meta content="石中玉工作室" name="author"/>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>石中玉首頁</title>
+<script src="https://cdn.tailwindcss.com">
+setTimeout(() => {
+  const rock = document.getElementById('rock');
+  const audio = document.getElementById('rockSound');
+
+  rock.style.display = 'block';
+  rock.classList.add('animate-dropInAndFlyOut');
+
+  document.body.style.animation = 'shakeHarder 0.8s ease';
+
+  audio.play();
+
+  setTimeout(() => {
+    document.body.style.animation = '';
+    rock.style.display = 'none';
+  }, 2500);
+}, 6400);
+</script>
+<style>
+body {
+    background-image: url('bgg.jpg');
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-position: center;
+    background-attachment: fixed;
+}
+
+@keyframes flyIn {
+  0% {
+    opacity: 0;
+    transform: translateY(-40px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.fly-in {
+  opacity: 0;
+  animation-name: flyIn;
+  animation-duration: 1s;
+  animation-fill-mode: forwards;
+}
+
+@keyframes fadeIn {
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes fadeIn {
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes dropIn {
+  0% {
+    opacity: 0;
+    transform: translateY(-300px) scale(1.2);
+  }
+  80% {
+    opacity: 1;
+    transform: translateY(10px) scale(1.05);
+  }
+  100% {
+    transform: translateY(0) scale(1);
+  }
+}
+@keyframes shake {
+  0%, 100% {
+    transform: translateX(0);
+  }
+  25% {
+    transform: translateX(-10px);
+  }
+  50% {
+    transform: translateX(10px);
+  }
+  75% {
+    transform: translateX(-5px);
+  }
+}
+
+@keyframes dropInStrong {
+  0% {
+    opacity: 0;
+    transform: translateY(-600px) scale(1.5);
+  }
+  80% {
+    opacity: 1;
+    transform: translateY(20px) scale(1.1);
+  }
+  100% {
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes shakeHard {
+  0%, 100% { transform: translateX(0); }
+  10% { transform: translateX(-20px); }
+  20% { transform: translateX(20px); }
+  30% { transform: translateX(-15px); }
+  40% { transform: translateX(15px); }
+  50% { transform: translateX(-10px); }
+  60% { transform: translateX(10px); }
+  70% { transform: translateX(-5px); }
+  80% { transform: translateX(5px); }
+}
+
+@keyframes dropInAndFlyOut {
+  0% {
+    opacity: 0;
+    transform: translateY(-600px) scale(1.5);
+  }
+  30% {
+    opacity: 1;
+    transform: translateY(20px) scale(1.3);
+  }
+  50% {
+    transform: translateY(0) scale(1);
+  }
+  80% {
+    transform: translateY(-50px) scale(0.8);
+  }
+  100% {
+    opacity: 0;
+    transform: translateY(-300px) scale(0.5);
+  }
+}
+@keyframes shakeHarder {
+  0%, 100% { transform: translateX(0); }
+  15% { transform: translateX(-25px); }
+  30% { transform: translateX(25px); }
+  45% { transform: translateX(-15px); }
+  60% { transform: translateX(15px); }
+  75% { transform: translateX(-10px); }
+  90% { transform: translateX(10px); }
+}
+
+
+
+@keyframes dropInAndFlyOut {
+  0% {
+    opacity: 0;
+    transform: translateY(-600px) scale(1.5);
+  }
+  30% {
+    opacity: 1;
+    transform: translateY(20px) scale(1.3);
+  }
+  50% {
+    transform: translateY(0) scale(1);
+  }
+  80% {
+    transform: translateY(-50px) scale(0.8);
+  }
+  100% {
+    opacity: 0;
+    transform: translateY(-300px) scale(0.5);
+  }
+}
+
+.animate-dropInAndFlyOut {
+  animation: dropInAndFlyOut 2.5s ease-out forwards;
+}
+</style>
+</head>
+<body class="relative flex flex-col items-center justify-start pt-36">
+<!-- 第一行：welcome-c.png -->
+<img alt="welcome" class="w-1/3 max-w-xs fly-in" src="welcome-c.png" style="animation-delay: 0.8s;"/>
+<!-- 第二行：stone1~stone4 依序飛入 -->
+<div class="flex justify-center gap-4 mt-3">
+<img class="w-20 fly-in" src="stone1.png" style="animation-delay: 1.6s;"/>
+<img class="w-20 fly-in" src="stone2.png" style="animation-delay: 2.4s;"/>
+<img class="w-20 fly-in" src="stone3.png" style="animation-delay: 3.2s;"/>
+<img class="w-20 fly-in" src="stone4.png" style="animation-delay: 4.0s;"/>
+</div>
+<!-- 第三行：stone4.png 單張置中 -->
+<img class="w-36 mt-3 fly-in" src="stone5.png" style="animation-delay: 4.8s;"/>
+<!-- 第四行：stone4.gif 可點擊 -->
+<a href="about.html">
+<img class="w-32 mt-3 fly-in cursor-pointer" src="move.gif" style="animation-delay: 9.2s;"/>
+<p class="text-white text-sm mt-2 text-center font-[ArialRoundedMTBold]" style="animation-delay: 10.0s; animation-name: fadeIn; animation-duration: 1s; animation-fill-mode: forwards; opacity: 0;">點擊進入</p>
+<!-- 導航列：調整位置與動畫延遲 -->
+<div class="text-white text-xs text-center mb-4" style="animation-delay: 11.2s; animation-name: fadeIn; animation-duration: 1s; animation-fill-mode: forwards; opacity: 0; margin-top: 6rem;">
+<a class="hover:underline" href="index.html">首頁</a> | 
+  <a class="hover:underline" href="about.html">工作室簡介</a> | 
+  <a class="hover:underline" href="author.html">作者簡介</a> | 
+  <a class="hover:underline" href="eastjade.html">東海岸玉石</a> | 
+  <a class="hover:underline" href="raw.html">原石欣賞</a> | 
+  <a class="hover:underline" href="carving.html">雕刻作品</a> | 
+  <a class="hover:underline" href="creation.html">玉石創作</a> | 
+  <a class="hover:underline" href="combo.html">複合式創作</a> | 
+  <a class="hover:underline" href="treasure.html">活動剪影</a> | 
+  <a class="hover:underline" href="exhibition.html">玉石展覽活動</a>
+</div>
+<script></script></a><div class="flex justify-center items-center w-full absolute top-[65%] z-50" id="rock-container"><img id="rock" src="DSCN1140.gif" style="width: 200px; display: none;"/></div><script>
+setTimeout(() => {
+  const rock = document.getElementById('rock');
+  const audio = document.getElementById('rockSound');
+
+  rock.style.display = 'block';
+  rock.classList.add('animate-dropInAndFlyOut');
+
+  document.body.style.animation = 'shakeHarder 0.8s ease';
+
+  audio.play();
+
+  setTimeout(() => {
+    document.body.style.animation = '';
+    rock.style.display = 'none';
+  }, 2500);
+}, 6400);
+</script><audio id="rockSound" src="crash.mp3"></audio></body></html>
