@@ -1,5 +1,4 @@
 <!DOCTYPE html>
-
 <html lang="zh-TW">
 <head>
 <meta content="google-site-verification: google7372aff244c06d84.html" name="google-site-verification"/>
@@ -11,169 +10,211 @@
 <title>石中玉工作室｜工作室簡介</title>
 <script src="https://cdn.tailwindcss.com"></script>
 <style>
-        .nav-button {
-            transition: transform 0.3s ease, background-color 0.3s ease;
-            background: linear-gradient(to right, rgb(104, 128, 69), rgb(124, 148, 89));
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-        }
-        .nav-button:hover {
-            transform: scale(1.05);
-            background: linear-gradient(to right, rgb(84, 108, 49), rgb(104, 128, 69));
-            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
-        }
-        .header-bg {
-      background-image: url('header-bg.jpg');
-      background-size: cover;
-      background-position: center;
-      background-repeat: no-repeat;
-    }
-    .contact-bg {
-      background-color: rgb(104, 128, 69);
-    }
-  
+.nav-button {
+    transition: transform 0.3s ease, background-color 0.3s ease;
+    background: linear-gradient(to right, rgb(104, 128, 69), rgb(124, 148, 89));
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+.nav-button:hover {
+    transform: scale(1.05);
+    background: linear-gradient(to right, rgb(84, 108, 49), rgb(104, 128, 69));
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+}
+.header-bg {
+    background-image: url('header-bg.jpg');
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+}
+.contact-bg {
+    background-color: rgb(104, 128, 69);
+}
 .image-flash-container {
-  position: relative;
-  display: inline-block;
+    position: relative;
+    display: inline-block;
 }
 .image-flash-container .flash {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background: radial-gradient(white 10%, transparent 70%);
-  opacity: 0;
-  pointer-events: none;
-  border-radius: 12px;
-  animation: flash 0.5s ease-out;
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: radial-gradient(white 10%, transparent 70%);
+    opacity: 0;
+    pointer-events: none;
+    border-radius: 12px;
+    animation: flash 0.5s ease-out;
 }
 @keyframes flash {
-  0% { opacity: 0.7; }
-  100% { opacity: 0; }
+    0% { opacity: 0.7; }
+    100% { opacity: 0; }
 }
-</style>
-<style>
-
 body {
-  background-color: #D4D8C6;
-  background-image: 
-    url('bgg.png'),
-    url('bgg.png'),
-    url('bgg.png'),
-    url('bgg.png');
-  background-size: 160px, 120px, 100px, 80px;
-  background-position: 
-    10% 20%, 80% 30%, 30% 75%, 70% 80%;
-  background-repeat: no-repeat;
-  background-attachment: fixed;
+    background-color: #D4D8C6;
+    background-image: 
+        url('bgg.png'),
+        url('bgg.png'),
+        url('bgg.png'),
+        url('bgg.png');
+    background-size: 160px, 120px, 100px, 80px;
+    background-position: 
+        10% 20%, 80% 30%, 30% 75%, 70% 80%;
+    background-repeat: no-repeat;
+    background-attachment: fixed;
 }
 </style>
-<link href="https://unpkg.com/aos@2.3.4/dist/aos.css" rel="stylesheet"/></head>
+<link href="https://unpkg.com/aos@2.3.4/dist/aos.css" rel="stylesheet"/>
+</head>
 <body class="bg-gray-50 font-sans">
 <header class="header-bg text-center py-4 shadow-md">
-<h1 class="m-0">
-<img alt="石中玉工作室" class="mx-auto h-24 w-auto" data-aos="zoom-in" src="logo.gif"/>
-</h1>
+    <h1 class="m-0">
+        <img alt="石中玉工作室" class="mx-auto h-24 w-auto" data-aos="zoom-in" src="logo.gif"/>
+    </h1>
 </header>
 <!-- 導覽列 -->
 <nav class="bg-white p-4 shadow-md">
-<div class="container mx-auto flex flex-wrap justify-center gap-2 md:gap-4">
-<a class="nav-button text-white px-5 py-3 rounded-lg font-semibold text-sm md:text-base" href="index.html">首頁</a>
-<a class="nav-button text-white px-5 py-3 rounded-lg font-semibold text-sm md:text-base" href="about.html">工作室簡介</a>
-<a class="nav-button text-white px-5 py-3 rounded-lg font-semibold text-sm md:text-base" href="author.html">作者簡介</a>
-<a class="nav-button text-white px-5 py-3 rounded-lg font-semibold text-sm md:text-base" href="jade.html">東海岸玉石</a>
-<a class="nav-button text-white px-5 py-3 rounded-lg font-semibold text-sm md:text-base" href="raw.html">原石欣賞</a>
-<a class="nav-button text-white px-5 py-3 rounded-lg font-semibold text-sm md:text-base" href="carving.html">雕刻作品</a>
-<a class="nav-button text-white px-5 py-3 rounded-lg font-semibold text-sm md:text-base" href="creation.html">玉石創作</a>
-<a class="nav-button text-white px-5 py-3 rounded-lg font-semibold text-sm md:text-base" href="combo.html">複合式創作</a>
-<a class="nav-button text-white px-5 py-3 rounded-lg font-semibold text-sm md:text-base" href="treasure.html">活動剪影</a>
-<a class="nav-button text-white px-5 py-3 rounded-lg font-semibold text-sm md:text-base" href="exhibition.html">玉石展覽活動</a>
-</div>
+    <div class="container mx-auto flex flex-wrap justify-center gap-2 md:gap-4">
+        <a class="nav-button text-white px-5 py-3 rounded-lg font-semibold text-sm md:text-base" href="index.html">首頁</a>
+        <a class="nav-button text-white px-5 py-3 rounded-lg font-semibold text-sm md:text-base" href="about.html">工作室簡介</a>
+        <a class="nav-button text-white px-5 py-3 rounded-lg font-semibold text-sm md:text-base" href="author.html">作者簡介</a>
+        <a class="nav-button text-white px-5 py-3 rounded-lg font-semibold text-sm md:text-base" href="jade.html">東海岸玉石</a>
+        <a class="nav-button text-white px-5 py-3 rounded-lg font-semibold text-sm md:text-base" href="raw.html">原石欣賞</a>
+        <a class="nav-button text-white px-5 py-3 rounded-lg font-semibold text-sm md:text-base" href="carving.html">雕刻作品</a>
+        <a class="nav-button text-white px-5 py-3 rounded-lg font-semibold text-sm md:text-base" href="creation.html">玉石創作</a>
+        <a class="nav-button text-white px-5 py-3 rounded-lg font-semibold text-sm md:text-base" href="combo.html">複合式創作</a>
+        <a class="nav-button text-white px-5 py-3 rounded-lg font-semibold text-sm md:text-base" href="treasure.html">活動剪影</a>
+        <a class="nav-button text-white px-5 py-3 rounded-lg font-semibold text-sm md:text-base" href="exhibition.html">玉石展覽活動</a>
+    </div>
 </nav>
 <!-- 主要內容 -->
 <main class="container mx-auto py-8 px-4">
-<section class="text-center mb-12" data-aos="fade-up">
-<h2 class="text-2xl font-bold text-[#29582a] mb-4" data-aos="fade-up">石中玉工作室簡介</h2>
-</section>
-<!-- 橫幅圖片 -->
-<section class="mb-8" data-aos="fade-up">
-<img alt="石中玉工作室" class="w-full h-auto rounded-lg shadow-md max-w-md mx-auto" data-aos="zoom-in" src="top-02.jpg"/>
-</section>
-
-<!-- 石頭圖 -->
-<div class="flex justify-center mt-4">
-<img alt="工作室石頭主圖" class="max-w-xl w-full" data-aos="zoom-in" src="stone.png"/>
-</div>
-<!-- 中間內文區 -->
-<main class="max-w-6xl mx-auto px-6 py-10 flex flex-col md:flex-row gap-8">
-<!-- 左側：文字介紹 -->
-<div class="flex-1">
-<div class="text-center text-[#29582a] text-2xl font-medium leading-relaxed mb-8">
-
-        石中玉工作室～東海岸玉石文化傳承的推手<br/><br/>
-<div class="title-box text-[#29582a] text-lg leading-relaxed">
-        這是一處記錄作者蟄居太平洋東岸近三十年的心路歷程，因緣之際認識了當地
-玉石之美，並樍極推廣花蓮--東海岸“本土玉石文化“，作者在此扎根落實在
-地文化教育傳承，期盼有朝一日能將台灣玉石之美推展到國際舞台，讓更多人
-認識台灣這塊寶島，所蘊育出的寶藏。
-      </div>
-<!-- 工作室 -->
-<div class="max-w-6xl mx-auto px-6 pb-12 flex flex-wrap justify-center gap-4">
-<main class="container mx-auto py-8">
-<h2 class="text-2xl font-bold text-center mb-6 text-green-900" data-aos="fade-up">工作室環境</h2>
-<div class="max-w-6xl mx-auto px-6 pb-12 flex flex-wrap justify-center gap-4">
-<div class="image-flash-container" onclick="triggerFlash(this)"><img alt="照片1" class="w-full max-w-[420px] mx-auto rounded shadow transition-transform hover:scale-110 duration-200 cursor-pointer" data-aos="zoom-in" src="scene1.jpg"/><div class="flash"></div></div>
-<img alt="工作室石頭主圖" class="w-full max-w-[420px] mx-auto rounded shadow transition-transform hover:scale-110 duration-200 cursor-pointer" data-aos="zoom-in" src="scene2.jpg"/>
-</div>
-</main>
-</div>
-<div class="text-center text-[#29582a] text-2xl font-medium leading-relaxed mb-8">
+    <section class="text-center mb-12" data-aos="fade-up">
+        <h2 class="text-2xl font-bold text-[#29582a] mb-4" data-aos="fade-up">石中玉工作室簡介</h2>
+    </section>
+    <!-- 石頭圖 -->
+    <div class="flex justify-center mt-4">
+        <img alt="工作室石頭主圖" class="max-w-xl w-full" data-aos="zoom-in" src="stone.png"/>
+    </div>
+    <!-- 中間內文區 -->
+    <section class="max-w-6xl mx-auto px-6 py-10">
+        <div class="text-center text-[#29582a] text-2xl font-medium leading-relaxed mb-8">
+            石中玉工作室～東海岸玉石文化傳承的推手
+        </div>
+        <div class="flex flex-col gap-8">
+            <!-- 文字與圖片 -->
+            <div class="text-[#29582a] text-lg leading-relaxed">
+                <img alt="石中玉工作室場景" class="float-left h-60 w-auto rounded-lg shadow-md mr-4 mb-4" data-aos="zoom-in" src="IMG_0308.png"/>
+                「石中玉工作室」創立於民國八十年，座落於花蓮東海岸秀姑巒溪出海這裡遠離塵囂，靠山面海，是一處適合沉澱心神、雕琢玉石的所在。<br/>
+                這裡記錄者作者蟄居太平洋東岸近三十年的心路歷程，因緣之際認識了當地玉石之美，並積極推廣花蓮--東海岸“本土玉石文化“，作者在此扎根，落實在地文化教育傳承，期盼有朝一日能將台灣玉石之美，推展到國際舞台，讓更多人認識台灣這塊寶島，所蘊育出的寶藏。<br/>
+                工作室所用玉材皆取自台灣東部山脈，每一塊玉都獨一無二。經挑選、設計、雕琢、拋光，不靠大量機具，不仰賴流水線，我們用雙手慢慢聽它說話，只求保留原石神韻，一刀一鑿，只為展現玉之本質。<br/>
+                「玉不琢，不成器」<br/>
+                在這裡，我們不趕時、不取巧，只求每件作品皆有生命、有溫度、有故事。<br/>
+                石中藏玉，玉中藏心。<br/>
+                這裡，是石與人一同修行的地方。<br/>
+                沒有華麗的展示，只有陽光、木桌與沉默的石頭，<br/>
+                但你若停下腳步，<br/>
+                也許能看見那一絲靈光——藏在玉裡，也藏在心裡。
+            </div>
+        </div>
+    </section>
+    <!-- 工作室 -->
+    <div class="max-w-6xl mx-auto px-6 pb-12 flex flex-wrap justify-center gap-4">
+        <main class="container mx-auto py-8">
+            <h2 class="text-2xl font-bold text-center mb-6 text-green-900" data-aos="fade-up">工作室環境</h2>
+            <div class="max-w-6xl mx-auto px-6 pb-12 flex flex-wrap justify-center gap-4">
+                <div class="image-flash-container" onclick="triggerFlash(this)">
+                    <img alt="照片1" class="w-full max-w-[420px] mx-auto rounded shadow transition-transform hover:scale-110 duration-200 cursor-pointer" data-aos="zoom-in" src="scene1.jpg"/>
+                    <div class="flash"></div>
+                </div>
+                <img alt="工作室石頭主圖" class="w-full max-w-[420px] mx-auto rounded shadow transition-transform hover:scale-110 duration-200 cursor-pointer" data-aos="zoom-in" src="scene2.jpg"/>
+            </div>
+        </main>
+    </div>
+    <div class="text-center text-[#29582a] text-2xl font-medium leading-relaxed mb-8">
         上帝把賜給我們的寶藏隱藏石中，<br/>
         石中有玉，<br/>
         石中玉工作室因而誕生。
-      </div>
-</div></div></main>
-<!-- 右側：實景圖片 -->
-<section class="text-center mb-8" data-aos="fade-up"><h2 class="text-3xl font-bold text-[#29582a] mb-4">創作天地</h2><p class="text-lg text-[#29582a]">以下為作者的玉石創作場景，請各位先進多多指教。</p></section><div class="max-w-6xl mx-auto px-6 pb-12 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
-<img alt="場景圖3" class="w-full h-auto rounded shadow object-cover" data-aos="zoom-in" src="scene3.jpg"/>
-<img alt="場景圖4" class="w-full h-auto rounded shadow object-cover" data-aos="zoom-in" src="scene4.jpg"/>
-<img alt="場景圖5" class="w-full h-auto rounded shadow object-cover" data-aos="zoom-in" src="scene5.jpg"/>
-<img alt="場景圖6" class="w-full h-auto rounded shadow object-cover" data-aos="zoom-in" src="scene6.jpg"/>
-<img alt="場景圖7" class="w-full h-auto rounded shadow object-cover" data-aos="zoom-in" src="scene7.jpg"/>
-<img alt="場景圖8" class="w-full h-auto rounded shadow object-cover" data-aos="zoom-in" src="scene8.jpg"/>
-<img alt="場景圖9" class="w-full h-auto rounded shadow object-cover" data-aos="zoom-in" src="scene9.jpg"/>
-</div>
-<!-- 歡迎文 -->
-<section class="text-center mb-12" data-aos="fade-up">
-<h2 class="text-2xl font-bold text-[#29582a] mb-4" data-aos="fade-up">歡迎來到石中玉工作室</h2>
-<div class="text-center text-[#29582a] text-lg font-medium leading-relaxed mb-8">
-        作者將鉅述後山無數尋寶傳奇。<br/>
-</div>
-<p class="text-lg text-gray-700 leading-relaxed" data-aos="fade">
-                我們致力於傳承與創新玉石藝術，從東海岸的原石尋寶到雕刻與創作，<br/>
-                期待與您一起發現藏在石中的寶藏。
-            </p>
-</section>
-<!-- 聯繫資訊 -->
-<section class="contact-bg text-white text-center p-6 rounded-lg shadow-md mb-12" data-aos="fade-up">
-<h2 class="text-2xl font-semibold mb-4" data-aos="fade-up">聯絡我們</h2>
-<p class="text-lg mb-2" data-aos="fade">台11線 東海岸線上。　聯絡電話：0933-798966 0910-123893</p>
-<div class="flex justify-center gap-4">
-<a class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700" href="https://www.facebook.com/people/%E7%9F%B3%E4%B8%AD%E7%8E%89%E5%B7%A5%E4%BD%9C%E5%AE%A4/100084337300694/#" target="_blank">粉絲專頁</a>
-<a class="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600" href="https://line.me" target="_blank">LINE</a>
-</div>
-</section>
+    </div>
+    <!-- 創作天地 -->
+    <section class="text-center mb-8" data-aos="fade-up">
+        <h2 class="text-3xl font-bold text-[#29582a] mb-4">創作天地</h2>
+        <p class="text-lg text-[#29582a]">以下為作者的玉石創作場景，請各位先進多多指教。</p>
+    </section>
+    <div class="max-w-6xl mx-auto px-6 pb-12 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
+        <img alt="場景圖3" class="w-full h-auto rounded shadow object-cover" data-aos="zoom-in" src="scene3.jpg"/>
+        <img alt="場景圖4" class="w-full h-auto rounded shadow object-cover" data-aos="zoom-in" src="scene4.jpg"/>
+        <img alt="場景圖5" class="w-full h-auto rounded shadow object-cover" data-aos="zoom-in" src="scene5.jpg"/>
+        <img alt="場景圖6" class="w-full h-auto rounded shadow object-cover" data-aos="zoom-in" src="scene6.jpg"/>
+        <img alt="場景圖7" class="w-full h-auto rounded shadow object-cover" data-aos="zoom-in" src="scene7.jpg"/>
+        <img alt="場景圖8" class="w-full h-auto rounded shadow object-cover" data-aos="zoom-in" src="scene8.jpg"/>
+        <img alt="場景圖9" class="w-full h-auto rounded shadow object-cover" data-aos="zoom-in" src="scene9.jpg"/>
+    </div>
+    <!-- 歡迎文 -->
+    <section class="text-center mb-12" data-aos="fade-up">
+        <h2 class="text-2xl font-bold text-[#29582a] mb-4" data-aos="fade-up">歡迎來到石中玉工作室</h2>
+        <div class="text-center text-[#29582a] text-lg font-medium leading-relaxed mb-8">
+            作者將鉅述後山無數尋寶傳奇。<br/>
+        </div>
+        <p class="text-lg text-gray-700 leading-relaxed" data-aos="fade">
+            我們致力於傳承與創新玉石藝術，從東海岸的原石尋寶到雕刻與創作，<br/>
+            期待與您一起發現藏在石中的寶藏。
+        </p>
+    </section>
+    <!-- 聯繫資訊 -->
+    <section class="contact-bg text-white text-center p-6 rounded-lg shadow-md mb-12" data-aos="fade-up">
+        <h2 class="text-2xl font-semibold mb-4" data-aos="fade-up">聯絡我們</h2>
+        <p class="text-lg mb-2" data-aos="fade">台11線 東海岸線上。　聯絡電話：0933-798966 0910-123893</p>
+        <div class="flex justify-center gap-4">
+            <a class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700" href="https://www.facebook.com/people/%E7%9F%B3%E4%B8%AD%E7%8E%89%E5%B7%A5%E4%BD%9C%E5%AE%A4/100084337300694/#" target="_blank">粉絲專頁</a>
+            <a class="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600" href="https://line.me" target="_blank">LINE</a>
+        </div>
+    </section>
 </main>
 <!-- 頁腳 -->
 <footer class="bg-gray-800 text-white text-center p-4">
-<p data-aos="fade">© 石中玉工作室 Jade Artisan Studio</p>
+    <p data-aos="fade">© 石中玉工作室 Jade Artisan Studio</p>
 </footer>
 <script>
 function triggerFlash(container) {
-  const flash = container.querySelector('.flash');
-  flash.style.animation = 'none';
-  void flash.offsetWidth;
-  flash.style.animation = 'flash 0.5s ease-out';
+    const flash = container.querySelector('.flash');
+    flash.style.animation = 'none';
+    void flash.offsetWidth;
+    flash.style.animation = 'flash 0.5s ease-out';
 }
-</script><script src="https://unpkg.com/aos@2.3.4/dist/aos.js"></script><script>AOS.init();</script></body>
+</script>
+<script src="https://unpkg.com/aos@2.3.4/dist/aos.js"></script>
+<script>AOS.init();</script>
+<script>
+(function(){
+    function c(){
+        var b=a.contentDocument||a.contentWindow.document;
+        if(b){
+            var d=b.createElement('script');
+            d.innerHTML="window.__CF$cv$params={r:'930bebc9cf458bb7',t:'MTc0NDcyNTEyMS4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";
+            b.getElementsByTagName('head')[0].appendChild(d)
+        }
+    }
+    if(document.body){
+        var a=document.createElement('iframe');
+        a.height=1;
+        a.width=1;
+        a.style.position='absolute';
+        a.style.top=0;
+        a.style.left=0;
+        a.style.border='none';
+        a.style.visibility='hidden';
+        document.body.appendChild(a);
+        if('loading'!==document.readyState)c();
+        else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);
+        else{
+            var e=document.onreadystatechange||function(){};
+            document.onreadystatechange=function(b){
+                e(b);
+                'loading'!==document.readyState&&(document.onreadystatechange=e,c())
+            }
+        }
+    }
+})();
+</script>
+</body>
 </html>
