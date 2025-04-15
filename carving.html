@@ -1,6 +1,4 @@
-
 <!DOCTYPE html>
-
 <html lang="zh-TW">
 <head>
 <meta content="石中玉工作室，位於花蓮東海岸，專注於玉石創作、雕刻、原石欣賞與多元複合創作。" name="description"/>
@@ -21,30 +19,49 @@
       background: linear-gradient(to right, rgb(84, 108, 49), rgb(104, 128, 69));
       box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
     }
-  
-.contact-bg { background-color: #6a8244; }</style>
+    .contact-bg { background-color: #6a8244; }
+    .pagination-button {
+        background: linear-gradient(to right, rgb(104, 128, 69), rgb(124, 148, 89));
+        color: white;
+        padding: 0.5rem 1rem;
+        margin: 0 0.25rem;
+        border-radius: 0.25rem;
+        text-decoration: none;
+        transition: all 0.3s ease;
+    }
+    .pagination-button:hover {
+        background: linear-gradient(to right, rgb(84, 108, 49), rgb(104, 128, 69));
+        transform: scale(1.05);
+    }
+    .pagination-button.active {
+        background: linear-gradient(to right, rgb(64, 88, 29), rgb(84, 108, 49));
+        font-weight: bold;
+    }
+    .pagination-button:disabled {
+        background: gray;
+        cursor: not-allowed;
+        transform: none;
+    }
+    body {
+      background-color: #D4D8C6;
+      background-image: 
+        url('bgg.png'),
+        url('bgg.png'),
+        url('bgg.png'),
+        url('bgg.png');
+      background-size: 160px, 120px, 100px, 80px;
+      background-position: 
+        10% 20%, 80% 30%, 30% 75%, 70% 80%;
+      background-repeat: no-repeat;
+      background-attachment: fixed;
+    }
+</style>
 </head>
 <body class="bg-[#fdfcf7] font-serif text-gray-800">
 <header class="text-center py-4 shadow-md bg-cover bg-center" style="background-image: url('header-bg.jpg');">
 <h1 class="mx-auto h-20 md:h-24 lg:h-32">
 <img alt="石中玉工作室" class="mx-auto h-24 w-auto" src="logo.gif"/>
 </h1>
-<style>
-
-body {
-  background-color: #D4D8C6;
-  background-image: 
-    url('bgg.png'),
-    url('bgg.png'),
-    url('bgg.png'),
-    url('bgg.png');
-  background-size: 160px, 120px, 100px, 80px;
-  background-position: 
-    10% 20%, 80% 30%, 30% 75%, 70% 80%;
-  background-repeat: no-repeat;
-  background-attachment: fixed;
-}
-</style>
 </header>
 <nav class="bg-white p-4 shadow-md">
 <div class="container mx-auto flex flex-wrap justify-center gap-2 md:gap-4">
@@ -64,78 +81,16 @@ body {
 <section class="text-center mb-12">
 <h2 class="text-2xl font-bold text-[#29582a] mb-4">雕刻作品</h2>
 </section>
-<div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 text-center">
-<div>
-<img alt="作品圖片" class="w-full max-w-[420px] mx-auto rounded shadow transition-transform hover:scale-110 duration-200 cursor-pointer h-[240px] object-contain" src="carving_01.jpg"/>
+<div id="imageGrid" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 text-center">
+<!-- 圖片將由 JavaScript 動態生成 -->
 </div>
-<div>
-<img alt="作品圖片" class="w-full max-w-[420px] mx-auto rounded shadow transition-transform hover:scale-110 duration-200 cursor-pointer h-[240px] object-contain" src="carving_02.jpg"/>
-</div>
-<div>
-<img alt="作品圖片" class="w-full max-w-[420px] mx-auto rounded shadow transition-transform hover:scale-110 duration-200 cursor-pointer h-[240px] object-contain" src="carving_03.jpg"/>
-</div>
-<div>
-<img alt="作品圖片" class="w-full max-w-[420px] mx-auto rounded shadow transition-transform hover:scale-110 duration-200 cursor-pointer h-[240px] object-contain" src="carving_04.jpg"/>
-</div>
-<div>
-<img alt="作品圖片" class="w-full max-w-[420px] mx-auto rounded shadow transition-transform hover:scale-110 duration-200 cursor-pointer h-[240px] object-contain" src="carving_05.jpg"/>
-</div>
-<div>
-<img alt="作品圖片" class="w-full max-w-[420px] mx-auto rounded shadow transition-transform hover:scale-110 duration-200 cursor-pointer h-[240px] object-contain" src="carving_06.jpg"/>
-</div>
-<div>
-<img alt="作品圖片" class="w-full max-w-[420px] mx-auto rounded shadow transition-transform hover:scale-110 duration-200 cursor-pointer h-[240px] object-contain" src="carving_07.jpg"/>
-</div>
-<div>
-<img alt="作品圖片" class="w-full max-w-[420px] mx-auto rounded shadow transition-transform hover:scale-110 duration-200 cursor-pointer h-[240px] object-contain" src="carving_08.jpg"/>
-</div>
-<div>
-<img alt="作品圖片" class="w-full max-w-[420px] mx-auto rounded shadow transition-transform hover:scale-110 duration-200 cursor-pointer h-[240px] object-contain" src="carving_09.jpg"/>
-</div>
-<div>
-<img alt="作品圖片" class="w-full max-w-[420px] mx-auto rounded shadow transition-transform hover:scale-110 duration-200 cursor-pointer h-[240px] object-contain" src="carving_10.jpg"/>
-</div>
-<div>
-<img alt="作品圖片" class="w-full max-w-[420px] mx-auto rounded shadow transition-transform hover:scale-110 duration-200 cursor-pointer h-[240px] object-contain" src="carving_11.jpg"/>
-</div>
-<div>
-<img alt="作品圖片" class="w-full max-w-[420px] mx-auto rounded shadow transition-transform hover:scale-110 duration-200 cursor-pointer h-[240px] object-contain" src="carving_12.jpg"/>
-</div>
-<div>
-<img alt="作品圖片" class="w-full max-w-[420px] mx-auto rounded shadow transition-transform hover:scale-110 duration-200 cursor-pointer h-[240px] object-contain" src="carving_13.jpg"/>
-</div>
-<div>
-<img alt="作品圖片" class="w-full max-w-[420px] mx-auto rounded shadow transition-transform hover:scale-110 duration-200 cursor-pointer h-[240px] object-contain" src="carving_14.jpg"/>
-</div>
-<div>
-<img alt="作品圖片" class="w-full max-w-[420px] mx-auto rounded shadow transition-transform hover:scale-110 duration-200 cursor-pointer h-[240px] object-contain" src="carving_15.jpg"/>
-</div>
-<div>
-<img alt="作品圖片" class="w-full max-w-[420px] mx-auto rounded shadow transition-transform hover:scale-110 duration-200 cursor-pointer h-[240px] object-contain" src="carving_16.jpg"/>
-</div>
-<div>
-<img alt="作品圖片" class="w-full max-w-[420px] mx-auto rounded shadow transition-transform hover:scale-110 duration-200 cursor-pointer h-[240px] object-contain" src="carving_17.jpg"/>
-</div>
-<div>
-<img alt="作品圖片" class="w-full max-w-[420px] mx-auto rounded shadow transition-transform hover:scale-110 duration-200 cursor-pointer h-[240px] object-contain" src="carving_18.jpg"/>
-</div>
-<div>
-<img alt="作品圖片" class="w-full max-w-[420px] mx-auto rounded shadow transition-transform hover:scale-110 duration-200 cursor-pointer h-[240px] object-contain" src="carving_19.jpg"/>
-</div>
-<div>
-<img alt="作品圖片" class="w-full max-w-[420px] mx-auto rounded shadow transition-transform hover:scale-110 duration-200 cursor-pointer h-[240px] object-contain" src="carving_20.jpg"/>
-</div>
-<div>
-<img alt="作品圖片" class="w-full max-w-[420px] mx-auto rounded shadow transition-transform hover:scale-110 duration-200 cursor-pointer h-[240px] object-contain" src="carving_21.jpg"/>
-</div>
-<div>
-<img alt="作品圖片" class="w-full max-w-[420px] mx-auto rounded shadow transition-transform hover:scale-110 duration-200 cursor-pointer h-[240px] object-contain" src="carving_22.jpg"/>
-</div>
+<div id="pagination" class="text-center mt-8">
+<!-- 分頁按鈕將由 JavaScript 動態生成 -->
 </div>
 <!-- 聯繫資訊 -->
 <section class="contact-bg text-white text-center p-6 rounded-lg shadow-md mb-12">
-<h2 class="text-2xl font-semibold mb-4" data-aos="fade-up">聯絡我們</h2>
-<p class="text-lg mb-2" data-aos="fade">台11線 東海岸線上。　聯絡電話：0933-798966 0910-123893</p>
+<h2 class="text-2xl font-semibold mb-4">聯絡我們</h2>
+<p class="text-lg mb-2">台11線 東海岸線上。　聯絡電話：0933-798966 0910-123893</p>
 <div class="flex justify-center gap-4">
 <a class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700" href="https://www.facebook.com/people/%E7%9F%B3%E4%B8%AD%E7%8E%89%E5%B7%A5%E4%BD%9C%E5%AE%A4/100084337300694/#" target="_blank">粉絲專頁</a>
 <a class="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600" href="https://line.me" target="_blank">LINE</a>
@@ -145,5 +100,113 @@ body {
 <footer class="bg-gray-800 text-white text-center p-4">
 <p>© 石中玉工作室 Jade Artisan Studio</p>
 </footer>
-</main></body>
+</main>
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+    const imageGrid = document.getElementById('imageGrid');
+    const pagination = document.getElementById('pagination');
+    const imagesPerPage = 50;
+    const totalImages = 300; // 假設有 300 張圖片 (carving_01.jpg 到 carving_300.jpg)
+    const totalPages = Math.ceil(totalImages / imagesPerPage); // 6 頁
+    const prefix = 'carving_';
+    const extension = '.jpg';
+
+    // 從 URL 獲取當前頁面
+    const urlParams = new URLSearchParams(window.location.search);
+    let currentPage = parseInt(urlParams.get('page')) || 1;
+    if (currentPage < 1 || currentPage > totalPages) currentPage = 1;
+
+    // 檢查圖片是否存在的函數
+    function checkImageExists(url) {
+        return new Promise(resolve => {
+            const img = new Image();
+            img.onload = () => resolve(true);
+            img.onerror = () => resolve(false);
+            img.src = url;
+        });
+    }
+
+    // 動態生成圖片
+    async function loadImages(page) {
+        imageGrid.innerHTML = ''; // 清空現有圖片
+        const start = (page - 1) * imagesPerPage + 1;
+        const end = Math.min(page * imagesPerPage, totalImages);
+
+        for (let i = start; i <= end; i++) {
+            const paddedNumber = i.toString().padStart(2, '0'); // 補零，如 01, 02
+            const imageUrl = `${prefix}${paddedNumber}${extension}`;
+
+            // 檢查圖片是否存在
+            if (await checkImageExists(imageUrl)) {
+                const div = document.createElement('div');
+                div.innerHTML = `
+                    <img loading="lazy" alt="作品圖片 ${i}" class="h-[240px] object-contain w-full max-w-[420px] mx-auto rounded shadow transition-transform hover:scale-110 duration-200 cursor-pointer" src="${imageUrl}"/>
+                `;
+                imageGrid.appendChild(div);
+            }
+        }
+    }
+
+    // 生成分頁按鈕
+    function renderPagination() {
+        pagination.innerHTML = '';
+
+        // Previous 按鈕
+        const prevButton = document.createElement('button');
+        prevButton.className = 'pagination-button';
+        prevButton.textContent = '上一頁';
+        prevButton.disabled = currentPage === 1;
+        prevButton.addEventListener('click', () => {
+            if (currentPage > 1) {
+                currentPage--;
+                updatePage();
+            }
+        });
+        pagination.appendChild(prevButton);
+
+        // 頁數按鈕
+        for (let i = 1; i <= totalPages; i++) {
+            const pageButton = document.createElement('button');
+            pageButton.className = `pagination-button ${i === currentPage ? 'active' : ''}`;
+            pageButton.textContent = i;
+            pageButton.addEventListener('click', () => {
+                currentPage = i;
+                updatePage();
+            });
+            pagination.appendChild(pageButton);
+        }
+
+        // Next 按鈕
+        const nextButton = document.createElement('button');
+        nextButton.className = 'pagination-button';
+        nextButton.textContent = '下一頁';
+        nextButton.disabled = currentPage === totalPages;
+        nextButton.addEventListener('click', () => {
+            if (currentPage < totalPages) {
+                currentPage++;
+                updatePage();
+            }
+        });
+        pagination.appendChild(nextButton);
+    }
+
+    // 更新頁面
+    function updatePage() {
+        // 更新 URL
+        const newUrl = `${window.location.pathname}?page=${currentPage}`;
+        window.history.pushState({}, '', newUrl);
+        // 加載圖片和分頁
+        loadImages(currentPage);
+        renderPagination();
+    }
+
+    // 初始加載
+    loadImages(currentPage).catch(err => {
+        console.error('載入圖片時發生錯誤:', err);
+    });
+    renderPagination();
+});
+</script>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'930c1c715ef5b016',t:'MTc0NDcyNzExNC4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script>
+</body>
 </html>
