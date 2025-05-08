@@ -209,13 +209,17 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     async function countAvailableImages() {
         let count = 0;
-        for (let i = 1; i <= totalImages; i++) {
-            const paddedNumber = i.toString().padStart(2, '0');
-            const imageUrl = `${prefix}${paddedNumber}${extension}`;
-            if (await checkImageExists(imageUrl)) {
+        const batchSize = 50; // 每批檢查 50 張圖片
+        for (let i = 1; i <= totalImages; i += batchSize) {
+            const batch = [];
+            for (let j = i; j < i + batchSize && j <= totalImages; j++) {
+                const paddedNumber = j.toString().padStart(2, '0');
+                batch.push(checkImageExists(`${prefix}${paddedNumber}${extension}`).then(exists => exists ? j : null));
+            }
+            const results = await Promise.all(batch);
+            for (const result of results) {
+                if (result === null) return count;
                 count++;
-            } else {
-                break;
             }
         }
         return count;
@@ -234,17 +238,24 @@ document.addEventListener('DOMContentLoaded', async () => {
         const start = (page - 1) * imagesPerPage + 1;
         const end = Math.min(page * imagesPerPage, availableImages);
 
+        const imageChecks = [];
         for (let i = start; i <= end; i++) {
             const paddedNumber = i.toString().padStart(2, '0');
             const imageUrl = `${prefix}${paddedNumber}${extension}`;
-            if (await checkImageExists(imageUrl)) {
+            imageChecks.push(checkImageExists(imageUrl).then(exists => exists ? imageUrl : null));
+        }
+
+        const results = await Promise.all(imageChecks);
+        results.forEach((imageUrl, index) => {
+            if (imageUrl) {
                 const imgDiv = document.createElement('div');
+                const paddedNumber = (start + index).toString().padStart(2, '0');
                 imgDiv.innerHTML = `
                     <img loading="lazy" alt="複合式創作 ${paddedNumber}" class="gallery-image rounded shadow" src="${imageUrl}"/>
                 `;
                 gallery.appendChild(imgDiv);
             }
-        }
+        });
     }
 
     function renderPagination() {
