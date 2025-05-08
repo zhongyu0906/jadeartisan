@@ -1,4 +1,43 @@
-<!DOCTYPE html>
+<script type="text/javascript">
+        var gk_isXlsx = false;
+        var gk_xlsxFileLookup = {};
+        var gk_fileData = {};
+        function filledCell(cell) {
+          return cell !== '' && cell != null;
+        }
+        function loadFileData(filename) {
+        if (gk_isXlsx && gk_xlsxFileLookup[filename]) {
+            try {
+                var workbook = XLSX.read(gk_fileData[filename], { type: 'base64' });
+                var firstSheetName = workbook.SheetNames[0];
+                var worksheet = workbook.Sheets[firstSheetName];
+
+                // Convert sheet to JSON to filter blank rows
+                var jsonData = XLSX.utils.sheet_to_json(worksheet, { header: 1, blankrows: false, defval: '' });
+                // Filter out blank rows (rows where all cells are empty, null, or undefined)
+                var filteredData = jsonData.filter(row => row.some(filledCell));
+
+                // Heuristic to find the header row by ignoring rows with fewer filled cells than the next row
+                var headerRowIndex = filteredData.findIndex((row, index) =>
+                  row.filter(filledCell).length >= filteredData[index + 1]?.filter(filledCell).length
+                );
+                // Fallback
+                if (headerRowIndex === -1 || headerRowIndex > 25) {
+                  headerRowIndex = 0;
+                }
+
+                // Convert filtered JSON back to CSV
+                var csv = XLSX.utils.aoa_to_sheet(filteredData.slice(headerRowIndex)); // Create a new sheet from filtered array of arrays
+                csv = XLSX.utils.sheet_to_csv(csv, { header: 1 });
+                return csv;
+            } catch (e) {
+                console.error(e);
+                return "";
+            }
+        }
+        return gk_fileData[filename] || "";
+        }
+        </script><!DOCTYPE html>
 <html lang="zh-TW">
 <head>
 <meta content="石中玉工作室，位於花蓮東海岸，專注於玉石創作、雕刻、原石欣賞與多元複合創作。" name="description"/>
@@ -33,6 +72,14 @@ body {
   background-repeat: no-repeat;
   background-attachment: fixed;
 }
+.responsive-img {
+  width: 100%;
+  max-width: 600px; /* 限制最大寬度，與內文段落對齊 */
+  height: auto;
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+}
 </style>
 </head>
 <body class="bg-[#fdfcf7] font-serif text-gray-800">
@@ -60,13 +107,17 @@ body {
 <img alt="作者照片" class="w-48 h-auto rounded shadow shrink-0" src="photo_1.gif"/>
 <div class="flex-1 space-y-6">
 <h2 class="text-3xl font-bold text-[#29582a] mb-8 text-center">【創作者簡介】</h2>
-<p class="text-lg text-gray-800 mb-6 text-center">出生於1957(淺秋)臺北新店</p>
+<p class="text-lg text-gray-800 mb-6 text-center">出生於1957臺北新店</p>
 <h2 class="text-3xl font-bold text-[#29582a] mb-8 text-center">【人生經歷】</h2>
 <p class="text-xl leading-loose text-gray-800 mb-8">水電工程負責人、泛舟事業股東、山莊經營者、成立個人工作室研發玉石、觀光景點專櫃營運，投入玉石社團擔任會長創辦《2008玉石祭》全國邀請首展推廣玉石產業、籌組奚卜蘭觀光發展協會提升在地文化，致各相關院校及職訓局教授玉石相關課程、為人生退場機制於花蓮市區購地建造咖啡莊園規劃做一位知玉良農。</p>
 <h2 class="text-3xl font-bold text-[#29582a] mb-8 text-center">【自傳】</h2>
-<p class="text-xl leading-loose text-gray-800 mb-8">人生猶如走馬燈，我之一生確是命運乖舛在苦海波濤中沉浮嚐盡世態炎涼甜酸苦�涩，也因如此而豐富了一身歷煉並寫下一頁頁篳路藍縷，在70年代初約四十年前我遠從繁華之都臺北舉家東進落腳於秀姑巒溪出海口展開拓荒史記。起源投資泛舟事業因遇人不義股東衍生淘空公款致使公司宣告倒閉停運，後輾轉經營泛舟休息山莊開設全鄉第一家卡拉OK其間歷經三大颱風一次大火洗禮傾盡全身分文，慘澹潦倒面對茫然的未來，陷在那谷底深淵處卻因緣際會遇見了時任泛舟救生隊隊長林慈德先進，並由他啟蒙</p>
+<p class="text-xl leading-loose text-gray-800 mb-8">人生猶如走馬燈，我之一生確是命運乖舛在苦海波濤中沉浮嚐盡世態炎涼甜酸苦澀，也因如此而豐富了一身歷煉並寫下一頁頁心路歷程，在70年代初約四十年前我遠從繁華之都台北舉家東遷落腳於秀姑巒溪出海口展開拓荒史記，起源投資秀姑巒溪泛舟事業因遇人不義股東洐生淘空公款致使公司宣告倒閉停運，後輾轉經營泛舟休息山莊開設全鄉第一家卡拉OK其間經歷三大颱風一次大火洗禮傾盡全身分文，慘澹潦倒面對茫然的未來，陷在那谷底深淵處卻因緣際會遇見了時任泛舟救生隊隊長林慈德先進，並由他啟蒙東玉之門同時推薦好友拙而奇甘信一，因而峰迴路轉綻開人生另一頁從此三人相約邁向尋玉之旅也獲喻稱東海岸三劍客！</p>
+<p class="text-xl leading-loose text-gray-800 mb-8">80年代初，甘信一創立拙而奇雕塑工作室，我隨後成立石中玉工作室，林慈德則擔任中華民國玉石協會首任會長。我與甘信一受邀擔任顧問，當時東海岸玉石產業正值巔峰，每逢假日，從北到南的海岸線上，尋玉之人絡繹不絕。我們三人各展所長，積極推廣東海岸玉石文化，舉辦演講與展覽，結識志同道合之人。1996年，在眾人支持與兩位好友的鼓勵下，我接任花蓮縣東海岸玉石學會及奚卜蘭觀光文化協會理事長，並於2008年創辦玉石祭全國邀請首展，再次掀起東海岸玉石熱潮。然而，命運無常，兩位摯友相繼離世，留我獨自踏浪尋玉，繼續這段玉石之路。</p>
+<p class="text-xl leading-loose text-gray-800 mb-8">歷經人生風浪與摯友離別，我深知夕陽雖美，終將西沉。急流勇退，方顯真我。為此，我選擇在花蓮市區購地，開闢一處咖啡莊園，賞玉弄孫，悠然度日。這便是我一生的寫照，一段從磨難中淬煉、從玉石中尋得人生真諦的旅程。</p>
+<div class="text-center mb-8">
+<img alt="教學照片" class="responsive-img rounded shadow" src="photo_2.png"/>
+</div>
 <h2 class="text-3xl font-bold text-[#29582a] mb-8 text-center">【創作者經歷】</h2>
-<img alt="教學照片" class="w-48 h-auto float-right ml-4 mb-4 rounded shadow" src="photo_2.png"/>
 <div class="text-xl leading-loose text-gray-800 space-y-1">
 <p>1984年 遷居東海岸投資泛舟事業</p>
 <p>1985年 成立「紅蕃谷山莊」</p>
@@ -96,6 +147,9 @@ body {
 <p>2011年 擔任花蓮縣秀姑巒溪泛舟渡船遊艇商業同業公會第七、八屆常務監事</p>
 <p>2013年 受聘花蓮大漢技術學院玉石研磨專任指導老師</p>
 <p>2020～2022 受聘於勞動部勞動力發展署北基宜花金馬分署職訓局指導老師</p>
+</div>
+<div class="text-center mt-8">
+<img alt="活動照片" class="responsive-img rounded shadow" src="photo_3.png"/>
 </div>
 </div>
 </div>
@@ -145,5 +199,5 @@ body {
     }
 })();
 </script>
-</body>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'93c97adacbd044dc',t:'MTc0NjcxMjc5MC4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>
