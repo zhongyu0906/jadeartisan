@@ -1,11 +1,48 @@
-<!DOCTYPE html>
+<script type="text/javascript">
+        var gk_isXlsx = false;
+        var gk_xlsxFileLookup = {};
+        var gk_fileData = {};
+        function filledCell(cell) {
+          return cell !== '' && cell != null;
+        }
+        function loadFileData(filename) {
+        if (gk_isXlsx && gk_xlsxFileLookup[filename]) {
+            try {
+                var workbook = XLSX.read(gk_fileData[filename], { type: 'base64' });
+                var firstSheetName = workbook.SheetNames[0];
+                var worksheet = workbook.Sheets[firstSheetName];
 
+                // Convert sheet to JSON to filter blank rows
+                var jsonData = XLSX.utils.sheet_to_json(worksheet, { header: 1, blankrows: false, defval: '' });
+                // Filter out blank rows (rows where all cells are empty, null, or undefined)
+                var filteredData = jsonData.filter(row => row.some(filledCell));
+
+                // Heuristic to find the header row by ignoring rows with fewer filled cells than the next row
+                var headerRowIndex = filteredData.findIndex((row, index) =>
+                  row.filter(filledCell).length >= filteredData[index + 1]?.filter(filledCell).length
+                );
+                // Fallback
+                if (headerRowIndex === -1 || headerRowIndex > 25) {
+                  headerRowIndex = 0;
+                }
+
+                // Convert filtered JSON back to CSV
+                var csv = XLSX.utils.aoa_to_sheet(filteredData.slice(headerRowIndex)); // Create a new sheet from filtered array of arrays
+                csv = XLSX.utils.sheet_to_csv(csv, { header: 1 });
+                return csv;
+            } catch (e) {
+                console.error(e);
+                return "";
+            }
+        }
+        return gk_fileData[filename] || "";
+        }
+        </script><!DOCTYPE html>
 <html lang="zh-TW">
 <head>
 <meta content="石中玉工作室，位於花蓮東海岸，專注於玉石創作、雕刻、原石欣賞與多元複合創作。" name="description"/>
 <meta content="石中玉, 玉石, 花蓮, 東海岸, 玉石雕刻, 原石欣賞, 台灣玉, 石藝, 原礦, 台灣藍寶" name="keywords"/>
 <meta content="石中玉工作室" name="author"/>
-
 <meta charset="utf-8"/>
 <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
 <title>石中玉工作室｜東海岸玉石</title>
@@ -21,22 +58,52 @@
       background: linear-gradient(to right, rgb(84, 108, 49), rgb(104, 128, 69));
       box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
     }
-  
-.contact-bg { background-color: #688045; }</style>
-<style>
-
+.contact-bg { background-color: #688045; }
 body {
   background-color: #D4D8C6;
   background-image: 
     url('bgg.png'),
     url('bgg.png'),
-    url('bgg.png'),
+    url('enever.png'),
     url('bgg.png');
   background-size: 160px, 120px, 100px, 80px;
   background-position: 
     10% 20%, 80% 30%, 30% 75%, 70% 80%;
   background-repeat: no-repeat;
   background-attachment: fixed;
+}
+.bordered-text {
+  border: 2px solid #29582a;
+  padding: 1.5rem;
+  border-radius: 8px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+.responsive-img {
+  width: 100%;
+  max-width: 600px; /* 手機和平板上的最大寬度 */
+  height: auto;
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+}
+@media (min-width: 1024px) {
+  .responsive-img {
+    max-width: 800px; /* 電腦瀏覽時圖片更大 */
+  }
+}
+.highlighted-title {
+  background-color: #29582a;
+  color: white;
+  font-family: 'Noto Sans TC', sans-serif;
+  padding: 0.5rem 1rem;
+  display: inline-block;
+  border-radius: 4px;
+  animation: blink 1.5s infinite;
+}
+@keyframes blink {
+  0% { opacity: 1; }
+  50% { opacity: 0.5; }
+  100% { opacity: 1; }
 }
 </style>
 </head>
@@ -49,7 +116,6 @@ body {
 </header>
 <!-- 導覽列 -->
 <nav class="bg-white p-4 shadow-md">
-<div class="container mx-auto flex flex-wrap justify-center gap-2 md:gap-4">
 <div class="container mx-auto flex flex-wrap justify-center gap-2 md:gap-4">
 <a class="nav-button text-white px-5 py-3 rounded-lg font-semibold text-sm md:text-base" href="index.html">首頁</a>
 <a class="nav-button text-white px-5 py-3 rounded-lg font-semibold text-sm md:text-base" href="about.html">工作室簡介</a>
@@ -67,18 +133,28 @@ body {
 <main class="max-w-6xl mx-auto px-6 py-10 space-y-16">
 <!-- 區塊一：東海岸玉石的由來 -->
 <section>
-<h2 class="text-2xl font-bold text-[#29582a] text-center mb-4">東海岸玉石的由來</h2>
+<h2 class="text-2xl font-bold text-center mb-4 highlighted-title">東海岸玉石的由來</h2>
 <div class="flex flex-col items-center gap-6">
 <div class="text-xl text-gray-800 leading-loose flex-1">
-<p class="text-xl leading-relaxed">顧名思義，東海岸玉石也就是生產在台灣東部海岸山脈的玉石，因我們的東海岸山脈北從花蓮大橋南至台東縣卑南溪出河口，這段大約一百三十五公里的細長山脈，是大約在五百萬年左右的造山運動中產生出來的，由菲律賓板塊與歐亞大陸板塊互相擠壓所形成的火山脈，由於在海岸山脈造山運動尚未穩定時，因內部的壓力衝擊，海岸山脈在某些地段的岩壁就會被壓力擠成裂縫，而裡面的熱氣和熱水就會順著裂縫往外衝，因為岩壁的質地密度不平均，較鬆軟的地方，就會被掏空成囊袋狀，而且越往外的溫度會越低，在熱氣及熱水中會夾帶著很多礦物原素，轉換成液體而附著在袋狀帶中，當內部的壓力減弱時，被撐開的岩壁裂縫，就會慢慢壓縮回去，這時候附著在岩壁出氣口附近的液體也跟著往內回流，填滿囊袋狀帶，而原本的裂縫就會慢慢密合在內部產生高溫、高壓的環境，在這一連串的熱力作用下又為所處地理環境的不同關係，它冷卻的時間，又剛好合乎產生玉石成礦條件時，於是乎台灣東部海岸山脈的大部份寶玉礦脈就這樣產生了。</p>
+<p class="text-xl leading-relaxed mb-4">顧名思義，東海岸玉石也就是生產在台灣東部海岸山脈的玉石，因我們的東海岸山脈北從花蓮大橋南至台東縣卑南溪出河口，這段大約一百三十五公里的細長山脈，是大約在五百萬年左右的造山運動中產生出來的。</p>
+<p class="text-xl leading-relaxed mb-4">由菲律賓板塊與歐亞大陸板塊互相擠壓所形成的火山脈，由於在海岸山脈造山運動尚未穩定時，因內部的壓力衝擊，海岸山脈在某些地段的岩壁就會被壓力擠成裂縫，而裡面的熱氣和熱水就會順著裂縫往外衝。</p>
+<p class="text-xl leading-relaxed">因為岩壁的質地密度不平均，較鬆軟的地方，就會被掏空成囊袋狀，而且越往外的溫度會越低，在熱氣及熱水中會夾帶著很多礦物原素，轉換成液體而附著在袋狀帶中，當內部的壓力減弱時，被撐開的岩壁裂縫，就會慢慢壓縮回去，這時候附著在岩壁出氣口附近的液體也跟著往內回流，填滿囊袋狀帶，而原本的裂縫就會慢慢密合在內部產生高溫、高壓的環境，在這一連串的熱力作用下又為所處地理環境的不同關係，它冷卻的時間，又剛好合乎產生玉石成礦條件時，於是乎台灣東部海岸山脈的大部份寶玉礦脈就這樣產生了。</p>
 </div>
 <img alt="東海岸玉石的由來" class="max-w-lg w-full rounded shadow mt-6 md:mt-0" src="mon.png"/>
 <h2 class="text-2xl font-bold text-[#29582a] mb-4">在這條細長的海岸山脈裡，蘊育無數的寶玉。</h2>
 </div>
 </section>
+<!-- 區塊一：東海岸玉石文化傳承的推手 -->
+<section class="bordered-text">
+<h2 class="text-2xl font-bold mb-4 highlighted-title">東海岸玉石文化傳承的推手</h2>
+<div class="text-xl text-gray-800 leading-loose flex-1">
+<p class="text-xl leading-relaxed mb-4">台灣東部海岸山脈如一條蔚藍絲路綿延百多公里，幽靜自在、依山面海、在其內蘊含了無盡生機，這片土地上有著得天獨厚的天然地質景觀，豐富的玉石礦源，多元的原鄉文化，特殊的族群手工產業，隨著原鄉族群的匯集而形成了一座座濱海山城，永續先民拓荒開墾精神！！ ~東海岸〝本土玉石文化〞，作者在此扎根落實在地文化教育傳承，期盼有朝一日能將台灣本土玉石之美推上國際舞台，讓更多人認識台灣這座寶島，所蘊育出的瑰寶。</p>
+<p class="text-xl leading-relaxed">以下這處將紀錄作者蟄居太平洋東岸近四十年的心路歷程，因緣際會認識了東玉之美，並積極投入推廣創作。</p>
+</div>
+</section>
 <!-- 區塊一：玉石形成 -->
 <section>
-<h2 class="text-2xl font-bold text-[#29582a] mb-4">玉石形成圖</h2>
+<h2 class="text-2xl font-bold mb-4 highlighted-title">玉石形成圖</h2>
 <div class="md:flex gap-8 items-start">
 <div class="text-xl text-gray-800 leading-loose flex-1">
 <p class="text-xl leading-relaxed">海岸山脈玉石的產地，大致上可分為四大山群，五個山系：台東縣的都蘭山群、富里成功的成廣澳山群、長濱瑞穗的花東山群、花蓮縣豐濱的八里灣山群。
@@ -90,13 +166,13 @@ body {
 </section>
 <!-- 區塊二：玉石分佈 -->
 <section>
-<h2 class="text-2xl font-bold text-[#29582a] mb-4">玉石分佈圖</h2>
-<img alt="玉石分佈圖" class="max-w-md w-full mx-auto rounded shadow" src="distribution.png"/>
+<h2 class="text-2xl font-bold mb-4 highlighted-title">玉石分佈圖</h2>
+<img alt="玉石分佈圖" class="responsive-img rounded shadow" src="distribution.png"/>
 </section>
 <!-- 區塊三：玉石分類 -->
 <section>
-<h2 class="text-2xl font-bold text-[#29582a] mb-4">玉石分類圖</h2>
-<img alt="玉石分類圖" class="max-w-md w-full mx-auto rounded shadow" src="classification.png"/>
+<h2 class="text-2xl font-bold mb-4 highlighted-title">玉石分類圖</h2>
+<img alt="玉石分類圖" class="responsive-img rounded shadow" src="classification.png"/>
 </section>
 </main>
 <!-- 聯繫資訊 -->
@@ -112,5 +188,5 @@ body {
 <footer class="bg-gray-800 text-white text-center p-4">
 <p>© 石中玉工作室 Jade Artisan Studio</p>
 </footer>
-</body>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'93c992776cd0b059',t:'MTc0NjcxMzc1Ny4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>
