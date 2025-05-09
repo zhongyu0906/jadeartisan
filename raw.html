@@ -91,6 +91,18 @@
   transform: scale(1.5);
   z-index: 10;
 }
+.main-image {
+  width: 100%;
+  max-width: 100%;
+  height: auto;
+  display: block;
+  margin: 0 auto;
+}
+@media (max-width: 640px) {
+  .main-image {
+    max-width: 90vw;
+  }
+}
 body {
   background-color: #D4D8C6;
   background-image: url('bgg.png');
@@ -124,7 +136,7 @@ body {
 </nav>
 <main class="max-w-6xl mx-auto px-6 py-10 space-y-12">
   <div id="mainImage" class="text-center">
-    <img alt="白玉髓" class="mx-auto rounded shadow-lg max-w-2xl" src="main_raw.png" loading="eager"/>
+    <img alt="白玉髓" class="main-image rounded shadow-lg" src="main_raw.png" loading="eager" srcset="main_raw.png 1000w, main_raw_sm.png 500w" sizes="(max-width: 640px) 500px, 1000px"/>
     <p class="text-gray-700 text-lg font-semibold mt-3">國內第二大海洗原石「白玉髓」　重量 47kg</p>
   </div>
   <div id="imageGrid" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 text-center"></div>
