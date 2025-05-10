@@ -1,3 +1,74 @@
+<script type="text/javascript">
+        var gk_isXlsx = false;
+        var gk_xlsxFileLookup = {};
+        var gk_fileData = {};
+        function filledCell(cell) {
+          return cell !== '' && cell != null;
+        }
+        function loadFileData(filename) {
+        if (gk_isXlsx && gk_xlsxFileLookup[filename]) {
+            try {
+                var workbook = XLSX.read(gk_fileData[filename], { type: 'base64' });
+                var firstSheetName = workbook.SheetNames[0];
+                var worksheet = workbook.Sheets[firstSheetName];
+
+                // Convert sheet to JSON to filter blank rows
+                var jsonData = XLSX.utils.sheet_to_json(worksheet, { header: 1, blankrows: false, defval: '' });
+                // Filter out blank rows (rows where all cells are empty, null, or undefined)
+                var filteredData = jsonData.filter(row => row.some(filledCell));
+
+                // Heuristic to find the header row by ignoring rows with fewer filled cells than the next row
+                var headerRowIndex = filteredData.findIndex((row, index) =>
+                  row.filter(filledCell).length >= filteredData[index + 1]?.filter(filledCell).length
+                );
+                // Fallback
+                if (headerRowIndex === -1 || headerRowIndex > 25) {
+                  headerRowIndex = 0;
+                }
+
+                // Convert filtered JSON back to CSV
+                var csv = XLSX.utils.aoa_to_sheet(filteredData.slice(headerRowIndex)); // Create a new sheet from filtered array of arrays
+                csv = XLSX.utils.sheet_to_csv(csv, { header: 1 });
+                return csv;
+            } catch (e) {
+                console.error(e);
+                return "";
+            }
+        }
+        return gk_fileData[filename] || "";
+        }
+        </script><script type="text/javascript">
+        var gk_isXlsx = false;
+        var gk_xlsxFileLookup = {};
+        var gk_fileData = {};
+        function filledCell(cell) {
+          return cell !== '' && cell != null;
+        }
+        function loadFileData(filename) {
+        if (gk_isXlsx && gk_xlsxFileLookup[filename]) {
+            try {
+                var workbook = XLSX.read(gk_fileData[filename], { type: 'base64' });
+                var firstSheetName = workbook.SheetNames[0];
+                var worksheet = workbook.Sheets[firstSheetName];
+                var jsonData = XLSX.utils.sheet_to_json(worksheet, { header: 1, blankrows: false, defval: '' });
+                var filteredData = jsonData.filter(row => row.some(filledCell));
+                var headerRowIndex = filteredData.findIndex((row, index) =>
+                  row.filter(filledCell).length >= filteredData[index + 1]?.filter(filledCell).length
+                );
+                if (headerRowIndex === -1 || headerRowIndex > 25) {
+                  headerRowIndex = 0;
+                }
+                var csv = XLSX.utils.aoa_to_sheet(filteredData.slice(headerRowIndex));
+                csv = XLSX.utils.sheet_to_csv(csv, { header: 1 });
+                return csv;
+            } catch (e) {
+                console.error(e);
+                return "";
+            }
+        }
+        return gk_fileData[filename] || "";
+        }
+</script>
 <!DOCTYPE html>
 <html lang="zh-TW">
 <head>
@@ -21,23 +92,38 @@
     }
     .contact-bg { background-color: #6a8244; }
     .pagination-button {
-      transition: background-color 0.3s ease;
+        background: linear-gradient(to right, rgb(104, 128, 69), rgb(124, 148, 89));
+        color: white;
+        padding: 0.5rem 1rem;
+        margin: 0 0.25rem;
+        border-radius: 0.25rem;
+        text-decoration: none;
+        transition: all 0.3s ease;
     }
-    .pagination-button:hover:not(:disabled) {
-      background-color: #4a6a2a;
+    .pagination-button:hover {
+        background: linear-gradient(to right, rgb(84, 108, 49), rgb(104, 128, 69));
+        transform: scale(1.05);
+    }
+    .pagination-button.active {
+        background: linear-gradient(to right, rgb(64, 88, 29), rgb(84, 108, 49));
+        font-weight: bold;
     }
     .pagination-button:disabled {
-      opacity: 0.5;
-      cursor: not-allowed;
+        background: gray;
+        cursor: not-allowed;
+        transform: none;
     }
-</style>
-</head>
-<body class="bg-[#fdfcf7] font-serif text-gray-800">
-<header class="text-center py-4 shadow-md bg-cover bg-center" style="background-image: url('header-bg.jpg');">
-<h1 class="mx-auto h-20 md:h-24 lg:h-32">
-<img alt="石中玉工作室" class="mx-auto h-24 w-auto" src="logo.gif"/>
-</h1>
-<style>
+    .gallery-image {
+        transition: transform 0.3s ease;
+        cursor: pointer;
+        width: 100%;
+        height: 240px;
+        object-fit: contain;
+    }
+    .gallery-image:hover, .gallery-image:active {
+        transform: scale(1.5);
+        z-index: 10;
+    }
 body {
   background-color: #D4D8C6;
   background-image: 
@@ -52,6 +138,12 @@ body {
   background-attachment: fixed;
 }
 </style>
+</head>
+<body class="bg-[#fdfcf7] font-serif text-gray-800">
+<header class="text-center py-4 shadow-md bg-cover bg-center" style="background-image: url('header-bg.jpg');">
+<h1 class="mx-auto h-20 md:h-24 lg:h-32">
+<img alt="石中玉工作室" class="mx-auto h-24 w-auto" src="logo.gif"/>
+</h1>
 </header>
 <nav class="bg-white p-4 shadow-md">
 <div class="container mx-auto flex flex-wrap justify-center gap-2 md:gap-4">
@@ -68,7 +160,7 @@ body {
 </div>
 </nav>
 <main class="max-w-6xl mx-auto px-6 py-10 space-y-12">
-<section class="text-center mb-12">
+<section id="introSection" class="text-center mb-12">
 <div class="text-lg text-gray-700 leading-relaxed">
 <p>玉石，本自天地而來，各有其質、色、紋、性。</p>
 <p>而當不同的玉相遇，便展開另一場靜謐的對話。</p>
@@ -82,9 +174,8 @@ body {
 <h2 class="text-2xl font-bold text-[#29582a] mt-12 mb-4">複合式創作</h2>
 </section>
 <div id="gallery" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 text-center"></div>
-<div class="flex justify-center gap-4 mt-8">
-<button id="prevPage" class="pagination-button bg-[#6a8244] text-white px-4 py-2 rounded disabled:opacity-50" disabled>上一頁</button>
-<button id="nextPage" class="pagination-button bg-[#6a8244] text-white px-4 py-2 rounded">下一頁</button>
+<div id="pagination" class="text-center mt-8">
+    <!-- 分頁按鈕將由 JavaScript 動態生成 -->
 </div>
 <section class="contact-bg text-white text-center p-6 rounded-lg shadow-md mb-12">
 <h2 class="text-2xl font-semibold mb-4">聯絡我們</h2>
@@ -98,45 +189,128 @@ body {
 <p>© 石中玉工作室 Jade Artisan Studio</p>
 </footer>
 <script>
-const imagesPerPage = 50;
-let currentPage = 1;
-const totalImages = 200;
-const gallery = document.getElementById('gallery');
-const prevButton = document.getElementById('prevPage');
-const nextButton = document.getElementById('nextPage');
+document.addEventListener('DOMContentLoaded', async () => {
+    const gallery = document.getElementById('gallery');
+    const pagination = document.getElementById('pagination');
+    const introSection = document.getElementById('introSection');
+    const imagesPerPage = 30;
+    const totalImages = 300;
+    const prefix = 'combo_';
+    const extension = '.jpg';
 
-function loadImages(page) {
-  gallery.innerHTML = '';
-  const start = (page - 1) * imagesPerPage + 1;
-  const end = Math.min(page * imagesPerPage, totalImages);
-  
-  for (let i = start; i <= end; i++) {
-    const imgDiv = document.createElement('div');
-    imgDiv.innerHTML = `
-      <img alt="作品圖片" class="h-[240px] object-contain w-full max-w-[420px] mx-auto rounded shadow transition-transform hover:scale-110 duration-200 cursor-pointer" src="combo_${i.toString().padStart(2, '0')}.jpg" onerror="this.parentElement.style.display='none'">
-    `;
-    gallery.appendChild(imgDiv);
-  }
+    async function checkImageExists(url) {
+        return new Promise(resolve => {
+            const img = new Image();
+            img.onload = () => resolve(true);
+            img.onerror = () => resolve(false);
+            img.src = url;
+        });
+    }
 
-  prevButton.disabled = page === 1;
-  nextButton.disabled = end >= totalImages;
-}
+    async function countAvailableImages() {
+        let count = 0;
+        const batchSize = 50; // 每批檢查 50 張圖片
+        for (let i = 1; i <= totalImages; i += batchSize) {
+            const batch = [];
+            for (let j = i; j < i + batchSize && j <= totalImages; j++) {
+                const paddedNumber = j.toString().padStart(2, '0');
+                batch.push(checkImageExists(`${prefix}${paddedNumber}${extension}`).then(exists => exists ? j : null));
+            }
+            const results = await Promise.all(batch);
+            for (const result of results) {
+                if (result === null) return count;
+                count++;
+            }
+        }
+        return count;
+    }
 
-prevButton.addEventListener('click', () => {
-  if (currentPage > 1) {
-    currentPage--;
-    loadImages(currentPage);
-  }
+    const availableImages = await countAvailableImages();
+    const totalPages = Math.ceil(availableImages / imagesPerPage);
+
+    const urlParams = new URLSearchParams(window.location.search);
+    let currentPage = parseInt(urlParams.get('page')) || 1;
+    if (currentPage < 1 || currentPage > totalPages) currentPage = 1;
+
+    async function loadImages(page) {
+        gallery.innerHTML = '';
+        introSection.style.display = page === 1 ? 'block' : 'none';
+        const start = (page - 1) * imagesPerPage + 1;
+        const end = Math.min(page * imagesPerPage, availableImages);
+
+        const imageChecks = [];
+        for (let i = start; i <= end; i++) {
+            const paddedNumber = i.toString().padStart(2, '0');
+            const imageUrl = `${prefix}${paddedNumber}${extension}`;
+            imageChecks.push(checkImageExists(imageUrl).then(exists => exists ? imageUrl : null));
+        }
+
+        const results = await Promise.all(imageChecks);
+        results.forEach((imageUrl, index) => {
+            if (imageUrl) {
+                const imgDiv = document.createElement('div');
+                const paddedNumber = (start + index).toString().padStart(2, '0');
+                imgDiv.innerHTML = `
+                    <img loading="lazy" alt="複合式創作 ${paddedNumber}" class="gallery-image rounded shadow" src="${imageUrl}"/>
+                `;
+                gallery.appendChild(imgDiv);
+            }
+        });
+    }
+
+    function renderPagination() {
+        pagination.innerHTML = '';
+
+        const prevButton = document.createElement('button');
+        prevButton.className = 'pagination-button';
+        prevButton.textContent = '上一頁';
+        prevButton.disabled = currentPage === 1;
+        prevButton.addEventListener('click', () => {
+            if (currentPage > 1) {
+                currentPage--;
+                updatePage();
+            }
+        });
+        pagination.appendChild(prevButton);
+
+        for (let i = 1; i <= totalPages; i++) {
+            const pageButton = document.createElement('button');
+            pageButton.className = `pagination-button ${i === currentPage ? 'active' : ''}`;
+            pageButton.textContent = i;
+            pageButton.addEventListener('click', () => {
+                currentPage = i;
+                updatePage();
+            });
+            pagination.appendChild(pageButton);
+        }
+
+        const nextButton = document.createElement('button');
+        nextButton.className = 'pagination-button';
+        nextButton.textContent = '下一頁';
+        nextButton.disabled = currentPage === totalPages;
+        nextButton.addEventListener('click', () => {
+            if (currentPage < totalPages) {
+                currentPage++;
+                updatePage();
+            }
+        });
+        pagination.appendChild(nextButton);
+    }
+
+    function updatePage() {
+        const newUrl = `${window.location.pathname}?page=${currentPage}`;
+        window.history.pushState({}, '', newUrl);
+        loadImages(currentPage);
+        renderPagination();
+    }
+
+    loadImages(currentPage).catch(err => {
+        console.error('載入圖片時發生錯誤:', err);
+    });
+    renderPagination();
 });
-
-nextButton.addEventListener('click', () => {
-  if (currentPage * imagesPerPage < totalImages) {
-    currentPage++;
-    loadImages(currentPage);
-  }
-});
-
-loadImages(currentPage);
 </script>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'93ca36d19e7ebfbb',t:'MTc0NjcyMDQ4OS4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'93ca49081c65675f',t:'MTc0NjcyMTIzNS4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script>
 </body>
 </html>

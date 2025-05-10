@@ -1,3 +1,74 @@
+<script type="text/javascript">
+        var gk_isXlsx = false;
+        var gk_xlsxFileLookup = {};
+        var gk_fileData = {};
+        function filledCell(cell) {
+          return cell !== '' && cell != null;
+        }
+        function loadFileData(filename) {
+        if (gk_isXlsx && gk_xlsxFileLookup[filename]) {
+            try {
+                var workbook = XLSX.read(gk_fileData[filename], { type: 'base64' });
+                var firstSheetName = workbook.SheetNames[0];
+                var worksheet = workbook.Sheets[firstSheetName];
+
+                // Convert sheet to JSON to filter blank rows
+                var jsonData = XLSX.utils.sheet_to_json(worksheet, { header: 1, blankrows: false, defval: '' });
+                // Filter out blank rows (rows where all cells are empty, null, or undefined)
+                var filteredData = jsonData.filter(row => row.some(filledCell));
+
+                // Heuristic to find the header row by ignoring rows with fewer filled cells than the next row
+                var headerRowIndex = filteredData.findIndex((row, index) =>
+                  row.filter(filledCell).length >= filteredData[index + 1]?.filter(filledCell).length
+                );
+                // Fallback
+                if (headerRowIndex === -1 || headerRowIndex > 25) {
+                  headerRowIndex = 0;
+                }
+
+                // Convert filtered JSON back to CSV
+                var csv = XLSX.utils.aoa_to_sheet(filteredData.slice(headerRowIndex)); // Create a new sheet from filtered array of arrays
+                csv = XLSX.utils.sheet_to_csv(csv, { header: 1 });
+                return csv;
+            } catch (e) {
+                console.error(e);
+                return "";
+            }
+        }
+        return gk_fileData[filename] || "";
+        }
+        </script><script type="text/javascript">
+        var gk_isXlsx = false;
+        var gk_xlsxFileLookup = {};
+        var gk_fileData = {};
+        function filledCell(cell) {
+          return cell !== '' && cell != null;
+        }
+        function loadFileData(filename) {
+        if (gk_isXlsx && gk_xlsxFileLookup[filename]) {
+            try {
+                var workbook = XLSX.read(gk_fileData[filename], { type: 'base64' });
+                var firstSheetName = workbook.SheetNames[0];
+                var worksheet = workbook.Sheets[firstSheetName];
+                var jsonData = XLSX.utils.sheet_to_json(worksheet, { header: 1, blankrows: false, defval: '' });
+                var filteredData = jsonData.filter(row => row.some(filledCell));
+                var headerRowIndex = filteredData.findIndex((row, index) =>
+                  row.filter(filledCell).length >= filteredData[index + 1]?.filter(filledCell).length
+                );
+                if (headerRowIndex === -1 || headerRowIndex > 25) {
+                  headerRowIndex = 0;
+                }
+                var csv = XLSX.utils.aoa_to_sheet(filteredData.slice(headerRowIndex));
+                csv = XLSX.utils.sheet_to_csv(csv, { header: 1 });
+                return csv;
+            } catch (e) {
+                console.error(e);
+                return "";
+            }
+        }
+        return gk_fileData[filename] || "";
+        }
+</script>
 <!DOCTYPE html>
 <html lang="zh-TW">
 <head>
@@ -42,6 +113,17 @@
         cursor: not-allowed;
         transform: none;
     }
+    .gallery-image {
+        transition: transform 0.3s ease;
+        cursor: pointer;
+        width: 100%;
+        height: 240px;
+        object-fit: contain;
+    }
+    .gallery-image:hover, .gallery-image:active {
+        transform: scale(1.5);
+        z-index: 10;
+    }
     body {
       background-color: #D4D8C6;
       background-image: 
@@ -78,7 +160,7 @@
 </div>
 </nav>
 <main class="max-w-6xl mx-auto px-6 py-10 space-y-12">
-<section class="text-center mb-12">
+<section id="introSection" class="text-center mb-12">
 <div class="text-lg text-gray-700 leading-relaxed">
 <p>這些玉石，曾靜靜沉睡於山林溪谷，歷經風化與時間洗禮，</p>
 <p>終於在某個時刻，被溫柔喚醒。</p>
@@ -91,13 +173,8 @@
 </div>
 <h2 class="text-2xl font-bold text-[#29582a] mt-12 mb-4">雕刻作品</h2>
 </section>
-<div id="imageGrid" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 text-center">
-<!-- 圖片將由 JavaScript 動態生成 -->
-</div>
-<div id="pagination" class="text-center mt-8">
-<!-- 分頁按鈕將由 JavaScript 動態生成 -->
-</div>
-<!-- 聯繫資訊 -->
+<div id="imageGrid" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 text-center"></div>
+<div id="pagination" class="text-center mt-8"></div>
 <section class="contact-bg text-white text-center p-6 rounded-lg shadow-md mb-12">
 <h2 class="text-2xl font-semibold mb-4">聯絡我們</h2>
 <p class="text-lg mb-2">台11線 東海岸線上。　聯絡電話：0933-798966 0910-123893</p>
@@ -106,28 +183,20 @@
 <a class="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600" href="https://line.me" target="_blank">LINE</a>
 </div>
 </section>
-<!-- 頁腳 -->
 <footer class="bg-gray-800 text-white text-center p-4">
 <p>© 石中玉工作室 Jade Artisan Studio</p>
 </footer>
-</main>
 <script>
-document.addEventListener('DOMContentLoaded', () => {
+document.addEventListener('DOMContentLoaded', async () => {
     const imageGrid = document.getElementById('imageGrid');
     const pagination = document.getElementById('pagination');
-    const imagesPerPage = 50;
-    const totalImages = 300; // 假設有 300 張圖片 (carving_01.jpg 到 carving_300.jpg)
-    const totalPages = Math.ceil(totalImages / imagesPerPage); // 6 頁
+    const introSection = document.getElementById('introSection');
+    const imagesPerPage = 30;
+    const totalImages = 300;
     const prefix = 'carving_';
     const extension = '.jpg';
 
-    // 從 URL 獲取當前頁面
-    const urlParams = new URLSearchParams(window.location.search);
-    let currentPage = parseInt(urlParams.get('page')) || 1;
-    if (currentPage < 1 || currentPage > totalPages) currentPage = 1;
-
-    // 檢查圖片是否存在的函數
-    function checkImageExists(url) {
+    async function checkImageExists(url) {
         return new Promise(resolve => {
             const img = new Image();
             img.onload = () => resolve(true);
@@ -136,32 +205,49 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // 動態生成圖片
+    async function countAvailableImages() {
+        let count = 0;
+        for (let i = 1; i <= totalImages; i++) {
+            const paddedNumber = i.toString().padStart(2, '0');
+            const imageUrl = `${prefix}${paddedNumber}${extension}`;
+            if (await checkImageExists(imageUrl)) {
+                count++;
+            } else {
+                break;
+            }
+        }
+        return count;
+    }
+
+    const availableImages = await countAvailableImages();
+    const totalPages = Math.ceil(availableImages / imagesPerPage);
+
+    const urlParams = new URLSearchParams(window.location.search);
+    let currentPage = parseInt(urlParams.get('page')) || 1;
+    if (currentPage < 1 || currentPage > totalPages) currentPage = 1;
+
     async function loadImages(page) {
-        imageGrid.innerHTML = ''; // 清空現有圖片
+        imageGrid.innerHTML = '';
+        introSection.style.display = page === 1 ? 'block' : 'none';
         const start = (page - 1) * imagesPerPage + 1;
-        const end = Math.min(page * imagesPerPage, totalImages);
+        const end = Math.min(page * imagesPerPage, availableImages);
 
         for (let i = start; i <= end; i++) {
-            const paddedNumber = i.toString().padStart(2, '0'); // 補零，如 01, 02
+            const paddedNumber = i.toString().padStart(2, '0');
             const imageUrl = `${prefix}${paddedNumber}${extension}`;
-
-            // 檢查圖片是否存在
             if (await checkImageExists(imageUrl)) {
                 const div = document.createElement('div');
                 div.innerHTML = `
-                    <img loading="lazy" alt="作品圖片 ${i}" class="h-[240px] object-contain w-full max-w-[420px] mx-auto rounded shadow transition-transform hover:scale-110 duration-200 cursor-pointer" src="${imageUrl}"/>
+                    <img loading="lazy" alt="雕刻作品 ${paddedNumber}" class="gallery-image rounded shadow" src="${imageUrl}"/>
                 `;
                 imageGrid.appendChild(div);
             }
         }
     }
 
-    // 生成分頁按鈕
     function renderPagination() {
         pagination.innerHTML = '';
 
-        // Previous 按鈕
         const prevButton = document.createElement('button');
         prevButton.className = 'pagination-button';
         prevButton.textContent = '上一頁';
@@ -174,7 +260,6 @@ document.addEventListener('DOMContentLoaded', () => {
         });
         pagination.appendChild(prevButton);
 
-        // 頁數按鈕
         for (let i = 1; i <= totalPages; i++) {
             const pageButton = document.createElement('button');
             pageButton.className = `pagination-button ${i === currentPage ? 'active' : ''}`;
@@ -186,7 +271,6 @@ document.addEventListener('DOMContentLoaded', () => {
             pagination.appendChild(pageButton);
         }
 
-        // Next 按鈕
         const nextButton = document.createElement('button');
         nextButton.className = 'pagination-button';
         nextButton.textContent = '下一頁';
@@ -200,17 +284,13 @@ document.addEventListener('DOMContentLoaded', () => {
         pagination.appendChild(nextButton);
     }
 
-    // 更新頁面
     function updatePage() {
-        // 更新 URL
         const newUrl = `${window.location.pathname}?page=${currentPage}`;
         window.history.pushState({}, '', newUrl);
-        // 加載圖片和分頁
         loadImages(currentPage);
         renderPagination();
     }
 
-    // 初始加載
     loadImages(currentPage).catch(err => {
         console.error('載入圖片時發生錯誤:', err);
     });
@@ -219,5 +299,6 @@ document.addEventListener('DOMContentLoaded', () => {
 </script>
 <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'930c1c715ef5b016',t:'MTc0NDcyNzExNC4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script>
 <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'930c4c7b7e6b44db',t:'MTc0NDcyOTA4Mi4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'93ca56f199624520',t:'MTc0NjcyMTgwNS4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script>
 </body>
 </html>
