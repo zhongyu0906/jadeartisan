@@ -625,7 +625,7 @@ document.addEventListener('DOMContentLoaded', function() {
             item.className = `carousel-item ${i === 1 ? 'active' : ''}`;
             const img = document.createElement('img');
             const paddedIndex = i.toString().padStart(2, '0');
-            img.src = `${prefix}_${paddedIndex}.jpg`;
+            img.src = `treasure/${prefix}_${paddedIndex}.jpg`;
             img.alt = `${title} ${i}`;
             img.className = 'd-block w-100 rounded-lg shadow-lg';
             item.appendChild(img);
