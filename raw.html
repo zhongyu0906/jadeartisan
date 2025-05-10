@@ -37,7 +37,47 @@
         }
         return gk_fileData[filename] || "";
         }
-        </script><!DOCTYPE html>
+        </script><script type="text/javascript">
+        var gk_isXlsx = false;
+        var gk_xlsxFileLookup = {};
+        var gk_fileData = {};
+        function filledCell(cell) {
+          return cell !== '' && cell != null;
+        }
+        function loadFileData(filename) {
+        if (gk_isXlsx && gk_xlsxFileLookup[filename]) {
+            try {
+                var workbook = XLSX.read(gk_fileData[filename], { type: 'base64' });
+                var firstSheetName = workbook.SheetNames[0];
+                var worksheet = workbook.Sheets[firstSheetName];
+
+                // Convert sheet to JSON to filter blank rows
+                var jsonData = XLSX.utils.sheet_to_json(worksheet, { header: 1, blankrows: false, defval: '' });
+                // Filter out blank rows (rows where all cells are empty, null, or undefined)
+                var filteredData = jsonData.filter(row => row.some(filledCell));
+
+                // Heuristic to find the header row by ignoring rows with fewer filled cells than the next row
+                var headerRowIndex = filteredData.findIndex((row, index) =>
+                  row.filter(filledCell).length >= filteredData[index + 1]?.filter(filledCell).length
+                );
+                // Fallback
+                if (headerRowIndex === -1 || headerRowIndex > 25) {
+                  headerRowIndex = 0;
+                }
+
+                // Convert filtered JSON back to CSV
+                var csv = XLSX.utils.aoa_to_sheet(filteredData.slice(headerRowIndex)); // Create a new sheet from filtered array of arrays
+                csv = XLSX.utils.sheet_to_csv(csv, { header: 1 });
+                return csv;
+            } catch (e) {
+                console.error(e);
+                return "";
+            }
+        }
+        return gk_fileData[filename] || "";
+        }
+</script>
+<!DOCTYPE html>
 <html lang="zh-TW">
 <head>
 <meta charset="utf-8"/>
@@ -130,8 +170,8 @@ body {
     <a class="nav-button text-white px-5 py-3 rounded-lg font-semibold text-sm md:text-base" href="carving.html">雕刻作品</a>
     <a class="nav-button text-white px-5 py-3 rounded-lg font-semibold text-sm md:text-base" href="creation.html">玉石創作</a>
     <a class="nav-button text-white px-5 py-3 rounded-lg font-semibold text-sm md:text-base" href="combo.html">複合式創作</a>
-    <a class="nav-button text-white px-5 py-3 rounded-lg font-semibold text-sm md:text-base" href="treasure.html">活動剪影</a>
-    <a class="nav-button text-white px-5 py-3 rounded-lg font-semibold text-sm md:text-base" href="exhibition.html">玉石展覽活動</a>
+    <a class="nav-button text-white px-5 py-3 rounded-lg font-semibold text-sm md:text-base" href="treasure.html">石中影記</a>
+    <a class="text-white px-5 py-3 rounded-lg font-semibold text-sm md:text-base" href="exhibition.html"><img src="YouTube.svg" alt="YouTube" class="youtube-icon"></a>
   </div>
 </nav>
 <main class="max-w-6xl mx-auto px-6 py-10 space-y-12">
@@ -190,74 +230,96 @@ document.addEventListener('DOMContentLoaded', () => {
   const e = document.getElementById('imageGrid');
   const t = document.getElementById('pagination');
   const a = document.getElementById('mainImage');
-  const n = 15; // 每頁圖片數
-  const i = 15; // 後續頁面每頁圖片數
-  const totalImages = 153; // 手動設置總圖片數，根據實際數量修改（目前設為153）
-  const o = 'raw_';
-  const s = '.jpg';
+  const imagesPerPage = 9; // 每頁9張
+  const totalImages = 153; // 總圖片數
+  const firstPages = 4; // 前4頁
+  const imagesInFirstThreePages = 27; // 前3頁共27張
+  const prefix = 'raw_';
+  const extension = '.jpg';
 
-  const d = totalImages - n;
-  const u = Math.ceil(d / i);
-  const h = 1 + u;
+  // 計算總頁數
+  const imagesAfterFirstThreePages = totalImages - imagesInFirstThreePages; // 153 - 27 = 126
+  const totalPages = Math.ceil(imagesAfterFirstThreePages / imagesPerPage) + firstPages - 1; // (126 / 9) + 4 - 1 = 14 + 3 = 17
+
   let p = new URLSearchParams(window.location.search);
   let f = parseInt(p.get('page')) || 1;
-  if (f < 1 || f > h) f = 1;
+  if (f < 1 || f > totalPages) f = 1;
 
   async function y(p) {
     console.log(`Loading page ${p}`);
     e.innerHTML = '';
     a.style.display = 1 === p ? 'block' : 'none';
-    let g, m;
-    if (1 === p) {
-      g = 1;
-      m = n;
-      [
-        { src: 'raw_01.jpg', alt: '山礦藍寶', text: '山礦藍寶' },
-        { src: 'raw_02.jpg', alt: '山礦藍寶', text: '山礦藍寶' },
-        { src: 'raw_03.jpg', alt: '山礦藍寶', text: '山礦藍寶' },
-        { src: 'raw_04.jpg', alt: '紫玉髓', text: '紫玉髓' },
-        { src: 'raw_05.jpg', alt: '紫玉', text: '紫玉' },
-        { src: 'raw_06.jpg', alt: '紫玉年糕', text: '紫玉年糕' },
-        { src: 'raw_07.jpg', alt: '山礦白玉髓', text: '山礦白玉髓' },
-        { src: 'raw_08.jpg', alt: '白玉髓晶洞', text: '白玉髓晶洞' },
-        { src: 'raw_09.jpg', alt: '海洗白玉髓', text: '海洗白玉髓' },
-        { src: 'raw_10.jpg', alt: '紅碧玉', text: '紅碧玉' },
-        { src: 'raw_11.jpg', alt: '山礦紅碧玉', text: '山礦紅碧玉' },
-        { src: 'raw_12.jpg', alt: '海洗紅碧玉', text: '海洗紅碧玉' },
-        { src: 'raw_13.jpg', alt: '血絲玉', text: '血絲玉' },
-        { src: 'raw_14.jpg', alt: '心臟石', text: '心臟石' },
-        { src: 'raw_15.jpg', alt: '血絲玉', text: '血絲玉' },
-        { src: 'raw_16.jpg', alt: '魚卵玉', text: '魚卵玉' },
-        { src: 'raw_17.jpg', alt: '魚卵玉', text: '魚卵玉' },
-        { src: 'raw_18.jpg', alt: '魚卵玉', text: '魚卵玉' },
-        { src: 'raw_19.jpg', alt: '跳花玉', text: '跳花玉' },
-        { src: 'raw_20.jpg', alt: '總統石', text: '總統石' },
-        { src: 'raw_21.jpg', alt: '赤碧玉', text: '赤碧玉' },
-        { src: 'raw_22.jpg', alt: '秀姑玉', text: '秀姑玉' },
-        { src: 'raw_23.jpg', alt: '黃碧玉金瓜石', text: '黃碧玉金瓜石' },
-        { src: 'raw_24.jpg', alt: '凍玉', text: '凍玉' },
-        { src: 'raw_25.jpg', alt: '菊花玉～細花', text: '菊花玉～細花' },
-        { src: 'raw_26.jpg', alt: '菊花玉～粗花', text: '菊花玉～粗花' },
-        { src: 'raw_27.jpg', alt: '蜂巢玉', text: '蜂巢玉' },
-        { src: 'raw_28.jpg', alt: '山礦雪花玉', text: '山礦雪花玉' },
-        { src: 'raw_29.jpg', alt: '雪花玉', text: '雪花玉' },
-        { src: 'raw_30.jpg', alt: '粽玉髓', text: '粽玉髓' }
-      ].forEach(t => {
+    let start, end;
+
+    const imageData = [
+      { src: 'raw_01.jpg', alt: '山礦藍寶', text: '山礦藍寶' },
+      { src: 'raw_02.jpg', alt: '山礦藍寶', text: '山礦藍寶' },
+      { src: 'raw_03.jpg', alt: '山礦藍寶', text: '山礦藍寶' },
+      { src: 'raw_04.jpg', alt: '紫玉髓', text: '紫玉髓' },
+      { src: 'raw_05.jpg', alt: '紫玉', text: '紫玉' },
+      { src: 'raw_06.jpg', alt: '紫玉年糕', text: '紫玉年糕' },
+      { src: 'raw_07.jpg', alt: '山礦白玉髓', text: '山礦白玉髓' },
+      { src: 'raw_08.jpg', alt: '白玉髓晶洞', text: '白玉髓晶洞' },
+      { src: 'raw_09.jpg', alt: '海洗白玉髓', text: '海洗白玉髓' },
+      { src: 'raw_10.jpg', alt: '紅碧玉', text: '紅碧玉' },
+      { src: 'raw_11.jpg', alt: '山礦紅碧玉', text: '山礦紅碧玉' },
+      { src: 'raw_12.jpg', alt: '海洗紅碧玉', text: '海洗紅碧玉' },
+      { src: 'raw_13.jpg', alt: '血絲玉', text: '血絲玉' },
+      { src: 'raw_14.jpg', alt: '心臟石', text: '心臟石' },
+      { src: 'raw_15.jpg', alt: '血絲玉', text: '血絲玉' },
+      { src: 'raw_16.jpg', alt: '魚卵玉', text: '魚卵玉' },
+      { src: 'raw_17.jpg', alt: '魚卵玉', text: '魚卵玉' },
+      { src: 'raw_18.jpg', alt: '魚卵玉', text: '魚卵玉' },
+      { src: 'raw_19.jpg', alt: '跳花玉', text: '跳花玉' },
+      { src: 'raw_20.jpg', alt: '總統石', text: '總統石' },
+      { src: 'raw_21.jpg', alt: '赤碧玉', text: '赤碧玉' },
+      { src: 'raw_22.jpg', alt: '秀姑玉', text: '秀姑玉' },
+      { src: 'raw_23.jpg', alt: '黃碧玉金瓜石', text: '黃碧玉金瓜石' },
+      { src: 'raw_24.jpg', alt: '凍玉', text: '凍玉' },
+      { src: 'raw_25.jpg', alt: '菊花玉～細花', text: '菊花玉～細花' },
+      { src: 'raw_26.jpg', alt: '菊花玉～粗花', text: '菊花玉～粗花' },
+      { src: 'raw_27.jpg', alt: '蜂巢玉', text: '蜂巢玉' },
+      { src: 'raw_28.jpg', alt: '山礦雪花玉', text: '山礦雪花玉' },
+      { src: 'raw_29.jpg', alt: '雪花玉', text: '雪花玉' },
+      { src: 'raw_30.jpg', alt: '粽玉髓', text: '粽玉髓' }
+    ];
+
+    if (p <= 3) {
+      // 前3頁每頁9張
+      start = (p - 1) * imagesPerPage + 1;
+      end = p * imagesPerPage;
+      for (let i = start - 1; i < end; i++) {
+        const t = imageData[i];
         const a = document.createElement('div');
         a.innerHTML = `<img loading="lazy" alt="${t.alt}" class="gallery-image rounded shadow" src="${t.src}" onerror="console.error('Failed to load: ${t.src}')" srcset="${t.src} 1000w, ${t.src.replace('.jpg', '_sm.jpg')} 500w" sizes="(max-width: 640px) 500px, 1000px"/><p class="mt-2 font-semibold">${t.text}</p>`;
         e.appendChild(a);
-      });
-    } else {
-      g = n + (p - 2) * i + 1;
-      m = Math.min(g + i - 1, totalImages);
-      console.log(`Loading images from ${g} to ${m}`);
-      const t = Array.from({ length: m - g + 1 }, (e, t) => t + g);
-      t.forEach(index => {
-        const imgIndex = index - n + 30;
-        const imgSrc = `${o}${imgIndex.toString().padStart(2, '0')}${s}`;
+      }
+    } else if (p === 4) {
+      // 第4頁：前3張從imageData（raw_28.jpg到raw_30.jpg），後6張從raw_31.jpg開始
+      for (let i = 27; i < 30; i++) { // raw_28.jpg 到 raw_30.jpg
+        const t = imageData[i];
+        const a = document.createElement('div');
+        a.innerHTML = `<img loading="lazy" alt="${t.alt}" class="gallery-image rounded shadow" src="${t.src}" onerror="console.error('Failed to load: ${t.src}')" srcset="${t.src} 1000w, ${t.src.replace('.jpg', '_sm.jpg')} 500w" sizes="(max-width: 640px) 500px, 1000px"/><p class="mt-2 font-semibold">${t.text}</p>`;
+        e.appendChild(a);
+      }
+      // 後6張：raw_31.jpg 到 raw_36.jpg
+      for (let index = 31; index <= 36; index++) {
+        const imgSrc = `${prefix}${index.toString().padStart(2, '0')}${extension}`;
         const div = document.createElement('div');
-        div.innerHTML = `<img loading="lazy" alt="原石圖片 ${imgIndex}" class="gallery-image rounded shadow" src="${imgSrc}" onerror="console.error('Failed to load: ${imgSrc}')" srcset="${imgSrc} 1000w, ${imgSrc.replace('.jpg', '_sm.jpg')} 500w" sizes="(max-width: 640px) 500px, 1000px"/><p class="mt-2 font-semibold">原石 ${imgIndex.toString().padStart(2, '0')}</p>`;
-        e.appendChild(div); // 修正這裡，將 div 添加到 imageGrid
+        div.innerHTML = `<img loading="lazy" alt="原石圖片 ${index}" class="gallery-image rounded shadow" src="${imgSrc}" onerror="console.error('Failed to load: ${imgSrc}')" srcset="${imgSrc} 1000w, ${imgSrc.replace('.jpg', '_sm.jpg')} 500w" sizes="(max-width: 640px) 500px, 1000px"/><p class="mt-2 font-semibold">原石 ${index.toString().padStart(2, '0')}</p>`;
+        e.appendChild(div);
+      }
+    } else {
+      // 後續頁面每頁9張，從raw_37.jpg開始
+      start = imagesInFirstThreePages + (p - 4) * imagesPerPage + 4; // 第4頁已用掉raw_31到raw_36
+      end = Math.min(start + imagesPerPage - 1, totalImages);
+      console.log(`Loading images from ${start} to ${end}`);
+      const indices = Array.from({ length: end - start + 1 }, (e, t) => t + start);
+      indices.forEach(index => {
+        const imgSrc = `${prefix}${index.toString().padStart(2, '0')}${extension}`;
+        const div = document.createElement('div');
+        div.innerHTML = `<img loading="lazy" alt="原石圖片 ${index}" class="gallery-image rounded shadow" src="${imgSrc}" onerror="console.error('Failed to load: ${imgSrc}')" srcset="${imgSrc} 1000w, ${imgSrc.replace('.jpg', '_sm.jpg')} 500w" sizes="(max-width: 640px) 500px, 1000px"/><p class="mt-2 font-semibold">原石 ${index.toString().padStart(2, '0')}</p>`;
+        e.appendChild(div);
       });
     }
   }
@@ -275,7 +337,7 @@ document.addEventListener('DOMContentLoaded', () => {
       }
     });
     t.appendChild(e);
-    for (let e = 1; e <= h; e++) {
+    for (let e = 1; e <= totalPages; e++) {
       const a = document.createElement('button');
       a.className = `pagination-button ${e === f ? 'active' : ''}`;
       a.textContent = e;
@@ -288,9 +350,9 @@ document.addEventListener('DOMContentLoaded', () => {
     const a = document.createElement('button');
     a.className = 'pagination-button';
     a.textContent = '下一頁';
-    a.disabled = f === h;
+    a.disabled = f === totalPages;
     a.addEventListener('click', () => {
-      if (f < h) {
+      if (f < totalPages) {
         f++;
         w();
       }
@@ -303,6 +365,7 @@ document.addEventListener('DOMContentLoaded', () => {
     window.history.pushState({}, '', e);
     y(f);
     b();
+    window.scrollTo({ top: 0, behavior: 'smooth' });
   }
 
   y(f).catch(e => {
@@ -317,7 +380,7 @@ document.addEventListener('DOMContentLoaded', () => {
     var b = a.contentDocument || a.contentWindow.document;
     if(b){
       var d = b.createElement('script');
-      d.innerHTML = "window.__CF$cv$params={r:'93d1ef986d9412d6',t:'MTc0NjgwMTQ1OC4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";
+      d.innerHTML = "window.__CF$cv$params={r:'93db1cb40b00dd1a',t:'MTc0Njg5NzY3Ny4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";
       b.getElementsByTagName('head')[0].appendChild(d);
     }
   }
@@ -346,6 +409,5 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 })();
 </script>
-<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'93d1f7cacd0d4523',t:'MTc0NjgwMTc5My4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script>
 </body>
 </html>
