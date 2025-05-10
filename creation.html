@@ -102,7 +102,56 @@
         50% { opacity: 0.5; }
         100% { opacity: 1; }
     }
+    .gallery-image {
+        transition: transform 0.3s ease;
+        cursor: pointer;
+        width: 100%;
+        height: 240px;
+        object-fit: contain;
+        max-width: 420px;
+        margin: 0 auto;
+    }
+    .gallery-image:hover, .gallery-image:active {
+        transform: scale(1.1);
+        z-index: 10;
+    }
+    .fly-in-text {
+        opacity: 0;
+        transform: translateX(-100%);
+        animation: flyIn 0.5s forwards;
+    }
+    .fly-out-text {
+        animation: flyOut 0.8s forwards;
+    }
+    @keyframes flyIn {
+        to {
+            opacity: 1;
+            transform: translateX(0);
+        }
+    }
+    @keyframes flyOut {
+        0% {
+            opacity: 1;
+            transform: translate(0, 0) rotate(0deg);
+        }
+        100% {
+            opacity: 0;
+            transform: translate(-500px, -500px) rotate(720deg);
+        }
+    }
+    .hidden-content {
+        display: none;
+    }
+    .visible-content {
+        display: block;
+        animation: fadeIn 0.5s forwards;
+    }
+    @keyframes fadeIn {
+        from { opacity: 0; }
+        to { opacity: 1; }
+    }
 </style>
+<link rel="preload" href="creation_01.jpg" as="image">
 </head>
 <body class="bg-[#fdfcf7] font-serif text-gray-800">
 <header class="text-center py-4 shadow-md bg-cover bg-center" style="background-image: url('header-bg.jpg');">
@@ -142,19 +191,23 @@ body {
 <main class="max-w-6xl mx-auto px-6 py-10 space-y-12">
 <section class="text-center mb-12">
 <div class="text-lg text-gray-700 leading-relaxed">
-<p>每一塊玉石，皆由天地孕育，歷經歲月雕琢。</p>
-<p>紋理獨一無二，自成天地，宛如天地間的密語。</p>
-<p>「玉不琢，不成器。」 唯經匠心巧手，方能引出它沉睡的靈魂。</p>
-<p>在刀起刀落之間，賦予它新的生命，也刻劃出創作者的心境。</p>
-<p>每件作品，都是與自然共創的藝術結晶。</p>
+<p class="fly-in-text" style="animation-delay: 0s">每一塊玉石，皆由天地孕育，</p>
+<p class="fly-in-text" style="animation-delay: 0.5s">歷經歲月雕琢。</p>
+<p class="fly-in-text" style="animation-delay: 1s">紋理獨一無二，自成天地，</p>
+<p class="fly-in-text" style="animation-delay: 1.5s">宛如天地間的密語。</p>
+<p class="fly-in-text" style="animation-delay: 2s">「玉不琢，不成器。」</p>
+<p class="fly-in-text" style="animation-delay: 2.5s">唯經匠心巧手，</p>
+<p class="fly-in-text" style="animation-delay: 3s">方能引出它沉睡的靈魂。</p>
+<p class="fly-in-text" style="animation-delay: 3.5s">在刀起刀落之間，賦予它新的生命，</p>
+<p class="fly-in-text" style="animation-delay: 4s">也刻劃出創作者的心境。</p>
+<p class="fly-in-text" style="animation-delay: 4.5s">每件作品，都是與自然共創的藝術結晶。</p>
 </div>
-
-<h2 class="text-2xl font-bold mt-12 mb-4 highlighted-title">玉石創作-平面研磨</h2>
 </section>
-<div id="imageGrid" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 text-center">
+<h2 class="text-2xl font-bold mt-12 mb-4 highlighted-title hidden-content" id="titleSection">玉石創作-平面研磨</h2>
+<div id="imageGrid" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 text-center hidden-content">
 <!-- 圖片將由 JavaScript 動態生成 -->
 </div>
-<div id="pagination" class="text-center mt-8">
+<div id="pagination" class="text-center mt-8 hidden-content">
 <!-- 分頁按鈕將由 JavaScript 動態生成 -->
 </div>
 </main>
@@ -168,55 +221,90 @@ body {
 </div>
 </div>
 <script>
+var gk_isXlsx = false;
+var gk_xlsxFileLookup = {};
+var gk_fileData = {};
+function filledCell(cell) {
+  return cell !== '' && cell != null;
+}
+function loadFileData(filename) {
+  if (gk_isXlsx && gk_xlsxFileLookup[filename]) {
+    try {
+      var workbook = XLSX.read(gk_fileData[filename], { type: 'base64' });
+      var firstSheetName = workbook.SheetNames[0];
+      var worksheet = workbook.Sheets[firstSheetName];
+      var jsonData = XLSX.utils.sheet_to_json(worksheet, { header: 1, blankrows: false, defval: '' });
+      var filteredData = jsonData.filter(row => row.some(filledCell));
+      var headerRowIndex = filteredData.findIndex((row, index) =>
+        row.filter(filledCell).length >= filteredData[index + 1]?.filter(filledCell).length
+      );
+      if (headerRowIndex === -1 || headerRowIndex > 25) {
+        headerRowIndex = 0;
+      }
+      var csv = XLSX.utils.aoa_to_sheet(filteredData.slice(headerRowIndex));
+      csv = XLSX.utils.sheet_to_csv(csv, { header: 1 });
+      return csv;
+    } catch (e) {
+      console.error(e);
+      return "";
+    }
+  }
+  return gk_fileData[filename] || "";
+}
+</script>
+<script defer>
 document.addEventListener('DOMContentLoaded', () => {
     const imageGrid = document.getElementById('imageGrid');
     const pagination = document.getElementById('pagination');
-    const imagesPerPage = 50;
-    const totalPages = 5; // 頁面1: 1-50, 頁面2: 51-100, 頁面3: 101-150, 頁面4: 151-200, 頁面5: 201-250
+    const titleSection = document.getElementById('titleSection');
+    const imagesPerPage = 9;
+    const totalImages = 39;
+    const totalPages = Math.ceil(totalImages / imagesPerPage);
     const prefix = 'creation_';
     const extension = '.jpg';
 
-    // 從 URL 獲取當前頁面
     const urlParams = new URLSearchParams(window.location.search);
     let currentPage = parseInt(urlParams.get('page')) || 1;
     if (currentPage < 1 || currentPage > totalPages) currentPage = 1;
 
-    // 檢查圖片是否存在的函數
-    function checkImageExists(url) {
-        return new Promise(resolve => {
+    async function checkAndLoadImage(url) {
+        return new Promise((resolve) => {
             const img = new Image();
-            img.onload = () => resolve(true);
-            img.onerror = () => resolve(false);
+            img.onload = () => resolve({ src: url, loaded: true });
+            img.onerror = () => resolve({ src: url, loaded: false });
             img.src = url;
         });
     }
 
-    // 動態生成圖片
     async function loadImages(page) {
-        imageGrid.innerHTML = ''; // 清空現有圖片
+        imageGrid.innerHTML = '';
         const start = (page - 1) * imagesPerPage + 1;
-        const end = page * imagesPerPage;
+        const end = Math.min(page * imagesPerPage, totalImages);
+        const imagePromises = [];
 
         for (let i = start; i <= end; i++) {
-            const paddedNumber = i.toString().padStart(2, '0'); // 補零，如 01, 02
+            const paddedNumber = i.toString().padStart(2, '0');
             const imageUrl = `${prefix}${paddedNumber}${extension}`;
+            imagePromises.push(checkAndLoadImage(imageUrl));
+        }
 
-            // 檢查圖片是否存在
-            if (await checkImageExists(imageUrl)) {
+        const results = await Promise.all(imagePromises);
+        results.forEach(result => {
+            if (result.loaded) {
                 const div = document.createElement('div');
                 div.innerHTML = `
-                    <img loading="lazy" alt="作品圖片 ${i}" class="h-[240px] object-contain w-full max-w-[420px] mx-auto rounded shadow transition-transform hover:scale-110 duration-200 cursor-pointer" src="${imageUrl}"/>
+                    <img loading="lazy" alt="作品圖片 ${result.src.split('_')[1].split('.')[0]}" class="gallery-image rounded shadow" src="${result.src}" onerror="this.src='placeholder.jpg'; console.error('Failed to load: ${result.src}')" srcset="${result.src} 1000w, ${result.src.replace('.jpg', '_sm.jpg')} 500w" sizes="(max-width: 640px) 500px, 1000px"/>
                 `;
                 imageGrid.appendChild(div);
+            } else {
+                console.warn(`Image not found: ${result.src}`);
             }
-        }
+        });
     }
 
-    // 生成分頁按鈕
     function renderPagination() {
         pagination.innerHTML = '';
 
-        // Previous 按鈕
         const prevButton = document.createElement('button');
         prevButton.className = 'pagination-button';
         prevButton.textContent = '上一頁';
@@ -229,7 +317,6 @@ document.addEventListener('DOMContentLoaded', () => {
         });
         pagination.appendChild(prevButton);
 
-        // 頁數按鈕
         for (let i = 1; i <= totalPages; i++) {
             const pageButton = document.createElement('button');
             pageButton.className = `pagination-button ${i === currentPage ? 'active' : ''}`;
@@ -241,7 +328,6 @@ document.addEventListener('DOMContentLoaded', () => {
             pagination.appendChild(pageButton);
         }
 
-        // Next 按鈕
         const nextButton = document.createElement('button');
         nextButton.className = 'pagination-button';
         nextButton.textContent = '下一頁';
@@ -255,23 +341,41 @@ document.addEventListener('DOMContentLoaded', () => {
         pagination.appendChild(nextButton);
     }
 
-    // 更新頁面
     function updatePage() {
-        // 更新 URL
         const newUrl = `${window.location.pathname}?page=${currentPage}`;
         window.history.pushState({}, '', newUrl);
-        // 加載圖片和分頁
         loadImages(currentPage);
         renderPagination();
     }
 
-    // 初始加載
-    loadImages(currentPage).catch(err => {
-        console.error('載入圖片時發生錯誤:', err);
-    });
+    // 觸發飛出動畫並顯示下方內容
+    setTimeout(() => {
+        const textElements = document.querySelectorAll('.fly-in-text');
+        textElements.forEach(el => el.classList.add('fly-out-text'));
+    }, 6000); // 4.5s (最後一句飛入) + 1.5s 延遲
+
+    setTimeout(() => {
+        titleSection.classList.remove('hidden-content');
+        titleSection.classList.add('visible-content');
+        imageGrid.classList.remove('hidden-content');
+        imageGrid.classList.add('visible-content');
+        pagination.classList.remove('hidden-content');
+        pagination.classList.add('visible-content');
+        loadImages(currentPage).catch(err => {
+            console.error('載入圖片時發生錯誤:', err);
+        });
+        renderPagination();
+    }, 6800); // 6s (飛出開始) + 0.8s (飛出持續時間)
+
     renderPagination();
 });
 </script>
 <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){ochronized='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script>
-<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'93c9c796feefb0b8',t:'MTc0NjcxNTkzMy4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'93c9c796feefb0b8',t:'MTc0NjcxNTkzMy4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'93d20c19c8a5bcf2',t:'MTc0NjgwMjYyNS4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'93d213d04f70bca2',t:'MTc0NjgwMjk0MS4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'93d21ed2cd5abfd4',t:'MTc0NjgwMzM5Mi4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'93d2271ca90fbf96',t:'MTc0NjgwMzczMi4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'93d22f17ff18bfa2',t:'MTc0NjgwNDA1OC4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script>
+</body>
 </html>

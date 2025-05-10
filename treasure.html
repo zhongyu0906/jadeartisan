@@ -1,5 +1,43 @@
-<!DOCTYPE html>
+<script type="text/javascript">
+        var gk_isXlsx = false;
+        var gk_xlsxFileLookup = {};
+        var gk_fileData = {};
+        function filledCell(cell) {
+          return cell !== '' && cell != null;
+        }
+        function loadFileData(filename) {
+        if (gk_isXlsx && gk_xlsxFileLookup[filename]) {
+            try {
+                var workbook = XLSX.read(gk_fileData[filename], { type: 'base64' });
+                var firstSheetName = workbook.SheetNames[0];
+                var worksheet = workbook.Sheets[firstSheetName];
 
+                // Convert sheet to JSON to filter blank rows
+                var jsonData = XLSX.utils.sheet_to_json(worksheet, { header: 1, blankrows: false, defval: '' });
+                // Filter out blank rows (rows where all cells are empty, null, or undefined)
+                var filteredData = jsonData.filter(row => row.some(filledCell));
+
+                // Heuristic to find the header row by ignoring rows with fewer filled cells than the next row
+                var headerRowIndex = filteredData.findIndex((row, index) =>
+                  row.filter(filledCell).length >= filteredData[index + 1]?.filter(filledCell).length
+                );
+                // Fallback
+                if (headerRowIndex === -1 || headerRowIndex > 25) {
+                  headerRowIndex = 0;
+                }
+
+                // Convert filtered JSON back to CSV
+                var csv = XLSX.utils.aoa_to_sheet(filteredData.slice(headerRowIndex)); // Create a new sheet from filtered array of arrays
+                csv = XLSX.utils.sheet_to_csv(csv, { header: 1 });
+                return csv;
+            } catch (e) {
+                console.error(e);
+                return "";
+            }
+        }
+        return gk_fileData[filename] || "";
+        }
+        </script><!DOCTYPE html>
 <html lang="zh-TW">
 <head>
 <meta content="石中玉工作室，位於花蓮東海岸，專注於玉石創作、雕刻、原石欣賞與多元複合創作。" name="description"/>
@@ -7,7 +45,7 @@
 <meta content="石中玉工作室" name="author"/>
 <meta charset="utf-8"/>
 <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
-<title>石中玉工作室｜活動剪影</title>
+<title>石中玉工作室｜石中影記</title>
 <script src="https://cdn.tailwindcss.com"></script>
 <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet"/>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
@@ -46,11 +84,105 @@
         max-width: 100%;
       }
     }
-
-img.rounded-lg.shadow-lg {
-  border-radius: 1rem;
-  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.25);
-}
+    img.rounded-lg.shadow-lg {
+      border-radius: 1rem;
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.25);
+    }
+    .blink {
+      background-color: #29582a;
+      color: white;
+      padding: 0.5rem;
+      animation: blink 1s infinite;
+    }
+    @keyframes blink {
+      50% { opacity: 0.5; }
+    }
+    .carousel-title {
+      background-color: #29582a;
+      color: white;
+      padding: 0.5rem;
+      border-radius: 0.5rem;
+    }
+    .carousel-item {
+      position: relative;
+      cursor: pointer;
+      padding: 20px;
+      background: linear-gradient(135deg, #d4d4d4, #a1a1a1);
+      border: 4px solid #b8860b;
+      border-radius: 1.2rem;
+      box-shadow: 0 10px 20px rgba(0, 0, 0, 0.3), inset 0 0 10px rgba(255, 255, 255, 0.2);
+    }
+    .carousel-item img {
+      border-radius: 0.8rem;
+    }
+    .carousel-item::before {
+      content: '';
+      position: absolute;
+      top: -10px;
+      left: -10px;
+      right: -10px;
+      bottom: -10px;
+      border: 2px solid #c0c0c0;
+      border-radius: 1.4rem;
+      z-index: -1;
+    }
+    .modal-image {
+      max-width: 90%;
+      max-height: 80vh;
+      margin: auto;
+      display: block;
+    }
+    .modal-content {
+      background-color: transparent;
+      border: none;
+    }
+    .responsive-img {
+      max-width: 100%;
+      height: auto;
+      cursor: pointer;
+      transition: transform 0.3s ease;
+    }
+    .responsive-img:hover {
+      transform: scale(1.05);
+    }
+    .youtube-iframe {
+      width: 100%;
+      max-width: 560px;
+      height: 315px;
+    }
+    @media (max-width: 768px) {
+      .youtube-iframe {
+        height: 200px;
+      }
+    }
+    .sound-icon {
+      width: 160px;
+      height: 160px;
+      cursor: pointer;
+      transition: transform 0.3s ease;
+    }
+    .sound-icon:hover {
+      transform: scale(1.1);
+    }
+    .sound-container {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 8px;
+      width: 100%;
+      max-width: 560px;
+    }
+    .youtube-icon {
+      height: 1.5em; /* Reduce YouTube icon size to half (from 3em to 1.5em) */
+      width: auto;
+      vertical-align: middle;
+      margin-left: 4px;
+    }
+    .intro-image {
+      max-height: 266.67px;
+      width: auto;
+      object-fit: contain;
+    }
 </style>
 </head>
 <body class="bg-[#fdfcf7] font-sans text-gray-800">
@@ -69,31 +201,36 @@ img.rounded-lg.shadow-lg {
 <a class="nav-button text-white px-4 py-2 rounded-lg font-semibold text-sm md:text-base" href="carving.html">雕刻作品</a>
 <a class="nav-button text-white px-4 py-2 rounded-lg font-semibold text-sm md:text-base" href="creation.html">玉石創作</a>
 <a class="nav-button text-white px-4 py-2 rounded-lg font-semibold text-sm md:text-base" href="combo.html">複合式創作</a>
-<a class="nav-button text-white px-4 py-2 rounded-lg font-semibold text-sm md:text-base" href="treasure.html">活動剪影</a>
-<a class="nav-button text-white px-4 py-2 rounded-lg font-semibold text-sm md:text-base" href="exhibition.html">玉石展覽活動</a>
+<a class="nav-button text-white px-4 py-2 rounded-lg font-semibold text-sm md:text-base" href="treasure.html">石中影記</a>
+<a class="text-white px-4 py-2 rounded-lg font-semibold text-sm md:text-base" href="exhibition.html"><img src="YouTube.svg" alt="YouTube" class="youtube-icon"></a>
 </div>
 </nav>
 <main class="max-w-7xl mx-auto px-6 py-10 space-y-12">
-<section class="text-center mb-12">
-<h2 class="text-2xl font-bold text-[#29582a] mb-2">活動剪影</h2>
-</section>
-<!-- First Row: 山中尋寶, 友會來訪, 台灣全紀錄專訪 -->
-<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-<!-- 山中尋寶 -->
-<div class="carousel-container">
-<h2 class="text-xl font-bold text-[#29582a] text-center mb-2">山中尋寶</h2>
-<div class="carousel slide" data-bs-interval="2000" data-bs-ride="carousel" id="carousel-a">
-<div class="carousel-inner rounded shadow">
-<div class="carousel-item active"><img alt="山中尋寶 1" class="d-block w-100 rounded-lg shadow-lg" src="a_01.jpg"/></div>
-<div class="carousel-item"><img alt="山中尋寶 2" class="d-block w-100 rounded-lg shadow-lg" src="a_02.jpg"/></div>
-<div class="carousel-item"><img alt="山中尋寶 3" class="d-block w-100 rounded-lg shadow-lg" src="a_03.jpg"/></div>
-<div class="carousel-item"><img alt="山中尋寶 4" class="d-block w-100 rounded-lg shadow-lg" src="a_04.jpg"/></div>
-<div class="carousel-item"><img alt="山中尋寶 5" class="d-block w-100 rounded-lg shadow-lg" src="a_05.jpg"/></div>
-<div class="carousel-item"><img alt="山中尋寶 6" class="d-block w-100 rounded-lg shadow-lg" src="a_06.jpg"/></div>
-<div class="carousel-item"><img alt="山中尋寶 7" class="d-block w-100 rounded-lg shadow-lg" src="a_07.jpg"/></div>
-<div class="carousel-item"><img alt="山中尋寶 8" class="d-block w-100 rounded-lg shadow-lg" src="a_08.jpg"/></div>
-<div class="carousel-item"><img alt="山中尋寶 9" class="d-block w-100 rounded-lg shadow-lg" src="a_09.jpg"/></div>
+<section class="text-center mb-12 flex flex-col md:flex-row items-center justify-center gap-8">
+<div class="md:w-1/2">
+<h2 class="text-2xl font-bold blink">玉旅足跡｜走過的每一場玉石故事</h2>
+<p class="text-lg mt-4">
+從山林間的礦區探訪，<br>
+到展覽廳裡的璀璨光影，<br>
+每一步，都是玉石文化推廣的旅程。<br>
+這些片刻，是我們與玉石相遇的證明，<br>
+記錄著一路走來的足跡。<br>
+每一張照片，<br>
+是一段真實的記憶，<br>
+成為玉石旅途中最動人的篇章。
+</p>
 </div>
+<div class="md:w-1/2">
+<img src="2008yg.jpg" alt="2008玉石祭" class="responsive-img rounded-lg shadow-lg intro-image" onclick="document.getElementById('jade-festival').scrollIntoView({ behavior: 'smooth' })">
+</div>
+</section>
+<!-- First Row: 礦區探勘, 親子尋寶之旅, 月洞玉石之旅 -->
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+<!-- 礦區探勘 -->
+<div class="carousel-container">
+<h2 class="text-xl font-bold carousel-title text-center mb-2">礦區探勘</h2>
+<div class="carousel slide" data-bs-interval="2000" data-bs-ride="carousel" id="carousel-a">
+<div class="carousel-inner rounded shadow"></div>
 <button class="carousel-control-prev" data-bs-slide="prev" data-bs-target="#carousel-a" type="button">
 <span class="carousel-control-prev-icon"></span>
 </button>
@@ -102,71 +239,124 @@ img.rounded-lg.shadow-lg {
 </button>
 </div>
 </div>
-<!-- 友會來訪 -->
+<!-- 親子尋寶之旅 -->
 <div class="carousel-container">
-<h2 class="text-xl font-bold text-[#29582a] text-center mb-2">友會來訪</h2>
-<div class="carousel slide" data-bs-interval="2000" data-bs-ride="carousel" id="carousel-b">
-<div class="carousel-inner rounded shadow">
-<div class="carousel-item active"><img alt="友會來訪 1" class="d-block w-100 rounded-lg shadow-lg" src="b_01.jpg"/></div>
-<div class="carousel-item"><img alt="友會來訪 2" class="d-block w-100 rounded-lg shadow-lg" src="b_02.jpg"/></div>
-<div class="carousel-item"><img alt="友會來訪 3" class="d-block w-100 rounded-lg shadow-lg" src="b_03.jpg"/></div>
-<div class="carousel-item"><img alt="友會來訪 4" class="d-block w-100 rounded-lg shadow-lg" src="b_04.jpg"/></div>
-<div class="carousel-item"><img alt="友會來訪 5" class="d-block w-100 rounded-lg shadow-lg" src="b_05.jpg"/></div>
-<div class="carousel-item"><img alt="友會來訪 6" class="d-block w-100 rounded-lg shadow-lg" src="b_06.jpg"/></div>
-<div class="carousel-item"><img alt="友會來訪 7" class="d-block w-100 rounded-lg shadow-lg" src="b_07.jpg"/></div>
-<div class="carousel-item"><img alt="友會來訪 8" class="d-block w-100 rounded-lg shadow-lg" src="b_08.jpg"/></div>
-<div class="carousel-item"><img alt="友會來訪 9" class="d-block w-100 rounded-lg shadow-lg" src="b_09.jpg"/></div>
-</div>
-<button class="carousel-control-prev" data-bs-slide="prev" data-bs-target="#carousel-b" type="button">
+<h2 class="text-xl font-bold carousel-title text-center mb-2">親子尋寶之旅</h2>
+<div class="carousel slide" data-bs-interval="2000" data-bs-ride="carousel" id="carousel-ab">
+<div class="carousel-inner rounded shadow"></div>
+<button class="carousel-control-prev" data-bs-slide="prev" data-bs-target="#carousel-ab" type="button">
 <span class="carousel-control-prev-icon"></span>
 </button>
-<button class="carousel-control-next" data-bs-slide="next" data-bs-target="#carousel-b" type="button">
+<button class="carousel-control-next" data-bs-slide="next" data-bs-target="#carousel-ab" type="button">
 <span class="carousel-control-next-icon"></span>
 </button>
 </div>
 </div>
-<!-- 台灣全紀錄專訪 -->
+<!-- 月洞玉石之旅 -->
 <div class="carousel-container">
-<h2 class="text-xl font-bold text-[#29582a] text-center mb-2">台灣全紀錄專訪</h2>
-<div class="carousel slide" data-bs-interval="2000" data-bs-ride="carousel" id="carousel-c">
-<div class="carousel-inner rounded shadow">
-<div class="carousel-item active"><img alt="台灣全紀錄專訪 1" class="d-block w-100 rounded-lg shadow-lg" src="c_01.jpg"/></div>
-<div class="carousel-item"><img alt="台灣全紀錄專訪 2" class="d-block w-100 rounded-lg shadow-lg" src="c_02.jpg"/></div>
-<!-- Showing only a few for brevity -->
-<div class="carousel-item"><img alt="台灣全紀錄專訪 3" class="d-block w-100 rounded-lg shadow-lg" src="c_03.jpg"/></div>
-<!-- ... Continue up to c_134 -->
-<div class="carousel-item"><img alt="台灣全紀錄專訪 134" class="d-block w-100 rounded-lg shadow-lg" src="c_134.jpg"/></div>
-</div>
-<button class="carousel-control-prev" data-bs-slide="prev" data-bs-target="#carousel-c" type="button">
+<h2 class="text-xl font-bold carousel-title text-center mb-2">月洞玉石之旅</h2>
+<div class="carousel slide" data-bs-interval="2000" data-bs-ride="carousel" id="carousel-cd">
+<div class="carousel-inner rounded shadow"></div>
+<button class="carousel-control-prev" data-bs-slide="prev" data-bs-target="#carousel-cd" type="button">
 <span class="carousel-control-prev-icon"></span>
 </button>
-<button class="carousel-control-next" data-bs-slide="next" data-bs-target="#carousel-c" type="button">
+<button class="carousel-control-next" data-bs-slide="next" data-bs-target="#carousel-cd" type="button">
 <span class="carousel-control-next-icon"></span>
 </button>
 </div>
 </div>
 </div>
-<!-- Second Row: 兆豐電視台專訪, 受邀演說, 基隆社區大學來訪交流 -->
+<!-- Second Row: 屏東文化中心參展, 高雄大統百貨展覽, 2003 藍色絲路記者會 -->
 <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-<!-- 兆豐電視台專訪 -->
+<!-- 屏東文化中心參展 -->
 <div class="carousel-container">
-<h2 class="text-xl font-bold text-[#29582a] text-center mb-2">兆豐電視台專訪</h2>
-<div class="carousel slide" data-bs-interval="2000" data-bs-ride="carousel" id="carousel-d">
-<div class="carousel-inner rounded shadow">
-<div class="carousel-item active"><img alt="兆豐電視台專訪 1" class="d-block w-100 rounded-lg shadow-lg" src="d_01.jpg"/></div>
-<div class="carousel-item"><img alt="兆豐電視台專訪 2" class="d-block w-100 rounded-lg shadow-lg" src="d_02.jpg"/></div>
-<div class="carousel-item"><img alt="兆豐電視台專訪 3" class="d-block w-100 rounded-lg shadow-lg" src="d_03.jpg"/></div>
-<div class="carousel-item"><img alt="兆豐電視台專訪 4" class="d-block w-100 rounded-lg shadow-lg" src="d_04.jpg"/></div>
-<div class="carousel-item"><img alt="兆豐電視台專訪 5" class="d-block w-100 rounded-lg shadow-lg" src="d_05.jpg"/></div>
-<div class="carousel-item"><img alt="兆豐電視台專訪 6" class="d-block w-100 rounded-lg shadow-lg" src="d_06.jpg"/></div>
-<div class="carousel-item"><img alt="兆豐電視台專訪 7" class="d-block w-100 rounded-lg shadow-lg" src="d_07.jpg"/></div>
-<div class="carousel-item"><img alt="兆豐電視台專訪 8" class="d-block w-100 rounded-lg shadow-lg" src="d_08.jpg"/></div>
-<div class="carousel-item"><img alt="兆豐電視台專訪 9" class="d-block w-100 rounded-lg shadow-lg" src="d_09.jpg"/></div>
-<div class="carousel-item"><img alt="兆豐電視台專訪 10" class="d-block w-100 rounded-lg shadow-lg" src="d_10.jpg"/></div>
-<div class="carousel-item"><img alt="兆豐電視台專訪 11" class="d-block w-100 rounded-lg shadow-lg" src="d_11.jpg"/></div>
-<div class="carousel-item"><img alt="兆豐電視台專訪 12" class="d-block w-100 rounded-lg shadow-lg" src="d_12.jpg"/></div>
-<div class="carousel-item"><img alt="兆豐電視台專訪 13" class="d-block w-100 rounded-lg shadow-lg" src="d_13.jpg"/></div>
+<h2 class="text-xl font-bold carousel-title text-center mb-2">屏東文化中心參展</h2>
+<div class="carousel slide" data-bs-interval="2000" data-bs-ride="carousel" id="carousel-g">
+<div class="carousel-inner rounded shadow"></div>
+<button class="carousel-control-prev" data-bs-slide="prev" data-bs-target="#carousel-g" type="button">
+<span class="carousel-control-prev-icon"></span>
+</button>
+<button class="carousel-control-next" data-bs-slide="next" data-bs-target="#carousel-g" type="button">
+<span class="carousel-control-next-icon"></span>
+</button>
 </div>
+</div>
+<!-- 高雄大統百貨展覽 -->
+<div class="carousel-container">
+<h2 class="text-xl font-bold carousel-title text-center mb-2">高雄大統百貨展覽</h2>
+<div class="carousel slide" data-bs-interval="2000" data-bs-ride="carousel" id="carousel-i">
+<div class="carousel-inner rounded shadow"></div>
+<button class="carousel-control-prev" data-bs-slide="prev" data-bs-target="#carousel-i" type="button">
+<span class="carousel-control-prev-icon"></span>
+</button>
+<button class="carousel-control-next" data-bs-slide="next" data-bs-target="#carousel-i" type="button">
+<span class="carousel-control-next-icon"></span>
+</button>
+</div>
+</div>
+<!-- 2003 藍色絲路記者會 -->
+<div class="carousel-container">
+<h2 class="text-xl font-bold carousel-title text-center mb-2">2003 藍色絲路記者會</h2>
+<div class="carousel slide" data-bs-interval="2000" data-bs-ride="carousel" id="carousel-h">
+<div class="carousel-inner rounded shadow"></div>
+<button class="carousel-control-prev" data-bs-slide="prev" data-bs-target="#carousel-h" type="button">
+<span class="carousel-control-prev-icon"></span>
+</button>
+<button class="carousel-control-next" data-bs-slide="next" data-bs-target="#carousel-h" type="button">
+<span class="carousel-control-next-icon"></span>
+</button>
+</div>
+</div>
+</div>
+<!-- Third Row: 2008石藝嘉年華, 文化局展覽, 玉石培訓班 -->
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+<!-- 2008石藝嘉年華 -->
+<div class="carousel-container">
+<h2 class="text-xl font-bold carousel-title text-center mb-2">2008石藝嘉年華</h2>
+<div class="carousel slide" data-bs-interval="2000" data-bs-ride="carousel" id="carousel-ef">
+<div class="carousel-inner rounded shadow"></div>
+<button class="carousel-control-prev" data-bs-slide="prev" data-bs-target="#carousel-ef" type="button">
+<span class="carousel-control-prev-icon"></span>
+</button>
+<button class="carousel-control-next" data-bs-slide="next" data-bs-target="#carousel-ef" type="button">
+<span class="carousel-control-next-icon"></span>
+</button>
+</div>
+</div>
+<!-- 文化局展覽 -->
+<div class="carousel-container">
+<h2 class="text-xl font-bold carousel-title text-center mb-2">文化局展覽</h2>
+<div class="carousel slide" data-bs-interval="2000" data-bs-ride="carousel" id="carousel-gh">
+<div class="carousel-inner rounded shadow"></div>
+<button class="carousel-control-prev" data-bs-slide="prev" data-bs-target="#carousel-gh" type="button">
+<span class="carousel-control-prev-icon"></span>
+</button>
+<button class="carousel-control-next" data-bs-slide="next" data-bs-target="#carousel-gh" type="button">
+<span class="carousel-control-next-icon"></span>
+</button>
+</div>
+</div>
+<!-- 玉石培訓班 -->
+<div class="carousel-container">
+<h2 class="text-xl font-bold carousel-title text-center mb-2">玉石培訓班</h2>
+<div class="carousel slide" data-bs-interval="2000" data-bs-ride="carousel" id="carousel-ij">
+<div class="carousel-inner rounded shadow"></div>
+<button class="carousel-control-prev" data-bs-slide="prev" data-bs-target="#carousel-ij" type="button">
+<span class="carousel-control-prev-icon"></span>
+</button>
+<button class="carousel-control-next" data-bs-slide="next" data-bs-target="#carousel-ij" type="button">
+<span class="carousel-control-next-icon"></span>
+</button>
+</div>
+</div>
+</div>
+<!-- Fourth Row: 兆豐玉石展覽, 綜合成果展, 巡迴展 -->
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+<!-- 兆豐玉石展覽 -->
+<div class="carousel-container">
+<h2 class="text-xl font-bold carousel-title text-center mb-2">兆豐玉石展覽</h2>
+<div class="carousel slide" data-bs-interval="2000" data-bs-ride="carousel" id="carousel-d">
+<div class="carousel-inner rounded shadow"></div>
 <button class="carousel-control-prev" data-bs-slide="prev" data-bs-target="#carousel-d" type="button">
 <span class="carousel-control-prev-icon"></span>
 </button>
@@ -175,108 +365,40 @@ img.rounded-lg.shadow-lg {
 </button>
 </div>
 </div>
-<!-- 受邀演說 -->
+<!-- 綜合成果展 -->
 <div class="carousel-container">
-<h2 class="text-xl font-bold text-[#29582a] text-center mb-2">受邀演說</h2>
-<div class="carousel slide" data-bs-interval="2000" data-bs-ride="carousel" id="carousel-e">
-<div class="carousel-inner rounded shadow">
-<div class="carousel-item active"><img alt="受邀演說 1" class="d-block w-100 rounded-lg shadow-lg" src="e_01.jpg"/></div>
-<div class="carousel-item"><img alt="受邀演說 2" class="d-block w-100 rounded-lg shadow-lg" src="e_02.jpg"/></div>
-<div class="carousel-item"><img alt="受邀演說 3" class="d-block w-100 rounded-lg shadow-lg" src="e_03.jpg"/></div>
-<div class="carousel-item"><img alt="受邀演說 4" class="d-block w-100 rounded-lg shadow-lg" src="e_04.jpg"/></div>
-<div class="carousel-item"><img alt="受邀演說 5" class="d-block w-100 rounded-lg shadow-lg" src="e_05.jpg"/></div>
-<div class="carousel-item"><img alt="受邀演說 6" class="d-block w-100 rounded-lg shadow-lg" src="e_06.jpg"/></div>
-<div class="carousel-item"><img alt="受邀演說 7" class="d-block w-100 rounded-lg shadow-lg" src="e_07.jpg"/></div>
-<div class="carousel-item"><img alt="受邀演說 8" class="d-block w-100 rounded-lg shadow-lg" src="e_08.jpg"/></div>
-<div class="carousel-item"><img alt="受邀演說 9" class="d-block w-100 rounded-lg shadow-lg" src="e_09.jpg"/></div>
-</div>
-<button class="carousel-control-prev" data-bs-slide="prev" data-bs-target="#carousel-e" type="button">
+<h2 class="text-xl font-bold carousel-title text-center mb-2">綜合成果展</h2>
+<div class="carousel slide" data-bs-interval="2000" data-bs-ride="carousel" id="carousel-kl">
+<div class="carousel-inner rounded shadow"></div>
+<button class="carousel-control-prev" data-bs-slide="prev" data-bs-target="#carousel-kl" type="button">
 <span class="carousel-control-prev-icon"></span>
 </button>
-<button class="carousel-control-next" data-bs-slide="next" data-bs-target="#carousel-e" type="button">
+<button class="carousel-control-next" data-bs-slide="next" data-bs-target="#carousel-kl" type="button">
 <span class="carousel-control-next-icon"></span>
 </button>
 </div>
 </div>
-<!-- 基隆社區大學來訪交流 -->
+<!-- 巡迴展 -->
 <div class="carousel-container">
-<h2 class="text-xl font-bold text-[#29582a] text-center mb-2">基隆社區大學來訪交流</h2>
-<div class="carousel slide" data-bs-interval="2000" data-bs-ride="carousel" id="carousel-j">
-<div class="carousel-inner rounded shadow">
-<div class="carousel-item active"><img alt="基隆社區大學來訪交流 1" class="d-block w-100 rounded-lg shadow-lg" src="j_01.jpg"/></div>
-<div class="carousel-item"><img alt="基隆社區大學來訪交流 2" class="d-block w-100 rounded-lg shadow-lg" src="j_02.jpg"/></div>
-<div class="carousel-item"><img alt="基隆社區大學來訪交流 3" class="d-block w-100 rounded-lg shadow-lg" src="j_03.jpg"/></div>
-<div class="carousel-item"><img alt="基隆社區大學來訪交流 4" class="d-block w-100 rounded-lg shadow-lg" src="j_04.jpg"/></div>
-<div class="carousel-item"><img alt="基隆社區大學來訪交流 5" class="d-block w-100 rounded-lg shadow-lg" src="j_05.jpg"/></div>
-<div class="carousel-item"><img alt="基隆社區大學來訪交流 6" class="d-block w-100 rounded-lg shadow-lg" src="j_06.jpg"/></div>
-<div class="carousel-item"><img alt="基隆社區大學來訪交流 7" class="d-block w-100 rounded-lg shadow-lg" src="j_07.jpg"/></div>
-<div class="carousel-item"><img alt="基隆社區大學來訪交流 8" class="d-block w-100 rounded-lg shadow-lg" src="j_08.jpg"/></div>
-<div class="carousel-item"><img alt="基隆社區大學來訪交流 9" class="d-block w-100 rounded-lg shadow-lg" src="j_09.jpg"/></div>
-<div class="carousel-item"><img alt="基隆社區大學來訪交流 10" class="d-block w-100 rounded-lg shadow-lg" src="j_10.jpg"/></div>
-<div class="carousel-item"><img alt="基隆社區大學來訪交流 11" class="d-block w-100 rounded-lg shadow-lg" src="j_11.jpg"/></div>
-<div class="carousel-item"><img alt="基隆社區大學來訪交流 12" class="d-block w-100 rounded-lg shadow-lg" src="j_12.jpg"/></div>
-<div class="carousel-item"><img alt="基隆社區大學來訪交流 13" class="d-block w-100 rounded-lg shadow-lg" src="j_13.jpg"/></div>
-<div class="carousel-item"><img alt="基隆社區大學來訪交流 14" class="d-block w-100 rounded-lg shadow-lg" src="j_14.jpg"/></div>
-<div class="carousel-item"><img alt="基隆社區大學來訪交流 15" class="d-block w-100 rounded-lg shadow-lg" src="j_15.jpg"/></div>
-<div class="carousel-item"><img alt="基隆社區大學來訪交流 16" class="d-block w-100 rounded-lg shadow-lg" src="j_16.jpg"/></div>
-<div class="carousel-item"><img alt="基隆社區大學來訪交流 17" class="d-block w-100 rounded-lg shadow-lg" src="j_17.jpg"/></div>
-<div class="carousel-item"><img alt="基隆社區大學來訪交流 18" class="d-block w-100 rounded-lg shadow-lg" src="j_18.jpg"/></div>
-<div class="carousel-item"><img alt="基隆社區大學來訪交流 19" class="d-block w-100 rounded-lg shadow-lg" src="j_19.jpg"/></div>
-<div class="carousel-item"><img alt="基隆社區大學來訪交流 20" class="d-block w-100 rounded-lg shadow-lg" src="j_20.jpg"/></div>
-<div class="carousel-item"><img alt="基隆社區大學來訪交流 21" class="d-block w-100 rounded-lg shadow-lg" src="j_21.jpg"/></div>
-<div class="carousel-item"><img alt="基隆社區大學來訪交流 22" class="d-block w-100 rounded-lg shadow-lg" src="j_22.jpg"/></div>
-<div class="carousel-item"><img alt="基隆社區大學來訪交流 23" class="d-block w-100 rounded-lg shadow-lg" src="j_23.jpg"/></div>
-<div class="carousel-item"><img alt="基隆社區大學來訪交流 24" class="d-block w-100 rounded-lg shadow-lg" src="j_24.jpg"/></div>
-</div>
-<button class="carousel-control-prev" data-bs-slide="prev" data-bs-target="#carousel-j" type="button">
+<h2 class="text-xl font-bold carousel-title text-center mb-2">巡迴展</h2>
+<div class="carousel slide" data-bs-interval="2000" data-bs-ride="carousel" id="carousel-mn">
+<div class="carousel-inner rounded shadow"></div>
+<button class="carousel-control-prev" data-bs-slide="prev" data-bs-target="#carousel-mn" type="button">
 <span class="carousel-control-prev-icon"></span>
 </button>
-<button class="carousel-control-next" data-bs-slide="next" data-bs-target="#carousel-j" type="button">
+<button class="carousel-control-next" data-bs-slide="next" data-bs-target="#carousel-mn" type="button">
 <span class="carousel-control-next-icon"></span>
 </button>
 </div>
 </div>
 </div>
-<!-- Third Row: 學習與成果, 礦區教學 -->
+<!-- Fifth Row: 戶外教學, 受邀演講, 友會來訪 -->
 <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-<!-- 學習與成果 -->
+<!-- 戶外教學 -->
 <div class="carousel-container">
-<h2 class="text-xl font-bold text-[#29582a] text-center mb-2">學習與成果</h2>
-<div class="carousel slide" data-bs-interval="2000" data-bs-ride="carousel" id="carousel-k">
-<div class="carousel-inner rounded shadow">
-<div class="carousel-item active"><img alt="學習與成果 1" class="d-block w-100 rounded-lg shadow-lg" src="k_01.jpg"/></div>
-<div class="carousel-item"><img alt="學習與成果 2" class="d-block w-100 rounded-lg shadow-lg" src="k_02.jpg"/></div>
-<div class="carousel-item"><img alt="學習與成果 3" class="d-block w-100 rounded-lg shadow-lg" src="k_03.jpg"/></div>
-<div class="carousel-item"><img alt="學習與成果 4" class="d-block w-100 rounded-lg shadow-lg" src="k_04.jpg"/></div>
-<div class="carousel-item"><img alt="學習與成果 5" class="d-block w-100 rounded-lg shadow-lg" src="k_05.jpg"/></div>
-<div class="carousel-item"><img alt="學習與成果 6" class="d-block w-100 rounded-lg shadow-lg" src="k_06.jpg"/></div>
-<div class="carousel-item"><img alt="學習與成果 7" class="d-block w-100 rounded-lg shadow-lg" src="k_07.jpg"/></div>
-<div class="carousel-item"><img alt="學習與成果 8" class="d-block w-100 rounded-lg shadow-lg" src="k_08.jpg"/></div>
-<div class="carousel-item"><img alt="學習與成果 9" class="d-block w-100 rounded-lg shadow-lg" src="k_09.jpg"/></div>
-</div>
-<button class="carousel-control-prev" data-bs-slide="prev" data-bs-target="#carousel-k" type="button">
-<span class="carousel-control-prev-icon"></span>
-</button>
-<button class="carousel-control-next" data-bs-slide="next" data-bs-target="#carousel-k" type="button">
-<span class="carousel-control-next-icon"></span>
-</button>
-</div>
-</div>
-<!-- 礦區教學 -->
-<div class="carousel-container">
-<h2 class="text-xl font-bold text-[#29582a] text-center mb-2">礦區教學</h2>
+<h2 class="text-xl font-bold carousel-title text-center mb-2">戶外教學</h2>
 <div class="carousel slide" data-bs-interval="2000" data-bs-ride="carousel" id="carousel-l">
-<div class="carousel-inner rounded shadow">
-<div class="carousel-item active"><img alt="礦區教學 1" class="d-block w-100 rounded-lg shadow-lg" src="l_01.jpg"/></div>
-<div class="carousel-item"><img alt="礦區教學 2" class="d-block w-100 rounded-lg shadow-lg" src="l_02.jpg"/></div>
-<div class="carousel-item"><img alt="礦區教學 3" class="d-block w-100 rounded-lg shadow-lg" src="l_03.jpg"/></div>
-<div class="carousel-item"><img alt="礦區教學 4" class="d-block w-100 rounded-lg shadow-lg" src="l_04.jpg"/></div>
-<div class="carousel-item"><img alt="礦區教學 5" class="d-block w-100 rounded-lg shadow-lg" src="l_05.jpg"/></div>
-<div class="carousel-item"><img alt="礦區教學 6" class="d-block w-100 rounded-lg shadow-lg" src="l_06.jpg"/></div>
-<div class="carousel-item"><img alt="礦區教學 7" class="d-block w-100 rounded-lg shadow-lg" src="l_07.jpg"/></div>
-<div class="carousel-item"><img alt="礦區教學 8" class="d-block w-100 rounded-lg shadow-lg" src="l_08.jpg"/></div>
-<div class="carousel-item"><img alt="礦區教學 9" class="d-block w-100 rounded-lg shadow-lg" src="l_09.jpg"/></div>
-</div>
+<div class="carousel-inner rounded shadow"></div>
 <button class="carousel-control-prev" data-bs-slide="prev" data-bs-target="#carousel-l" type="button">
 <span class="carousel-control-prev-icon"></span>
 </button>
@@ -285,9 +407,128 @@ img.rounded-lg.shadow-lg {
 </button>
 </div>
 </div>
-<!-- Empty div to maintain 3-column layout on desktop -->
+<!-- 受邀演講 -->
+<div class="carousel-container">
+<h2 class="text-xl font-bold carousel-title text-center mb-2">受邀演講</h2>
+<div class="carousel slide" data-bs-interval="2000" data-bs-ride="carousel" id="carousel-e">
+<div class="carousel-inner rounded shadow"></div>
+<button class="carousel-control-prev" data-bs-slide="prev" data-bs-target="#carousel-e" type="button">
+<span class="carousel-control-prev-icon"></span>
+</button>
+<button class="carousel-control-next" data-bs-slide="next" data-bs-target="#carousel-e" type="button">
+<span class="carousel-control-next-icon"></span>
+</button>
+</div>
+</div>
+<!-- 友會來訪 -->
+<div class="carousel-container">
+<h2 class="text-xl font-bold carousel-title text-center mb-2">友會來訪</h2>
+<div class="carousel slide" data-bs-interval="2000" data-bs-ride="carousel" id="carousel-b">
+<div class="carousel-inner rounded shadow"></div>
+<button class="carousel-control-prev" data-bs-slide="prev" data-bs-target="#carousel-b" type="button">
+<span class="carousel-control-prev-icon"></span>
+</button>
+<button class="carousel-control-next" data-bs-slide="next" data-bs-target="#carousel-b" type="button">
+<span class="carousel-control-next-icon"></span>
+</button>
+</div>
+</div>
+</div>
+<!-- Sixth Row: 台灣全紀錄專訪, 基隆社區大學來訪交流, 學習與成果 -->
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+<!-- 台灣全紀錄專訪 -->
+<div class="carousel-container">
+<h2 class="text-xl font-bold carousel-title text-center mb-2">台灣全紀錄專訪</h2>
+<div class="carousel slide" data-bs-interval="2000" data-bs-ride="carousel" id="carousel-c">
+<div class="carousel-inner rounded shadow"></div>
+<button class="carousel-control-prev" data-bs-slide="prev" data-bs-target="#carousel-c" type="button">
+<span class="carousel-control-prev-icon"></span>
+</button>
+<button class="carousel-control-next" data-bs-slide="next" data-bs-target="#carousel-c" type="button">
+<span class="carousel-control-next-icon"></span>
+</button>
+</div>
+</div>
+<!-- 基隆社區大學來訪交流 -->
+<div class="carousel-container">
+<h2 class="text-xl font-bold carousel-title text-center mb-2">基隆社區大學來訪交流</h2>
+<div class="carousel slide" data-bs-interval="2000" data-bs-ride="carousel" id="carousel-j">
+<div class="carousel-inner rounded shadow"></div>
+<button class="carousel-control-prev" data-bs-slide="prev" data-bs-target="#carousel-j" type="button">
+<span class="carousel-control-prev-icon"></span>
+</button>
+<button class="carousel-control-next" data-bs-slide="next" data-bs-target="#carousel-j" type="button">
+<span class="carousel-control-next-icon"></span>
+</button>
+</div>
+</div>
+<!-- 學習與成果 -->
+<div class="carousel-container">
+<h2 class="text-xl font-bold carousel-title text-center mb-2">學習與成果</h2>
+<div class="carousel slide" data-bs-interval="2000" data-bs-ride="carousel" id="carousel-k">
+<div class="carousel-inner rounded shadow"></div>
+<button class="carousel-control-prev" data-bs-slide="prev" data-bs-target="#carousel-k" type="button">
+<span class="carousel-control-prev-icon"></span>
+</button>
+<button class="carousel-control-next" data-bs-slide="next" data-bs-target="#carousel-k" type="button">
+<span class="carousel-control-next-icon"></span>
+</button>
+</div>
+</div>
+</div>
+<!-- Seventh Row: 東海岸玉石展 -->
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+<!-- 東海岸玉石展 -->
+<div class="carousel-container">
+<h2 class="text-xl font-bold carousel-title text-center mb-2">東海岸玉石展</h2>
+<div class="carousel slide" data-bs-interval="2000" data-bs-ride="carousel" id="carousel-f">
+<div class="carousel-inner rounded shadow"></div>
+<button class="carousel-control-prev" data-bs-slide="prev" data-bs-target="#carousel-f" type="button">
+<span class="carousel-control-prev-icon"></span>
+</button>
+<button class="carousel-control-next" data-bs-slide="next" data-bs-target="#carousel-f" type="button">
+<span class="carousel-control-next-icon"></span>
+</button>
+</div>
+</div>
+<!-- Empty divs to maintain 3-column layout on desktop -->
+<div class="hidden lg:block"></div>
 <div class="hidden lg:block"></div>
 </div>
+<!-- Jade Festival Section -->
+<section id="jade-festival" class="text-center mb-12">
+<h2 class="text-2xl font-bold blink carousel-title mb-4">玉石祭特別報導</h2>
+<img src="110262.jpg" alt="玉石祭特別報導" class="responsive-img rounded-lg shadow-lg mb-8">
+<div class="flex flex-col lg:flex-row gap-8">
+<div class="lg:w-2/3">
+<!-- 玉石祭 Carousel -->
+<div class="carousel-container">
+<h2 class="text-xl font-bold carousel-title text-center mb-2">玉石祭</h2>
+<div class="carousel slide" data-bs-interval="2000" data-bs-ride="carousel" id="carousel-op">
+<div class="carousel-inner rounded shadow"></div>
+<button class="carousel-control-prev" data-bs-slide="prev" data-bs-target="#carousel-op" type="button">
+<span class="carousel-control-prev-icon"></span>
+</button>
+<button class="carousel-control-next" data-bs-slide="next" data-bs-target="#carousel-op" type="button">
+<span class="carousel-control-next-icon"></span>
+</button>
+</div>
+</div>
+</div>
+<div class="lg:w-1/3">
+<div class="space-y-4">
+<div class="sound-container">
+<img src="sound.png" alt="Play mu01" class="sound-icon" data-audio="mu01.mp3">
+<img src="sound.png" alt="Play mu02" class="sound-icon" data-audio="mu02.mp3">
+</div>
+<div class="space-y-4 flex flex-col items-center">
+<iframe class="youtube-iframe" src="https://www.youtube.com/embed/YWfZw9WnbXQ" title="YouTube video" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+<iframe class="youtube-iframe" src="https://www.youtube.com/embed/-oZnmAg3YF0" title="YouTube video" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+</div>
+</div>
+</div>
+</div>
+</section>
 </main>
 <section class="contact-bg text-white text-center p-6 rounded-lg shadow-md mb-12">
 <h2 class="text-2xl font-semibold mb-2">聯絡我們</h2>
@@ -300,23 +541,178 @@ img.rounded-lg.shadow-lg {
 <footer class="bg-gray-800 text-white text-center p-4">
 <p>© 石中玉工作室 Jade Artisan Studio</p>
 </footer>
+<!-- Modal for full-screen image view -->
+<div class="modal fade" id="imageModal" tabindex="-1" aria-labelledby="imageModalLabel" aria-hidden="true">
+<div class="modal-dialog modal-dialog-centered modal-xl">
+<div class="modal-content">
+<div class="modal-body text-center">
+<div id="modalCarousel" class="carousel slide" data-bs-interval="2000" data-bs-ride="carousel">
+<div class="carousel-inner"></div>
+<button class="carousel-control-prev" data-bs-slide="prev" data-bs-target="#modalCarousel" type="button">
+<span class="carousel-control-prev-icon"></span>
+</button>
+<button class="carousel-control-next" data-bs-slide="next" data-bs-target="#modalCarousel" type="button">
+<span class="carousel-control-next-icon"></span>
+</button>
+</div>
+</div>
+</div>
+</div>
+</div>
+<script type="text/javascript">
+var gk_isXlsx = false;
+var gk_xlsxFileLookup = {};
+var gk_fileData = {};
+function filledCell(cell) {
+  return cell !== '' && cell != null;
+}
+function loadFileData(filename) {
+if (gk_isXlsx && gk_xlsxFileLookup[filename]) {
+    try {
+        var workbook = XLSX.read(gk_fileData[filename], { type: 'base64' });
+        var firstSheetName = workbook.SheetNames[0];
+        var worksheet = workbook.Sheets[firstSheetName];
+        var jsonData = XLSX.utils.sheet_to_json(worksheet, { header: 1, blankrows: false, defval: '' });
+        var filteredData = jsonData.filter(row => row.some(filledCell));
+        var headerRowIndex = filteredData.findIndex((row, index) =>
+          row.filter(filledCell).length >= filteredData[index + 1]?.filter(filledCell).length
+        );
+        if (headerRowIndex === -1 || headerRowIndex > 25) {
+          headerRowIndex = 0;
+        }
+        var csv = XLSX.utils.aoa_to_sheet(filteredData.slice(headerRowIndex));
+        csv = XLSX.utils.sheet_to_csv(csv, { header: 1 });
+        return csv;
+    } catch (e) {
+        console.error(e);
+        return "";
+    }
+}
+return gk_fileData[filename] || "";
+}
+</script>
 <script>
-    document.addEventListener('DOMContentLoaded', function() {
-        const carousels = document.querySelectorAll('.carousel');
-        carousels.forEach(carousel => {
-            const bsCarousel = new bootstrap.Carousel(carousel, {
+document.addEventListener('DOMContentLoaded', function() {
+    // Configuration object for carousels
+    const carouselConfig = [
+        { id: 'carousel-a', title: '礦區探勘', prefix: 'a', count: 29 },
+        { id: 'carousel-ab', title: '親子尋寶之旅', prefix: 'ab', count: 48 },
+        { id: 'carousel-cd', title: '月洞玉石之旅', prefix: 'cd', count: 27 },
+        { id: 'carousel-g', title: '屏東文化中心參展', prefix: 'g', count: 9 },
+        { id: 'carousel-i', title: '高雄大統百貨展覽', prefix: 'i', count: 9 },
+        { id: 'carousel-h', title: '2003 藍色絲路記者會', prefix: 'h', count: 13 },
+        { id: 'carousel-ef', title: '2008石藝嘉年華', prefix: 'ef', count: 66 },
+        { id: 'carousel-gh', title: '文化局展覽', prefix: 'gh', count: 29 },
+        { id: 'carousel-ij', title: '玉石培訓班', prefix: 'ij', count: 80 },
+        { id: 'carousel-d', title: '兆豐玉石展覽', prefix: 'd', count: 16 },
+        { id: 'carousel-kl', title: '綜合成果展', prefix: 'kl', count: 6 },
+        { id: 'carousel-mn', title: '巡迴展', prefix: 'mn', count: 2 },
+        { id: 'carousel-l', title: '戶外教學', prefix: 'l', count: 35 },
+        { id: 'carousel-e', title: '受邀演講', prefix: 'e', count: 18 },
+        { id: 'carousel-b', title: '友會來訪', prefix: 'b', count: 66 },
+        { id: 'carousel-c', title: '台灣全紀錄專訪', prefix: 'c', count: 134 },
+        { id: 'carousel-j', title: '基隆社區大學來訪交流', prefix: 'j', count: 24 },
+        { id: 'carousel-k', title: '學習與成果', prefix: 'k', count: 9 },
+        { id: 'carousel-f', title: '東海岸玉石展', prefix: 'f', count: 35 },
+        { id: 'carousel-op', title: '玉石祭', prefix: 'op', count: 132 }
+    ];
+
+    // Function to generate carousel items
+    function generateCarouselItems(carouselId, prefix, count, title) {
+        const carouselInner = document.querySelector(`#${carouselId} .carousel-inner`);
+        for (let i = 1; i <= count; i++) {
+            const item = document.createElement('div');
+            item.className = `carousel-item ${i === 1 ? 'active' : ''}`;
+            const img = document.createElement('img');
+            const paddedIndex = i.toString().padStart(2, '0');
+            img.src = `${prefix}_${paddedIndex}.jpg`;
+            img.alt = `${title} ${i}`;
+            img.className = 'd-block w-100 rounded-lg shadow-lg';
+            item.appendChild(img);
+            carouselInner.appendChild(item);
+        }
+    }
+
+    // Initialize carousels
+    carouselConfig.forEach(config => {
+        generateCarouselItems(config.id, config.prefix, config.count, config.title);
+        const carousel = document.getElementById(config.id);
+        const bsCarousel = new bootstrap.Carousel(carousel, {
+            interval: 2000,
+            pause: 'hover'
+        });
+        carousel.addEventListener('click', function(e) {
+            if (e.target.classList.contains('carousel-control-prev') || e.target.classList.contains('carousel-control-next')) {
+                return;
+            }
+            if (bsCarousel._isPaused) {
+                bsCarousel.cycle();
+            } else {
+                bsCarousel.pause();
+            }
+        });
+    });
+
+    // Modal for full-screen carousel
+    const modal = new bootstrap.Modal(document.getElementById('imageModal'));
+    const modalCarousel = document.getElementById('modalCarousel');
+    const modalCarouselInner = modalCarousel.querySelector('.carousel-inner');
+    document.querySelectorAll('.carousel-item img').forEach(img => {
+        img.addEventListener('click', function() {
+            const parentCarousel = img.closest('.carousel');
+            const carouselId = parentCarousel.id;
+            const config = carouselConfig.find(c => c.id === carouselId);
+            modalCarouselInner.innerHTML = '';
+            for (let i = 1; i <= config.count; i++) {
+                const item = document.createElement('div');
+                item.className = `carousel-item ${i === parseInt(img.alt.match(/\d+$/)[0]) ? 'active' : ''}`;
+                const modalImg = document.createElement('img');
+                const paddedIndex = i.toString().padStart(2, '0');
+                modalImg.src = `${config.prefix}_${paddedIndex}.jpg`;
+                modalImg.alt = `${config.title} ${i}`;
+                modalImg.className = 'modal-image';
+                item.appendChild(modalImg);
+                modalCarouselInner.appendChild(item);
+            }
+            modal.show();
+            const bsModalCarousel = new bootstrap.Carousel(modalCarousel, {
                 interval: 2000,
-                pause: 'hover'
-            });
-            carousel.addEventListener('click', function() {
-                if (bsCarousel._isPaused) {
-                    bsCarousel.cycle();
-                } else {
-                    bsCarousel.pause();
-                }
+                ride: 'carousel'
             });
         });
     });
+
+    // Close modal on click
+    document.getElementById('imageModal').addEventListener('click', function(e) {
+        if (e.target.classList.contains('modal-image') || e.target.classList.contains('carousel-control-prev') || e.target.classList.contains('carousel-control-next')) {
+            return;
+        }
+        modal.hide();
+    });
+
+    // Audio playback for sound icons
+    const soundIcons = document.querySelectorAll('.sound-icon');
+    soundIcons.forEach(icon => {
+        const audio = new Audio(icon.dataset.audio);
+        icon.addEventListener('click', () => {
+            if (audio.paused) {
+                audio.play();
+            } else {
+                audio.pause();
+                audio.currentTime = 0;
+            }
+        });
+    });
+});
 </script>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'93d88165eff77b一级域名',t:'MTc0Njg3MDM0NC4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'93d88eb7590312e5',t:'MTc0Njg3MDg5MC4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'93d92eb3abd5bd37',t:'MTc0Njg3NzQ0My4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'93d94450da9244e4',t:'MTc0Njg3ODMyOC4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.weight=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'93d95aa698c7bcf6',t:'MTc0Njg3OTI0My4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'93d967edd9166789',t:'MTc0Njg3OTc4Ny4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'93d976b04b1d452d',t:'MTc0Njg4MDM5MS4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'93d990a16c2c6762',t:'MTc0Njg4MTQ1NC4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'93d99b7cae2244d9',t:'MTc0Njg4MTg5OS4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script>
 </body>
 </html>

@@ -193,7 +193,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     const gallery = document.getElementById('gallery');
     const pagination = document.getElementById('pagination');
     const introSection = document.getElementById('introSection');
-    const imagesPerPage = 30;
+    const imagesPerPage = 9;
     const totalImages = 300;
     const prefix = 'combo_';
     const extension = '.jpg';
@@ -209,7 +209,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     async function countAvailableImages() {
         let count = 0;
-        const batchSize = 50; // 每批檢查 50 張圖片
+        const batchSize = 9; // 每批檢查 9 張圖片
         for (let i = 1; i <= totalImages; i += batchSize) {
             const batch = [];
             for (let j = i; j < i + batchSize && j <= totalImages; j++) {

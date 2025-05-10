@@ -40,329 +40,312 @@
         </script><!DOCTYPE html>
 <html lang="zh-TW">
 <head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
 <meta content="石中玉工作室，位於花蓮東海岸，專注於玉石創作、雕刻、原石欣賞與多元複合創作。" name="description"/>
 <meta content="石中玉, 玉石, 花蓮, 東海岸, 玉石雕刻, 原石欣賞, 台灣玉, 石藝, 原礦, 台灣藍寶" name="keywords"/>
 <meta content="石中玉工作室" name="author"/>
-<meta charset="utf-8"/>
-<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
 <title>石中玉工作室｜原石欣賞</title>
 <script src="https://cdn.tailwindcss.com"></script>
 <style>
-    .nav-button {
-      transition: transform 0.3s ease, background-color 0.3s ease;
-      background: linear-gradient(to right, rgb(104, 128, 69), rgb(124, 148, 89));
-      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-    }
-    .nav-button:hover {
-      transform: scale(1.05);
-      background: linear-gradient(to right, rgb(84, 108, 49), rgb(104, 128, 69));
-      box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
-    }
-    .contact-bg { background-color: #688045; }
-    .pagination-button {
-        background: linear-gradient(to right, rgb(104, 128, 69), rgb(124, 148, 89));
-        color: white;
-        padding: 0.5rem 1rem;
-        margin: 0 0.25rem;
-        border-radius: 0.25rem;
-        text-decoration: none;
-        transition: all 0.3s ease;
-    }
-    .pagination-button:hover {
-        background: linear-gradient(to right, rgb(84, 108, 49), rgb(104, 128, 69));
-        transform: scale(1.05);
-    }
-    .pagination-button.active {
-        background: linear-gradient(to right, rgb(64, 88, 29), rgb(84, 108, 49));
-        font-weight: bold;
-    }
-    .pagination-button:disabled {
-        background: gray;
-        cursor: not-allowed;
-        transform: none;
-    }
-    .gallery-image {
-        transition: transform 0.3s ease;
-        cursor: pointer;
-        width: 100%;
-        height: 240px;
-        object-fit: contain;
-    }
-    .gallery-image:hover, .gallery-image:active {
-        transform: scale(1.5);
-        z-index: 10;
-    }
+.nav-button {
+  transition: transform 0.3s ease, background-color 0.3s ease;
+  background: linear-gradient(to right, #688045, #7c9459);
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+.nav-button:hover {
+  transform: scale(1.05);
+  background: linear-gradient(to right, #546c31, #688045);
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+}
+.contact-bg { background-color: #688045; }
+.pagination-button {
+  background: linear-gradient(to right, #688045, #7c9459);
+  color: white;
+  padding: 0.5rem 1rem;
+  margin: 0 0.25rem;
+  border-radius: 0.25rem;
+  text-decoration: none;
+  transition: all 0.3s ease;
+}
+.pagination-button:hover:not(:disabled) {
+  background: linear-gradient(to right, #546c31, #688045);
+  transform: scale(1.05);
+}
+.pagination-button.active {
+  background: linear-gradient(to right, #40581d, #546c31);
+  font-weight: bold;
+}
+.pagination-button:disabled {
+  background: gray;
+  cursor: not-allowed;
+}
+.gallery-image {
+  transition: transform 0.3s ease;
+  cursor: pointer;
+  width: 100%;
+  height: 240px;
+  object-fit: contain;
+}
+.gallery-image:hover, .gallery-image:active {
+  transform: scale(1.5);
+  z-index: 10;
+}
+.main-image {
+  width: 100%;
+  max-width: 100%;
+  height: auto;
+  display: block;
+  margin: 0 auto;
+}
+@media (max-width: 640px) {
+  .main-image {
+    max-width: 90vw;
+  }
+}
 body {
   background-color: #D4D8C6;
-  background-image: 
-    url('bgg.png'),
-    url('bgg.png'),
-    url('bgg.png'),
-    url('bgg.png');
-  background-size: 160px, 120px, 100px, 80px;
-  background-position: 
-    10% 20%, 80% 30%, 30% 75%, 70% 80%;
+  background-image: url('bgg.png');
+  background-size: 160px;
+  background-position: 10% 20%;
   background-repeat: no-repeat;
   background-attachment: fixed;
 }
 </style>
+<link rel="preload" href="main_raw.png" as="image">
 </head>
 <body class="bg-[#fdfcf7] font-serif text-gray-800">
 <header class="text-center py-4 shadow-md bg-cover bg-center" style="background-image: url('header-bg.jpg');">
-<h1 class="mx-auto h-20 md:h-24 lg:h-32">
-<img alt="石中玉工作室" class="mx-auto h-24 w-auto" src="logo.gif"/>
-</h1>
+  <h1 class="mx-auto h-20 md:h-24 lg:h-32">
+    <img alt="石中玉工作室" class="mx-auto h-24 w-auto" src="logo.gif"/>
+  </h1>
 </header>
 <nav class="bg-white p-4 shadow-md">
-<div class="container mx-auto flex flex-wrap justify-center gap-2 md:gap-4">
-<a class="nav-button text-white px-5 py-3 rounded-lg font-semibold text-sm md:text-base" href="index.html">首頁</a>
-<a class="nav-button text-white px-5 py-3 rounded-lg font-semibold text-sm md:text-base" href="about.html">工作室簡介</a>
-<a class="nav-button text-white px-5 py-3 rounded-lg font-semibold text-sm md:text-base" href="author.html">作者簡介</a>
-<a class="nav-button text-white px-5 py-3 rounded-lg font-semibold text-sm md:text-base" href="jade.html">東海岸玉石</a>
-<a class="nav-button text-white px-5 py-3 rounded-lg font-semibold text-sm md:text-base" href="raw.html">原石欣賞</a>
-<a class="nav-button text-white px-5 py-3 rounded-lg font-semibold text-sm md:text-base" href="carving.html">雕刻作品</a>
-<a class="nav-button text-white px-5 py-3 rounded-lg font-semibold text-sm md:text-base" href="creation.html">玉石創作</a>
-<a class="nav-button text-white px-5 py-3 rounded-lg font-semibold text-sm md:text-base" href="combo.html">複合式創作</a>
-<a class="nav-button text-white px-5 py-3 rounded-lg font-semibold text-sm md:text-base" href="treasure.html">活動剪影</a>
-<a class="nav-button text-white px-5 py-3 rounded-lg font-semibold text-sm md:text-base" href="exhibition.html">玉石展覽活動</a>
-</div>
+  <div class="container mx-auto flex flex-wrap justify-center gap-2 md:gap-4">
+    <a class="nav-button text-white px-5 py-3 rounded-lg font-semibold text-sm md:text-base" href="index.html">首頁</a>
+    <a class="nav-button text-white px-5 py-3 rounded-lg font-semibold text-sm md:text-base" href="about.html">工作室簡介</a>
+    <a class="nav-button text-white px-5 py-3 rounded-lg font-semibold text-sm md:text-base" href="author.html">作者簡介</a>
+    <a class="nav-button text-white px-5 py-3 rounded-lg font-semibold text-sm md:text-base" href="jade.html">東海岸玉石</a>
+    <a class="nav-button text-white px-5 py-3 rounded-lg font-semibold text-sm md:text-base" href="raw.html">原石欣賞</a>
+    <a class="nav-button text-white px-5 py-3 rounded-lg font-semibold text-sm md:text-base" href="carving.html">雕刻作品</a>
+    <a class="nav-button text-white px-5 py-3 rounded-lg font-semibold text-sm md:text-base" href="creation.html">玉石創作</a>
+    <a class="nav-button text-white px-5 py-3 rounded-lg font-semibold text-sm md:text-base" href="combo.html">複合式創作</a>
+    <a class="nav-button text-white px-5 py-3 rounded-lg font-semibold text-sm md:text-base" href="treasure.html">活動剪影</a>
+    <a class="nav-button text-white px-5 py-3 rounded-lg font-semibold text-sm md:text-base" href="exhibition.html">玉石展覽活動</a>
+  </div>
 </nav>
 <main class="max-w-6xl mx-auto px-6 py-10 space-y-12">
-<div id="mainImage" class="text-center">
-<img alt="白玉髓" class="mx-auto rounded shadow-lg max-w-2xl" src="main_raw.png"/>
-<p class="text-gray-700 text-lg font-semibold mt-3">國內第二大海洗原石「白玉髓」　重量 47kg</p>
-</div>
-<div id="imageGrid" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 text-center">
-<!-- 圖片將由 JavaScript 動態生成 -->
-</div>
-<div id="pagination" class="text-center mt-8">
-<!-- 分頁按鈕將由 JavaScript 動態生成 -->
-</div>
+  <div id="mainImage" class="text-center">
+    <img alt="白玉髓" class="main-image rounded shadow-lg" src="main_raw.png" loading="eager" srcset="main_raw.png 1000w, main_raw_sm.png 500w" sizes="(max-width: 640px) 500px, 1000px"/>
+    <p class="text-gray-700 text-lg font-semibold mt-3">國內第二大海洗原石「白玉髓」　重量 47kg</p>
+  </div>
+  <div id="imageGrid" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 text-center"></div>
+  <div id="pagination" class="text-center mt-8"></div>
 </main>
 <section class="contact-bg text-white text-center p-6 rounded-lg shadow-md mb-12">
-<h2 class="text-2xl font-semibold mb-4" data-aos="fade-up">聯絡我們</h2>
-<p class="text-lg mb-2" data-aos="fade">台11線 東海岸線上。　聯絡電話：0933-798966 0910-123893</p>
-<div class="flex justify-center gap-4">
-<a class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700" href="https://www.facebook.com/people/%E7%9F%B3%E4%B8%AD%E7%8E%89%E5%B7%A5%E4%BD%9C%E5%AE%A4/100084337300694/#" target="_blank">粉絲專頁</a>
-<a class="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600" href="https://line.me" target="_blank">LINE</a>
-</div>
+  <h2 class="text-2xl font-semibold mb-4">聯絡我們</h2>
+  <p class="text-lg mb-2">台11線 東海岸線上。　聯絡電話：0933-798966 0910-123893</p>
+  <div class="flex justify-center gap-4">
+    <a class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700" href="https://www.facebook.com/people/%E7%9F%B3%E4%B8%AD%E7%8E%89%E5%B7%A5%E4%BD%9C%E5%AE%A4/100084337300694/#" target="_blank">粉絲專頁</a>
+    <a class="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600" href="https://line.me" target="_blank">LINE</a>
+  </div>
 </section>
 <footer class="bg-gray-800 text-white text-center p-4">
-<p>© 石中玉工作室 Jade Artisan Studio</p>
+  <p>© 石中玉工作室 Jade Artisan Studio</p>
 </footer>
 <script>
-document.addEventListener('DOMContentLoaded', async () => {
-    const imageGrid = document.getElementById('imageGrid');
-    const pagination = document.getElementById('pagination');
-    const mainImage = document.getElementById('mainImage');
-    const imagesPerPageFirst = 30; // 第一頁顯示30張
-    const imagesPerPage = 30; // 第二頁之後每頁30張
-    const totalImages = 300;
-    const prefix = 'raw_';
-    const extension = '.jpg';
-
-    // 檢查圖片是否存在的函數
-    async function checkImageExists(url) {
-        return new Promise(resolve => {
-            const img = new Image();
-            img.onload = () => resolve(true);
-            img.onerror = () => resolve(false);
-            img.src = url;
-        });
+var gk_isXlsx = false;
+var gk_xlsxFileLookup = {};
+var gk_fileData = {};
+function filledCell(cell) {
+  return cell !== '' && cell != null;
+}
+function loadFileData(filename) {
+  if (gk_isXlsx && gk_xlsxFileLookup[filename]) {
+    try {
+      var workbook = XLSX.read(gk_fileData[filename], { type: 'base64' });
+      var firstSheetName = workbook.SheetNames[0];
+      var worksheet = workbook.Sheets[firstSheetName];
+      var jsonData = XLSX.utils.sheet_to_json(worksheet, { header: 1, blankrows: false, defval: '' });
+      var filteredData = jsonData.filter(row => row.some(filledCell));
+      var headerRowIndex = filteredData.findIndex((row, index) =>
+        row.filter(filledCell).length >= filteredData[index + 1]?.filter(filledCell).length
+      );
+      if (headerRowIndex === -1 || headerRowIndex > 25) {
+        headerRowIndex = 0;
+      }
+      var csv = XLSX.utils.aoa_to_sheet(filteredData.slice(headerRowIndex));
+      csv = XLSX.utils.sheet_to_csv(csv, { header: 1 });
+      return csv;
+    } catch (e) {
+      console.error(e);
+      return "";
     }
+  }
+  return gk_fileData[filename] || "";
+}
+</script>
+<script defer>
+document.addEventListener('DOMContentLoaded', () => {
+  const e = document.getElementById('imageGrid');
+  const t = document.getElementById('pagination');
+  const a = document.getElementById('mainImage');
+  const n = 15; // 每頁圖片數
+  const i = 15; // 後續頁面每頁圖片數
+  const totalImages = 153; // 手動設置總圖片數，根據實際數量修改（目前設為153）
+  const o = 'raw_';
+  const s = '.jpg';
 
-    // 計算實際存在的圖片數量
-    async function countAvailableImages() {
-        let count = 0;
-        for (let i = 31; i <= totalImages; i++) { // 從31開始
-            const paddedNumber = i.toString().padStart(2, '0');
-            const imageUrl = `${prefix}${paddedNumber}${extension}`;
-            if (await checkImageExists(imageUrl)) {
-                count++;
-            } else {
-                break; // 遇到第一個不存在的圖片即停止
-            }
-        }
-        return count + imagesPerPageFirst; // 加上第一頁的30張
+  const d = totalImages - n;
+  const u = Math.ceil(d / i);
+  const h = 1 + u;
+  let p = new URLSearchParams(window.location.search);
+  let f = parseInt(p.get('page')) || 1;
+  if (f < 1 || f > h) f = 1;
+
+  async function y(p) {
+    console.log(`Loading page ${p}`);
+    e.innerHTML = '';
+    a.style.display = 1 === p ? 'block' : 'none';
+    let g, m;
+    if (1 === p) {
+      g = 1;
+      m = n;
+      [
+        { src: 'raw_01.jpg', alt: '山礦藍寶', text: '山礦藍寶' },
+        { src: 'raw_02.jpg', alt: '山礦藍寶', text: '山礦藍寶' },
+        { src: 'raw_03.jpg', alt: '山礦藍寶', text: '山礦藍寶' },
+        { src: 'raw_04.jpg', alt: '紫玉髓', text: '紫玉髓' },
+        { src: 'raw_05.jpg', alt: '紫玉', text: '紫玉' },
+        { src: 'raw_06.jpg', alt: '紫玉年糕', text: '紫玉年糕' },
+        { src: 'raw_07.jpg', alt: '山礦白玉髓', text: '山礦白玉髓' },
+        { src: 'raw_08.jpg', alt: '白玉髓晶洞', text: '白玉髓晶洞' },
+        { src: 'raw_09.jpg', alt: '海洗白玉髓', text: '海洗白玉髓' },
+        { src: 'raw_10.jpg', alt: '紅碧玉', text: '紅碧玉' },
+        { src: 'raw_11.jpg', alt: '山礦紅碧玉', text: '山礦紅碧玉' },
+        { src: 'raw_12.jpg', alt: '海洗紅碧玉', text: '海洗紅碧玉' },
+        { src: 'raw_13.jpg', alt: '血絲玉', text: '血絲玉' },
+        { src: 'raw_14.jpg', alt: '心臟石', text: '心臟石' },
+        { src: 'raw_15.jpg', alt: '血絲玉', text: '血絲玉' },
+        { src: 'raw_16.jpg', alt: '魚卵玉', text: '魚卵玉' },
+        { src: 'raw_17.jpg', alt: '魚卵玉', text: '魚卵玉' },
+        { src: 'raw_18.jpg', alt: '魚卵玉', text: '魚卵玉' },
+        { src: 'raw_19.jpg', alt: '跳花玉', text: '跳花玉' },
+        { src: 'raw_20.jpg', alt: '總統石', text: '總統石' },
+        { src: 'raw_21.jpg', alt: '赤碧玉', text: '赤碧玉' },
+        { src: 'raw_22.jpg', alt: '秀姑玉', text: '秀姑玉' },
+        { src: 'raw_23.jpg', alt: '黃碧玉金瓜石', text: '黃碧玉金瓜石' },
+        { src: 'raw_24.jpg', alt: '凍玉', text: '凍玉' },
+        { src: 'raw_25.jpg', alt: '菊花玉～細花', text: '菊花玉～細花' },
+        { src: 'raw_26.jpg', alt: '菊花玉～粗花', text: '菊花玉～粗花' },
+        { src: 'raw_27.jpg', alt: '蜂巢玉', text: '蜂巢玉' },
+        { src: 'raw_28.jpg', alt: '山礦雪花玉', text: '山礦雪花玉' },
+        { src: 'raw_29.jpg', alt: '雪花玉', text: '雪花玉' },
+        { src: 'raw_30.jpg', alt: '粽玉髓', text: '粽玉髓' }
+      ].forEach(t => {
+        const a = document.createElement('div');
+        a.innerHTML = `<img loading="lazy" alt="${t.alt}" class="gallery-image rounded shadow" src="${t.src}" onerror="console.error('Failed to load: ${t.src}')" srcset="${t.src} 1000w, ${t.src.replace('.jpg', '_sm.jpg')} 500w" sizes="(max-width: 640px) 500px, 1000px"/><p class="mt-2 font-semibold">${t.text}</p>`;
+        e.appendChild(a);
+      });
+    } else {
+      g = n + (p - 2) * i + 1;
+      m = Math.min(g + i - 1, totalImages);
+      console.log(`Loading images from ${g} to ${m}`);
+      const t = Array.from({ length: m - g + 1 }, (e, t) => t + g);
+      t.forEach(index => {
+        const imgIndex = index - n + 30;
+        const imgSrc = `${o}${imgIndex.toString().padStart(2, '0')}${s}`;
+        const div = document.createElement('div');
+        div.innerHTML = `<img loading="lazy" alt="原石圖片 ${imgIndex}" class="gallery-image rounded shadow" src="${imgSrc}" onerror="console.error('Failed to load: ${imgSrc}')" srcset="${imgSrc} 1000w, ${imgSrc.replace('.jpg', '_sm.jpg')} 500w" sizes="(max-width: 640px) 500px, 1000px"/><p class="mt-2 font-semibold">原石 ${imgIndex.toString().padStart(2, '0')}</p>`;
+        e.appendChild(div); // 修正這裡，將 div 添加到 imageGrid
+      });
     }
+  }
 
-    const availableImages = await countAvailableImages();
-    const remainingImages = availableImages - imagesPerPageFirst;
-    const additionalPages = Math.ceil(remainingImages / imagesPerPage);
-    const totalPages = 1 + additionalPages; // 第一頁 + 後續頁數
-
-    // 從 URL 獲取當前頁面
-    const urlParams = new URLSearchParams(window.location.search);
-    let currentPage = parseInt(urlParams.get('page')) || 1;
-    if (currentPage < 1 || currentPage > totalPages) currentPage = 1;
-
-    // 動態生成圖片
-    async function loadImages(page) {
-        imageGrid.innerHTML = ''; // 清空現有圖片
-        // 第二頁之後隱藏 mainImage
-        mainImage.style.display = page === 1 ? 'block' : 'none';
-
-        let start, end;
-        if (page === 1) {
-            start = 1;
-            end = imagesPerPageFirst;
-        } else {
-            start = imagesPerPageFirst + (page - 2) * imagesPerPage + 1;
-            end = Math.min(start + imagesPerPage - 1, availableImages);
-        }
-
-        // 第一頁顯示特定的圖片（原始的30張）
-        if (page === 1) {
-            const firstPageImages = [
-<<<<<<< HEAD
-                { src: 'raw_01.jpg', alt: '山礦藍寶', text: '山礦藍寶' },
-                { src: 'raw_02.jpg', alt: '山礦藍寶', text: '山礦藍寶' },
-                { src: 'raw_03.jpg', alt: '山礦藍寶', text: '山礦藍寶' },
-                { src: 'raw_04.jpg', alt: '紫玉髓', text: '紫玉髓' },
-                { src: 'raw_05.jpg', alt: '紫玉', text: '紫玉' },
-                { src: 'raw_06.jpg', alt: '紫玉年糕', text: '紫玉年糕' },
-                { src: 'raw_07.jpg', alt: '山礦白玉髓', text: '山礦白玉髓' },
-                { src: 'raw_08.jpg', alt: '白玉髓晶洞', text: '白玉髓晶洞' },
-                { src: 'raw_09.jpg', alt: '海洗白玉髓', text: '海洗白玉髓' },
-                { src: 'raw_10.jpg', alt: '紅碧玉', text: '紅碧玉' },
-                { src: 'raw_11.jpg', alt: '山礦紅碧玉', text: '山礦紅碧玉' },
-                { src: 'raw_12.jpg', alt: '海洗紅碧玉', text: '海洗紅碧玉' },
-                { src: 'raw_13.jpg', alt: '血絲玉', text: '血絲玉' },
-                { src: 'raw_14.jpg', alt: '心臟石', text: '心臟石' },
-                { src: 'raw_15.jpg', alt: '血絲玉', text: '血絲玉' },
-                { src: 'raw_16.jpg', alt: '魚卵玉', text: '魚卵玉' },
-                { src: 'raw_17.jpg', alt: '魚卵玉', text: '魚卵玉' },
-                { src: 'raw_18.jpg', alt: '魚卵玉', text: '魚卵玉' },
-                { src: 'raw_19.jpg', alt: '跳花玉', text: '跳花玉' },
-                { src: 'raw_20.jpg', alt: '總統石', text: '總統石' },
-                { src: 'raw_21.jpg', alt: '赤碧玉', text: '赤碧玉' },
-                { src: 'raw_22.jpg', alt: '秀姑玉', text: '秀姑玉' },
-                { src: 'raw_23.jpg', alt: '黃碧玉金瓜石', text: '黃碧玉金瓜石' },
-                { src: 'raw_24.jpg', alt: '凍玉', text: '凍玉' },
-                { src: 'raw_25.jpg', alt: '菊花玉～細花', text: '菊花玉～細花' },
-                { src: 'raw_26.jpg', alt: '菊花玉～粗花', text: '菊花玉～粗花' },
-                { src: 'raw_27.jpg', alt: '蜂巢玉', text: '蜂巢玉' },
-                { src: 'raw_28.jpg', alt: '山礦雪花玉', text: '山礦雪花玉' },
-                { src: 'raw_29.jpg', alt: '雪花玉', text: '雪花玉' },
-                { src: 'raw_30.jpg', alt: '粽玉髓', text: '粽玉髓' }
-=======
-                { src: 'raw_01.png', alt: '山礦藍寶', text: '山礦藍寶' },
-                { src: 'raw_02.png', alt: '山礦藍寶', text: '山礦藍寶' },
-                { src: 'raw_03.png', alt: '山礦藍寶', text: '山礦藍寶' },
-                { src: 'raw_04.png', alt: '紫玉髓', text: '紫玉髓' },
-                { src: 'raw_05.png', alt: '紫玉', text: '紫玉' },
-                { src: 'raw_06.png', alt: '紫玉年糕', text: '紫玉年糕' },
-                { src: 'raw_07.png', alt: '山礦白玉髓', text: '山礦白玉髓' },
-                { src: 'raw_08.png', alt: '白玉髓晶洞', text: '白玉髓晶洞' },
-                { src: 'raw_09.png', alt: '海洗白玉髓', text: '海洗白玉髓' },
-                { src: 'raw_10.png', alt: '紅碧玉', text: '紅碧玉' },
-                { src: 'raw_11.png', alt: '山礦紅碧玉', text: '山礦紅碧玉' },
-                { src: 'raw_12.png', alt: '海洗紅碧玉', text: '海洗紅碧玉' },
-                { src: 'raw_13.png', alt: '血絲玉', text: '血絲玉' },
-                { src: 'raw_14.png', alt: '心臟石', text: '心臟石' },
-                { src: 'raw_15.png', alt: '血絲玉', text: '血絲玉' },
-                { src: 'raw_16.png', alt: '魚卵玉', text: '魚卵玉' },
-                { src: 'raw_17.png', alt: '魚卵玉', text: '魚卵玉' },
-                { src: 'raw_18.png', alt: '魚卵玉', text: '魚卵玉' },
-                { src: 'raw_19.png', alt: '跳花玉', text: '跳花玉' },
-                { src: 'raw_20.png', alt: '總統石', text: '總統石' },
-                { src: 'raw_21.png', alt: '赤碧玉', text: '赤碧玉' },
-                { src: 'raw_22.png', alt: '秀姑玉', text: '秀姑玉' },
-                { src: 'raw_23.png', alt: '黃碧玉金瓜石', text: '黃碧玉金瓜石' },
-                { src: 'raw_24.png', alt: '凍玉', text: '凍玉' },
-                { src: 'raw_25.png', alt: '菊花玉～細花', text: '菊花玉～細花' },
-                { src: 'raw_26.png', alt: '菊花玉～粗花', text: '菊花玉～粗花' },
-                { src: 'raw_27.png', alt: '蜂巢玉', text: '蜂巢玉' },
-                { src: 'raw_28.png', alt: '山礦雪花玉', text: '山礦雪花玉' },
-                { src: 'raw_29.png', alt: '雪花玉', text: '雪花玉' },
-                { src: 'raw_30.png', alt: '粽玉髓', text: '粽玉髓' }
->>>>>>> 70fef5489eae1332a472eb931b8f12abc11b2aeb
-            ];
-
-            for (const img of firstPageImages) {
-                const div = document.createElement('div');
-                div.innerHTML = `
-                    <img loading="lazy" alt="${img.alt}" class="gallery-image rounded shadow" src="${img.src}"/>
-                    <p class="mt-2 font-semibold">${img.text}</p>
-                `;
-                imageGrid.appendChild(div);
-            }
-        } else {
-            // 從第二頁開始顯示 raw_31.jpg 起
-            for (let i = start; i <= end; i++) {
-                const actualIndex = i - imagesPerPageFirst + 30; // 從 raw_31.jpg 開始
-                const paddedNumber = actualIndex.toString().padStart(2, '0');
-                const imageUrl = `${prefix}${paddedNumber}${extension}`;
-                if (await checkImageExists(imageUrl)) {
-                    const div = document.createElement('div');
-                    div.innerHTML = `
-                        <img loading="lazy" alt="原石圖片 ${actualIndex}" class="gallery-image rounded shadow" src="${imageUrl}"/>
-                        <p class="mt-2 font-semibold">原石 ${paddedNumber}</p>
-                    `;
-                    imageGrid.appendChild(div);
-                }
-            }
-        }
-    }
-
-    // 生成分頁按鈕
-    function renderPagination() {
-        pagination.innerHTML = '';
-
-        // Previous 按鈕
-        const prevButton = document.createElement('button');
-        prevButton.className = 'pagination-button';
-        prevButton.textContent = '上一頁';
-        prevButton.disabled = currentPage === 1;
-        prevButton.addEventListener('click', () => {
-            if (currentPage > 1) {
-                currentPage--;
-                updatePage();
-            }
-        });
-        pagination.appendChild(prevButton);
-
-        // 頁數按鈕
-        for (let i = 1; i <= totalPages; i++) {
-            const pageButton = document.createElement('button');
-            pageButton.className = `pagination-button ${i === currentPage ? 'active' : ''}`;
-            pageButton.textContent = i;
-            pageButton.addEventListener('click', () => {
-                currentPage = i;
-                updatePage();
-            });
-            pagination.appendChild(pageButton);
-        }
-
-        // Next 按鈕
-        const nextButton = document.createElement('button');
-        nextButton.className = 'pagination-button';
-        nextButton.textContent = '下一頁';
-        nextButton.disabled = currentPage === totalPages;
-        nextButton.addEventListener('click', () => {
-            if (currentPage < totalPages) {
-                currentPage++;
-                updatePage();
-            }
-        });
-        pagination.appendChild(nextButton);
-    }
-
-    // 更新頁面
-    function updatePage() {
-        const newUrl = `${window.location.pathname}?page=${currentPage}`;
-        window.history.pushState({}, '', newUrl);
-        loadImages(currentPage);
-        renderPagination();
-    }
-
-    // 初始加載
-    loadImages(currentPage).catch(err => {
-        console.error('載入圖片時發生錯誤:', err);
+  function b() {
+    t.innerHTML = '';
+    const e = document.createElement('button');
+    e.className = 'pagination-button';
+    e.textContent = '上一頁';
+    e.disabled = 1 === f;
+    e.addEventListener('click', () => {
+      if (f > 1) {
+        f--;
+        w();
+      }
     });
-    renderPagination();
+    t.appendChild(e);
+    for (let e = 1; e <= h; e++) {
+      const a = document.createElement('button');
+      a.className = `pagination-button ${e === f ? 'active' : ''}`;
+      a.textContent = e;
+      a.addEventListener('click', () => {
+        f = e;
+        w();
+      });
+      t.appendChild(a);
+    }
+    const a = document.createElement('button');
+    a.className = 'pagination-button';
+    a.textContent = '下一頁';
+    a.disabled = f === h;
+    a.addEventListener('click', () => {
+      if (f < h) {
+        f++;
+        w();
+      }
+    });
+    t.appendChild(a);
+  }
+
+  function w() {
+    const e = `${window.location.pathname}?page=${f}`;
+    window.history.pushState({}, '', e);
+    y(f);
+    b();
+  }
+
+  y(f).catch(e => {
+    console.error('載入圖片時發生錯誤:', e);
+  });
+  b();
 });
 </script>
-<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'93c9fe5b9ad76753',t:'MTc0NjcxODE3Ni4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script>
+<script>
+(function(){
+  function c(){
+    var b = a.contentDocument || a.contentWindow.document;
+    if(b){
+      var d = b.createElement('script');
+      d.innerHTML = "window.__CF$cv$params={r:'93d1ef986d9412d6',t:'MTc0NjgwMTQ1OC4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";
+      b.getElementsByTagName('head')[0].appendChild(d);
+    }
+  }
+  if(document.body){
+    var a = document.createElement('iframe');
+    a.height = 1;
+    a.width = 1;
+    a.style.position = 'absolute';
+    a.style.top = 0;
+    a.style.left = 0;
+    a.style.border = 'none';
+    a.style.visibility = 'hidden';
+    document.body.appendChild(a);
+    if('loading' !== document.readyState) c();
+    else if(window.addEventListener) document.addEventListener('DOMContentLoaded', c);
+    else {
+      var e = document.onreadystatechange || function(){};
+      document.onreadystatechange = function(b){
+        e(b);
+        if('loading' !== document.readyState){
+          document.onreadystatechange = e;
+          c();
+        }
+      };
+    }
+  }
+})();
+</script>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'93d1f7cacd0d4523',t:'MTc0NjgwMTc5My4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script>
 </body>
 </html>
