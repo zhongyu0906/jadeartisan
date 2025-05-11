@@ -37,7 +37,48 @@
         }
         return gk_fileData[filename] || "";
         }
-        </script><!DOCTYPE html>
+        </script>```html
+<script type="text/javascript">
+        var gk_isXlsx = false;
+        var gk_xlsxFileLookup = {};
+        var gk_fileData = {};
+        function filledCell(cell) {
+          return cell !== '' && cell != null;
+        }
+        function loadFileData(filename) {
+        if (gk_isXlsx && gk_xlsxFileLookup[filename]) {
+            try {
+                var workbook = XLSX.read(gk_fileData[filename], { type: 'base64' });
+                var firstSheetName = workbook.SheetNames[0];
+                var worksheet = workbook.Sheets[firstSheetName];
+
+                // Convert sheet to JSON to filter blank rows
+                var jsonData = XLSX.utils.sheet_to_json(worksheet, { header: 1, blankrows: false, defval: '' });
+                // Filter out blank rows (rows where all cells are empty, null, or undefined)
+                var filteredData = jsonData.filter(row => row.some(filledCell));
+
+                // Heuristic to find the header row by ignoring rows with fewer filled cells than the next row
+                var headerRowIndex = filteredData.findIndex((row, index) =>
+                  row.filter(filledCell).length >= filteredData[index + 1]?.filter(filledCell).length
+                );
+                // Fallback
+                if (headerRowIndex === -1 || headerRowIndex > 25) {
+                  headerRowIndex = 0;
+                }
+
+                // Convert filtered JSON back to CSV
+                var csv = XLSX.utils.aoa_to_sheet(filteredData.slice(headerRowIndex)); // Create a new sheet from filtered array of arrays
+                csv = XLSX.utils.sheet_to_csv(csv, { header: 1 });
+                return csv;
+            } catch (e) {
+                console.error(e);
+                return "";
+            }
+        }
+        return gk_fileData[filename] || "";
+        }
+</script>
+<!DOCTYPE html>
 <html lang="zh-TW">
 <head>
 <meta content="google-site-verification: google7372aff244c06d84.html" name="google-site-verification"/>
@@ -102,10 +143,11 @@ body {
     background-attachment: fixed;
 }
 .youtube-icon {
-    height: 1.5em;
+    height: 1.2em; /* 縮小圖標尺寸 */
     width: auto;
     vertical-align: middle;
     margin-left: 4px;
+    filter: brightness(0) invert(1); /* 若 SVG 非白色，強制反白 */
 }
 </style>
 <link href="https://unpkg.com/aos@2.3.4/dist/aos.css" rel="stylesheet"/>
@@ -128,7 +170,9 @@ body {
         <a class="nav-button text-white px-5 py-3 rounded-lg font-semibold text-sm md:text-base" href="creation.html">玉石創作</a>
         <a class="nav-button text-white px-5 py-3 rounded-lg font-semibold text-sm md:text-base" href="combo.html">複合式創作</a>
         <a class="nav-button text-white px-5 py-3 rounded-lg font-semibold text-sm md:text-base" href="treasure.html">石中影記</a>
-        <a class="text-white px-5 py-3 rounded-lg font-semibold text-sm md:text-base" href="exhibition.html"><img src="YouTube.svg" alt="YouTube" class="youtube-icon"></a>
+        <a class="nav-button text-white px-5 py-3 rounded-lg font-semibold text-sm md:text-base flex items-center" href="exhibition.html">
+            <img src="YouTube.svg" alt="YouTube" class="youtube-icon">
+        </a>
     </div>
 </nav>
 <!-- 主要內容 -->
@@ -189,7 +233,7 @@ body {
         <img alt="場景圖3" class="w-full h-auto rounded shadow object-cover" data-aos="zoom-in" src="scene3.jpg"/>
         <img alt="場景圖4" class="w-full h-auto rounded shadow object-cover" data-aos="zoom-in" src="scene4.jpg"/>
         <img alt="場景圖5" class="w-full h-auto rounded shadow object-cover" data-aos="zoom-in" src="scene5.jpg"/>
-        <img alt="場景圖6" class="w-full h-auto rounded shadow object-cover" data-aos="zoom-in" src="scene6.jpg"/>
+        <img耸 alt="場景圖6" class="w-full h-auto rounded shadow object-cover" data-aos="zoom-in" src="scene6.jpg"/>
         <img alt="場景圖7" class="w-full h-auto rounded shadow object-cover" data-aos="zoom-in" src="scene7.jpg"/>
         <img alt="場景圖8" class="w-full h-auto rounded shadow object-cover" data-aos="zoom-in" src="scene8.jpg"/>
         <img alt="場景圖9" class="w-full h-auto rounded shadow object-cover" data-aos="zoom-in" src="scene9.jpg"/>
@@ -262,5 +306,7 @@ function triggerFlash(container) {
 })();
 </script>
 <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'93dab8168833bd23',t:'MTc0Njg5MzU1Ni4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'93e1955a9d03ed87',t:'MTc0Njk2NTUzMy4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script>
 </body>
 </html>
+```
