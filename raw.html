@@ -37,47 +37,7 @@
         }
         return gk_fileData[filename] || "";
         }
-        </script><script type="text/javascript">
-        var gk_isXlsx = false;
-        var gk_xlsxFileLookup = {};
-        var gk_fileData = {};
-        function filledCell(cell) {
-          return cell !== '' && cell != null;
-        }
-        function loadFileData(filename) {
-        if (gk_isXlsx && gk_xlsxFileLookup[filename]) {
-            try {
-                var workbook = XLSX.read(gk_fileData[filename], { type: 'base64' });
-                var firstSheetName = workbook.SheetNames[0];
-                var worksheet = workbook.Sheets[firstSheetName];
-
-                // Convert sheet to JSON to filter blank rows
-                var jsonData = XLSX.utils.sheet_to_json(worksheet, { header: 1, blankrows: false, defval: '' });
-                // Filter out blank rows (rows where all cells are empty, null, or undefined)
-                var filteredData = jsonData.filter(row => row.some(filledCell));
-
-                // Heuristic to find the header row by ignoring rows with fewer filled cells than the next row
-                var headerRowIndex = filteredData.findIndex((row, index) =>
-                  row.filter(filledCell).length >= filteredData[index + 1]?.filter(filledCell).length
-                );
-                // Fallback
-                if (headerRowIndex === -1 || headerRowIndex > 25) {
-                  headerRowIndex = 0;
-                }
-
-                // Convert filtered JSON back to CSV
-                var csv = XLSX.utils.aoa_to_sheet(filteredData.slice(headerRowIndex)); // Create a new sheet from filtered array of arrays
-                csv = XLSX.utils.sheet_to_csv(csv, { header: 1 });
-                return csv;
-            } catch (e) {
-                console.error(e);
-                return "";
-            }
-        }
-        return gk_fileData[filename] || "";
-        }
-</script>
-<!DOCTYPE html>
+        </script><!DOCTYPE html>
 <html lang="zh-TW">
 <head>
 <meta charset="utf-8"/>
@@ -171,7 +131,9 @@ body {
     <a class="nav-button text-white px-5 py-3 rounded-lg font-semibold text-sm md:text-base" href="creation.html">玉石創作</a>
     <a class="nav-button text-white px-5 py-3 rounded-lg font-semibold text-sm md:text-base" href="combo.html">複合式創作</a>
     <a class="nav-button text-white px-5 py-3 rounded-lg font-semibold text-sm md:text-base" href="treasure.html">石中影記</a>
-    <a class="text-white px-5 py-3 rounded-lg font-semibold text-sm md:text-base" href="exhibition.html"><img src="YouTube.svg" alt="YouTube" class="youtube-icon"></a>
+    <a class="nav-button text-white px-5 py-3 rounded-lg font-semibold text-sm md:text-base flex items-center" href="exhibition.html">
+      <img src="YouTube.svg" alt="YouTube" class="h-5 w-5 mr-2"> YouTube
+    </a>
   </div>
 </nav>
 <main class="max-w-6xl mx-auto px-6 py-10 space-y-12">
@@ -230,16 +192,15 @@ document.addEventListener('DOMContentLoaded', () => {
   const e = document.getElementById('imageGrid');
   const t = document.getElementById('pagination');
   const a = document.getElementById('mainImage');
-  const imagesPerPage = 9; // 每頁9張
-  const totalImages = 153; // 總圖片數
-  const firstPages = 4; // 前4頁
-  const imagesInFirstThreePages = 27; // 前3頁共27張
+  const imagesPerPage = 9;
+  const totalImages = 153;
+  const firstPages = 4;
+  const imagesInFirstThreePages = 27;
   const prefix = 'raw_';
   const extension = '.jpg';
 
-  // 計算總頁數
-  const imagesAfterFirstThreePages = totalImages - imagesInFirstThreePages; // 153 - 27 = 126
-  const totalPages = Math.ceil(imagesAfterFirstThreePages / imagesPerPage) + firstPages - 1; // (126 / 9) + 4 - 1 = 14 + 3 = 17
+  const imagesAfterFirstThreePages = totalImages - imagesInFirstThreePages;
+  const totalPages = Math.ceil(imagesAfterFirstThreePages / imagesPerPage) + firstPages - 1;
 
   let p = new URLSearchParams(window.location.search);
   let f = parseInt(p.get('page')) || 1;
@@ -285,7 +246,6 @@ document.addEventListener('DOMContentLoaded', () => {
     ];
 
     if (p <= 3) {
-      // 前3頁每頁9張
       start = (p - 1) * imagesPerPage + 1;
       end = p * imagesPerPage;
       for (let i = start - 1; i < end; i++) {
@@ -295,14 +255,12 @@ document.addEventListener('DOMContentLoaded', () => {
         e.appendChild(a);
       }
     } else if (p === 4) {
-      // 第4頁：前3張從imageData（raw_28.jpg到raw_30.jpg），後6張從raw_31.jpg開始
-      for (let i = 27; i < 30; i++) { // raw_28.jpg 到 raw_30.jpg
+      for (let i = 27; i < 30; i++) {
         const t = imageData[i];
         const a = document.createElement('div');
         a.innerHTML = `<img loading="lazy" alt="${t.alt}" class="gallery-image rounded shadow" src="${t.src}" onerror="console.error('Failed to load: ${t.src}')" srcset="${t.src} 1000w, ${t.src.replace('.jpg', '_sm.jpg')} 500w" sizes="(max-width: 640px) 500px, 1000px"/><p class="mt-2 font-semibold">${t.text}</p>`;
         e.appendChild(a);
       }
-      // 後6張：raw_31.jpg 到 raw_36.jpg
       for (let index = 31; index <= 36; index++) {
         const imgSrc = `${prefix}${index.toString().padStart(2, '0')}${extension}`;
         const div = document.createElement('div');
@@ -310,8 +268,7 @@ document.addEventListener('DOMContentLoaded', () => {
         e.appendChild(div);
       }
     } else {
-      // 後續頁面每頁9張，從raw_37.jpg開始
-      start = imagesInFirstThreePages + (p - 4) * imagesPerPage + 4; // 第4頁已用掉raw_31到raw_36
+      start = imagesInFirstThreePages + (p - 4) * imagesPerPage + 4;
       end = Math.min(start + imagesPerPage - 1, totalImages);
       console.log(`Loading images from ${start} to ${end}`);
       const indices = Array.from({ length: end - start + 1 }, (e, t) => t + start);
@@ -409,5 +366,6 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 })();
 </script>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'93e1d979f94bed80',t:'MTc0Njk2ODMyNC4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script>
 </body>
 </html>
