@@ -323,18 +323,10 @@
 <img src="110262.jpg" alt="玉石祭特別報導" class="responsive-img rounded-lg shadow-lg mb-8">
 <div class="flex flex-col lg:flex-row gap-8">
 <div class="lg:w-2/3">
-<!-- 玉石祭 Carousel -->
+<!-- 玉石祭 Representative Image -->
 <div class="carousel-container">
 <h2 class="text-xl font-bold carousel-title text-center mb-2">玉石祭</h2>
-<div class="carousel slide" data-bs-interval="2000" data-bs-ride="carousel" id="carousel-op">
-<div class="carousel-inner rounded shadow"></div>
-<button class="carousel-control-prev" data-bs-slide="prev" data-bs-target="#carousel-op" type="button">
-<span class="carousel-control-prev-icon"></span>
-</button>
-<button class="carousel-control-next" data-bs-slide="next" data-bs-target="#carousel-op" type="button">
-<span class="carousel-control-next-icon"></span>
-</button>
-</div>
+<img src="menu081.png" alt="玉石祭" class="representative-img rounded-lg shadow-lg" data-bs-toggle="modal" data-bs-target="#slideshowModal-op">
 </div>
 </div>
 <div class="lg:w-1/3">
@@ -388,6 +380,9 @@
 <div id="carousel-ab" class="carousel slide" data-bs-interval="2000" data-bs-ride="carousel">
 <div class="carousel-inner"></div>
 <button class="carousel-control-prev" data-bs-slide="prev" data-bs-target="#carousel-ab" type="button">
+<span class="carousel-control-prev-icon"></span>
+</button>
+<button class="carousel-control-next" data-bs-slide="next" data-bs-target="#carousel-ab" type="button">
 <span class="carousel-control-prev-icon"></span>
 </button>
 <button class="carousel-control-next" data-bs-slide="next" data-bs-target="#carousel-ab" type="button">
@@ -521,9 +516,7 @@
 <div class="modal-dialog modal-dialog-centered modal-xl">
 <div class="modal-content">
 <div class="modal-body text-center">
-<div id="carousel-d" class="carousel slide" data-bs-interval="2000" data-bs-
-
-ride="carousel">
+<div id="carousel-d" class="carousel slide" data-bs-interval="2000" data-bs-ride="carousel">
 <div class="carousel-inner"></div>
 <button class="carousel-control-prev" data-bs-slide="prev" data-bs-target="#carousel-d" type="button">
 <span class="carousel-control-prev-icon"></span>
@@ -621,6 +614,23 @@ ride="carousel">
 </div>
 </div>
 </div>
+<div class="modal fade slideshow-modal" id="slideshowModal-op" tabindex="-1" aria-hidden="true">
+<div class="modal-dialog modal-dialog-centered modal-xl">
+<div class="modal-content">
+<div class="modal-body text-center">
+<div id="carousel-op" class="carousel slide" data-bs-interval="2000" data-bs-ride="carousel">
+<div class="carousel-inner"></div>
+<button class="carousel-control-prev" data-bs-slide="prev" data-bs-target="#carousel-op" type="button">
+<span class="carousel-control-prev-icon"></span>
+</button>
+<button class="carousel-control-next" data-bs-slide="next" data-bs-target="#carousel-op" type="button">
+<span class="carousel-control-next-icon"></span>
+</button>
+</div>
+</div>
+</div>
+</div>
+</div>
 <script>
 document.addEventListener('DOMContentLoaded', function() {
     // Configuration object for carousels and modals
@@ -640,7 +650,7 @@ document.addEventListener('DOMContentLoaded', function() {
         { id: 'carousel-l', modalId: 'slideshowModal-l', title: '戶外教學', prefix: 'l', count: 35, baseUrl: 'https://raw.githubusercontent.com/zhongyu0906/jadeartisan-treasure02/main/' },
         { id: 'carousel-e', modalId: 'slideshowModal-e', title: '受邀演講', prefix: 'e', count: 18, baseUrl: 'https://raw.githubusercontent.com/zhongyu0906/jadeartisan-treasure01/main/' },
         { id: 'carousel-b', modalId: 'slideshowModal-b', title: '友會來訪', prefix: 'b', count: 66, baseUrl: 'https://raw.githubusercontent.com/zhongyu0906/jadeartisan-treasure01/main/' },
-        { id: 'carousel-op', modalId: null, title: '玉石祭', prefix: 'op', count: 132, baseUrl: 'https://zhongyu0906.github.io/jadeartisan/treasure/' }
+        { id: 'carousel-op', modalId: 'slideshowModal-op', title: '玉石祭', prefix: 'op', count: 132, baseUrl: 'https://raw.githubusercontent.com/zhongyu0906/jadeartisan-treasure02/main/' }
     ];
 
     // Function to generate carousel items
@@ -684,13 +694,6 @@ document.addEventListener('DOMContentLoaded', function() {
                         bootstrap.Modal.getInstance(modal).hide();
                     }, 2000);
                 }
-            });
-        } else {
-            generateCarouselItems(config.id, config.prefix, config.count, config.title, config.baseUrl);
-            const carousel = document.getElementById(config.id);
-            new bootstrap.Carousel(carousel, {
-                interval: 2000,
-                pause: 'hover'
             });
         }
     });
