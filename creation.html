@@ -37,47 +37,7 @@
         }
         return gk_fileData[filename] || "";
         }
-        </script><script type="text/javascript">
-        var gk_isXlsx = false;
-        var gk_xlsxFileLookup = {};
-        var gk_fileData = {};
-        function filledCell(cell) {
-          return cell !== '' && cell != null;
-        }
-        function loadFileData(filename) {
-        if (gk_isXlsx && gk_xlsxFileLookup[filename]) {
-            try {
-                var workbook = XLSX.read(gk_fileData[filename], { type: 'base64' });
-                var firstSheetName = workbook.SheetNames[0];
-                var worksheet = workbook.Sheets[firstSheetName];
-
-                // Convert sheet to JSON to filter blank rows
-                var jsonData = XLSX.utils.sheet_to_json(worksheet, { header: 1, blankrows: false, defval: '' });
-                // Filter out blank rows (rows where all cells are empty, null, or undefined)
-                var filteredData = jsonData.filter(row => row.some(filledCell));
-
-                // Heuristic to find the header row by ignoring rows with fewer filled cells than the next row
-                var headerRowIndex = filteredData.findIndex((row, index) =>
-                  row.filter(filledCell).length >= filteredData[index + 1]?.filter(filledCell).length
-                );
-                // Fallback
-                if (headerRowIndex === -1 || headerRowIndex > 25) {
-                  headerRowIndex = 0;
-                }
-
-                // Convert filtered JSON back to CSV
-                var csv = XLSX.utils.aoa_to_sheet(filteredData.slice(headerRowIndex)); // Create a new sheet from filtered array of arrays
-                csv = XLSX.utils.sheet_to_csv(csv, { header: 1 });
-                return csv;
-            } catch (e) {
-                console.error(e);
-                return "";
-            }
-        }
-        return gk_fileData[filename] || "";
-        }
-</script>
-<!DOCTYPE html>
+        </script><!DOCTYPE html>
 <html lang="zh-TW">
 <head>
 <meta content="石中玉工作室，位於花蓮東海岸，專注於玉石創作、雕刻、原石欣賞與多元複合創作。" name="description"/>
@@ -133,9 +93,11 @@
         color: white;
         font-family: 'Noto Sans TC', sans-serif;
         padding: 0.5rem 1rem;
-        display: inline-block;
         border-radius: 4px;
         animation: blink 1.5s infinite;
+        text-align: center;
+        width: 100%;
+        box-sizing: border-box;
     }
     @keyframes blink {
         0% { opacity: 1; }
@@ -212,24 +174,27 @@ body {
 <a class="nav-button text-white px-5 py-3 rounded-lg font-semibold text-sm md:text-base" href="creation.html">玉石創作</a>
 <a class="nav-button text-white px-5 py-3 rounded-lg font-semibold text-sm md:text-base" href="combo.html">複合式創作</a>
 <a class="nav-button text-white px-5 py-3 rounded-lg font-semibold text-sm md:text-base" href="treasure.html">石中影記</a>
-<a class="text-white px-5 py-3 rounded-lg font-semibold text-sm md:text-base" href="exhibition.html"><img src="YouTube.svg" alt="YouTube" class="youtube-icon"></a>
+<a class="nav-button text-white px-5 py-3 rounded-lg font-semibold text-sm md:text-base flex items-center" href="exhibition.html">
+  <img src="YouTube.svg" alt="YouTube" class="h-5 w-5 mr-2"> YouTube
+</a>
 </div>
 </nav>
 <main class="max-w-6xl mx-auto px-6 py-10 space-y-12">
 <section class="text-center mb-12">
 <div class="text-lg text-gray-700 leading-relaxed">
-<p class="fly-in-text" style="animation-delay: 0s">每一塊玉石，皆由天地孕育，</p>
-<p class="fly-in-text" style="animation-delay: 0.5s">歷經歲月雕琢。</p>
-<p class="fly-in-text" style="animation-delay: 1s">紋理獨一無二，自成天地，</p>
-<p class="fly-in-text" style="animation-delay: 1.5s">宛如天地間的密語。</p>
-<p class="fly-in-text" style="animation-delay: 2s">「玉不琢，不成器。」</p>
-<p class="fly-in-text" style="animation-delay: 2.5s">唯經匠心巧手，</p>
-<p class="fly-in-text" style="animation-delay: 3s">方能引出它沉睡的靈魂。</p>
-<p class="fly-in-text" style="animation-delay: 3.5s">在刀起刀落之間，賦予它新的生命，</p>
-<p class="fly-in-text" style="animation-delay: 4s">也刻劃出創作者的心境。</p>
-<p class="fly-in-text" style="animation-delay: 4.5s">每件作品，都是與自然共創的藝術結晶。</p>
+<p>每一塊玉石，皆由天地孕育，</p>
+<p>歷經歲月雕琢。</p>
+<p>紋理獨一無二，自成天地，</p>
+<p>宛如天地間的密語。</p>
+<p>「玉不琢，不成器。」</p>
+<p>唯經匠心巧手，</p>
+<p>方能引出它沉睡的靈魂。</p>
+<p>在刀起刀落之間，賦予它新的生命，</p>
+<p>也刻劃出創作者的心境。</p>
+<p>每件作品，都是與自然共創的藝術結晶。</p>
 </div>
 </section>
+<section class="text-center mb-12">
 <h2 class="text-2xl font-bold mt-12 mb-4 highlighted-title hidden-content" id="titleSection">玉石創作-平面研磨</h2>
 <div id="imageGrid" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 text-center hidden-content">
 <!-- 圖片將由 JavaScript 動態生成 -->
@@ -237,6 +202,7 @@ body {
 <div id="pagination" class="text-center mt-8 hidden-content">
 <!-- 分頁按鈕將由 JavaScript 動態生成 -->
 </div>
+</section>
 </main>
 <!-- 頁腳 -->
 <div class="footer-bg">
@@ -376,23 +342,21 @@ document.addEventListener('DOMContentLoaded', () => {
         window.scrollTo({ top: 0, behavior: 'smooth' });
     }
 
-    // 在飛入動畫結束後顯示下方內容
-    setTimeout(() => {
-        titleSection.classList.remove('hidden-content');
-        titleSection.classList.add('visible-content');
-        imageGrid.classList.remove('hidden-content');
-        imageGrid.classList.add('visible-content');
-        pagination.classList.remove('hidden-content');
-        pagination.classList.add('visible-content');
-        loadImages(currentPage).catch(err => {
-            console.error('載入圖片時發生錯誤:', err);
-        });
-        renderPagination();
-    }, 6000); // 4.5s (最後一句飛入) + 1.5s 延遲
-
+    // 立即顯示下方內容（因為文字動畫已移除）
+    titleSection.classList.remove('hidden-content');
+    titleSection.classList.add('visible-content');
+    imageGrid.classList.remove('hidden-content');
+    imageGrid.classList.add('visible-content');
+    pagination.classList.remove('hidden-content');
+    pagination.classList.add('visible-content');
+    loadImages(currentPage).catch(err => {
+        console.error('載入圖片時發生錯誤:', err);
+    });
     renderPagination();
 });
 </script>
 <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'93db02641f1a53ce',t:'MTc0Njg5NjU5OS4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'93e1c45f680a1383',t:'MTc0Njk2NzQ1OS4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'93e1d0ac5b616776',t:'MTc0Njk2Nzk2My4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script>
 </body>
 </html>
