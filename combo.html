@@ -37,40 +37,7 @@
         }
         return gk_fileData[filename] || "";
         }
-        </script>
-<script type="text/javascript">
-        var gk_isXlsx = false;
-        var gk_xlsxFileLookup = {};
-        var gk_fileData = {};
-        function filledCell(cell) {
-          return cell !== '' && cell != null;
-        }
-        function loadFileData(filename) {
-        if (gk_isXlsx && gk_xlsxFileLookup[filename]) {
-            try {
-                var workbook = XLSX.read(gk_fileData[filename], { type: 'base64' });
-                var firstSheetName = workbook.SheetNames[0];
-                var worksheet = workbook.Sheets[firstSheetName];
-                var jsonData = XLSX.utils.sheet_to_json(worksheet, { header: 1, blankrows: false, defval: '' });
-                var filteredData = jsonData.filter(row => row.some(filledCell));
-                var headerRowIndex = filteredData.findIndex((row, index) =>
-                  row.filter(filledCell).length >= filteredData[index + 1]?.filter(filledCell).length
-                );
-                if (headerRowIndex === -1 || headerRowIndex > 25) {
-                  headerRowIndex = 0;
-                }
-                var csv = XLSX.utils.aoa_to_sheet(filteredData.slice(headerRowIndex));
-                csv = XLSX.utils.sheet_to_csv(csv, { header: 1 });
-                return csv;
-            } catch (e) {
-                console.error(e);
-                return "";
-            }
-        }
-        return gk_fileData[filename] || "";
-        }
-</script>
-<!DOCTYPE html>
+        </script><!DOCTYPE html>
 <html lang="zh-TW">
 <head>
 <meta content="石中玉工作室，位於花蓮東海岸，專注於玉石創作、雕刻、原石欣賞與多元複合創作。" name="description"/>
@@ -101,7 +68,7 @@
         text-decoration: none;
         transition: all 0.3s ease;
     }
-    .pagination-button:hover {
+    .pagination-button:hover:not(:disabled) {
         background: linear-gradient(to right, rgb(84, 108, 49), rgb(104, 128, 69));
         transform: scale(1.05);
     }
@@ -139,7 +106,7 @@
       background-attachment: fixed;
     }
     .youtube-icon {
-        height: 1.2em; /* 縮小圖標尺寸 */
+        height: 1.2em;
         width: auto;
         vertical-align: middle;
         margin-left: 4px;
@@ -183,9 +150,8 @@
 <h2 class="text-2xl font-bold text-[#29582a] mt-12 mb-4">複合式創作</h2>
 </section>
 <div id="gallery" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 text-center"></div>
-<div id="pagination" class="text-center mt-8">
-    <!-- 分頁按鈕將由 JavaScript 動態生成 -->
-</div>
+<div id="pagination" class="text-center mt-8"></div>
+</main>
 <section class="contact-bg text-white text-center p-6 rounded-lg shadow-md mb-12">
 <h2 class="text-2xl font-semibold mb-4">聯絡我們</h2>
 <p class="text-lg mb-2">台11線 東海岸線上。　聯絡電話：0933-798966 0910-123893</p>
@@ -198,73 +164,37 @@
 <p>© 石中玉工作室 Jade Artisan Studio</p>
 </footer>
 <script>
-document.addEventListener('DOMContentLoaded', async () => {
+document.addEventListener('DOMContentLoaded', () => {
     const gallery = document.getElementById('gallery');
     const pagination = document.getElementById('pagination');
     const introSection = document.getElementById('introSection');
     const imagesPerPage = 9;
-    const totalImages = 300;
+    const totalImages = 64; // 可自行修改此數值以增加或減少圖片數量
     const prefix = 'combo_';
     const extension = '.jpg';
 
-    async function checkImageExists(url) {
-        return new Promise(resolve => {
-            const img = new Image();
-            img.onload = () => resolve(true);
-            img.onerror = () => resolve(false);
-            img.src = url;
-        });
-    }
-
-    async function countAvailableImages() {
-        let count = 0;
-        const batchSize = 9; // 每批檢查 9 張圖片
-        for (let i = 1; i <= totalImages; i += batchSize) {
-            const batch = [];
-            for (let j = i; j < i + batchSize && j <= totalImages; j++) {
-                const paddedNumber = j.toString().padStart(2, '0');
-                batch.push(checkImageExists(`${prefix}${paddedNumber}${extension}`).then(exists => exists ? j : null));
-            }
-            const results = await Promise.all(batch);
-            for (const result of results) {
-                if (result === null) return count;
-                count++;
-            }
-        }
-        return count;
-    }
-
-    const availableImages = await countAvailableImages();
-    const totalPages = Math.ceil(availableImages / imagesPerPage);
+    const totalPages = Math.ceil(totalImages / imagesPerPage);
 
     const urlParams = new URLSearchParams(window.location.search);
     let currentPage = parseInt(urlParams.get('page')) || 1;
     if (currentPage < 1 || currentPage > totalPages) currentPage = 1;
 
-    async function loadImages(page) {
+    function loadImages(page) {
         gallery.innerHTML = '';
         introSection.style.display = page === 1 ? 'block' : 'none';
         const start = (page - 1) * imagesPerPage + 1;
-        const end = Math.min(page * imagesPerPage, availableImages);
+        const end = Math.min(page * imagesPerPage, totalImages);
 
-        const imageChecks = [];
         for (let i = start; i <= end; i++) {
             const paddedNumber = i.toString().padStart(2, '0');
             const imageUrl = `${prefix}${paddedNumber}${extension}`;
-            imageChecks.push(checkImageExists(imageUrl).then(exists => exists ? imageUrl : null));
+            const div = document.createElement('div');
+            div.innerHTML = `
+                <img loading="lazy" alt="複合式創作 ${paddedNumber}" class="gallery-image rounded shadow" src="${imageUrl}" onerror="console.error('Failed to load: ${imageUrl}')" srcset="${imageUrl} 1000w, ${imageUrl.replace('.jpg', '_sm.jpg')} 500w" sizes="(max-width: 640px) 500px, 1000px"/>
+                <p class="mt-2 font-semibold">複合式創作 ${paddedNumber}</p>
+            `;
+            gallery.appendChild(div);
         }
-
-        const results = await Promise.all(imageChecks);
-        results.forEach((imageUrl, index) => {
-            if (imageUrl) {
-                const imgDiv = document.createElement('div');
-                const paddedNumber = (start + index).toString().padStart(2, '0');
-                imgDiv.innerHTML = `
-                    <img loading="lazy" alt="複合式創作 ${paddedNumber}" class="gallery-image rounded shadow" src="${imageUrl}"/>
-                `;
-                gallery.appendChild(imgDiv);
-            }
-        });
     }
 
     function renderPagination() {
@@ -314,16 +244,9 @@ document.addEventListener('DOMContentLoaded', async () => {
         window.scrollTo({ top: 0, behavior: 'smooth' });
     }
 
-    loadImages(currentPage).catch(err => {
-        console.error('載入圖片時發生錯誤:', err);
-    });
+    loadImages(currentPage);
     renderPagination();
 });
 </script>
-<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'93ca36d19e7ebfbb',t:'MTc0NjcyMDQ4OS4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script>
-<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'93ca49081c65675f',t:'MTc0NjcyMTIzNS4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script>
-<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'93dafc0488acdd21',t:'MTc0Njg5NjMzOC4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script>
-<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'93e1ba64efafbff1',t:'MTc0Njk2NzA1MS4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script>
 </body>
 </html>
-```
