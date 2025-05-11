@@ -37,37 +37,6 @@
         }
         return gk_fileData[filename] || "";
         }
-        </script><script type="text/javascript">
-        var gk_isXlsx = false;
-        var gk_xlsxFileLookup = {};
-        var gk_fileData = {};
-        function filledCell(cell) {
-          return cell !== '' && cell != null;
-        }
-        function loadFileData(filename) {
-        if (gk_isXlsx && gk_xlsxFileLookup[filename]) {
-            try {
-                var workbook = XLSX.read(gk_fileData[filename], { type: 'base64' });
-                var firstSheetName = workbook.SheetNames[0];
-                var worksheet = workbook.Sheets[firstSheetName];
-                var jsonData = XLSX.utils.sheet_to_json(worksheet, { header: 1, blankrows: false, defval: '' });
-                var filteredData = jsonData.filter(row => row.some(filledCell));
-                var headerRowIndex = filteredData.findIndex((row, index) =>
-                  row.filter(filledCell).length >= filteredData[index + 1]?.filter(filledCell).length
-                );
-                if (headerRowIndex === -1 || headerRowIndex > 25) {
-                  headerRowIndex = 0;
-                }
-                var csv = XLSX.utils.aoa_to_sheet(filteredData.slice(headerRowIndex));
-                csv = XLSX.utils.sheet_to_csv(csv, { header: 1 });
-                return csv;
-            } catch (e) {
-                console.error(e);
-                return "";
-            }
-        }
-        return gk_fileData[filename] || "";
-        }
         </script><!DOCTYPE html>
 <html lang="zh-TW">
 <head>
@@ -89,6 +58,16 @@
     .nav-button:hover {
       transform: scale(1.05);
       background: linear-gradient(to right, rgb(84, 108, 49), rgb(104, 128, 69));
+      box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+    }
+    .youtube-button {
+      background-color: #29582a;
+      transition: transform 0.3s ease, background-color 0.3s ease;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    }
+    .youtube-button:hover {
+      transform: scale(1.05);
+      background-color: #1a3c1b;
       box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
     }
     .contact-bg { background-color: #688045; }
@@ -134,19 +113,32 @@
       padding: 0.5rem;
       border-radius: 0.5rem;
     }
-    .carousel-item {
-      position: relative;
+    .representative-img {
       cursor: pointer;
+      transition: transform 0.3s ease;
+    }
+    .representative-img:hover {
+      transform: scale(1.05);
+    }
+    .slideshow-modal .modal-content {
+      background-color: transparent;
+      border: none;
+    }
+    .slideshow-modal .carousel-item {
       padding: 20px;
       background: linear-gradient(135deg, #d4d4d4, #a1a1a1);
       border: 4px solid #b8860b;
       border-radius: 1.2rem;
       box-shadow: 0 10px 20px rgba(0, 0, 0, 0.3), inset 0 0 10px rgba(255, 255, 255, 0.2);
     }
-    .carousel-item img {
+    .slideshow-modal .carousel-item img {
       border-radius: 0.8rem;
+      max-width: 90%;
+      max-height: 80vh;
+      margin: auto;
+      display: block;
     }
-    .carousel-item::before {
+    .slideshow-modal .carousel-item::before {
       content: '';
       position: absolute;
       top: -10px;
@@ -156,25 +148,6 @@
       border: 2px solid #c0c0c0;
       border-radius: 1.4rem;
       z-index: -1;
-    }
-    .modal-image {
-      max-width: 90%;
-      max-height: 80vh;
-      margin: auto;
-      display: block;
-    }
-    .modal-content {
-      background-color: transparent;
-      border: none;
-    }
-    .responsive-img {
-      max-width: 100%;
-      height: auto;
-      cursor: pointer;
-      transition: transform 0.3s ease;
-    }
-    .responsive-img:hover {
-      transform: scale(1.05);
     }
     .youtube-iframe {
       width: 100%;
@@ -207,7 +180,6 @@
       height: 1.5em;
       width: auto;
       vertical-align: middle;
-      margin-left: 4px;
     }
     .intro-image {
       max-height: 266.67px;
@@ -223,7 +195,7 @@
 </h1>
 </header>
 <nav class="bg-white p-4 shadow-md">
-<div class="container mx-auto flex flex-wrap justify-center gap-2 md:gap-4">
+<div class="container mx-auto flex flex-wrap justify-center gap-2 md:gap-4 items-center">
 <a class="nav-button text-white px-4 py-2 rounded-lg font-semibold text-sm md:text-base" href="index.html">首頁</a>
 <a class="nav-button text-white px-4 py-2 rounded-lg font-semibold text-sm md:text-base" href="about.html">工作室簡介</a>
 <a class="nav-button text-white px-4 py-2 rounded-lg font-semibold text-sm md:text-base" href="author.html">作者簡介</a>
@@ -233,7 +205,7 @@
 <a class="nav-button text-white px-4 py-2 rounded-lg font-semibold text-sm md:text-base" href="creation.html">玉石創作</a>
 <a class="nav-button text-white px-4 py-2 rounded-lg font-semibold text-sm md:text-base" href="combo.html">複合式創作</a>
 <a class="nav-button text-white px-5 py-3 rounded-lg font-semibold text-sm md:text-base" href="treasure.html">石中影記</a>
-<a class="text-white px-5 py-3 rounded-lg font-semibold text-sm md:text-base" href="exhibition.html"><img src="YouTube.svg" alt="YouTube" class="youtube-icon"></a>
+<a class="youtube-button text-white px-5 py-3 rounded-lg font-semibold text-sm md:text-base" href="exhibition.html"><img src="YouTube.svg" alt="YouTube" class="youtube-icon"></a>
 </div>
 </nav>
 <main class="max-w-7xl mx-auto px-6 py-10 space-y-12">
@@ -260,41 +232,17 @@
 <!-- 礦區探勘 -->
 <div class="carousel-container">
 <h2 class="text-xl font-bold carousel-title text-center mb-2">礦區探勘</h2>
-<div class="carousel slide" data-bs-interval="2000" data-bs-ride="carousel" id="carousel-a">
-<div class="carousel-inner rounded shadow"></div>
-<button class="carousel-control-prev" data-bs-slide="prev" data-bs-target="#carousel-a" type="button">
-<span class="carousel-control-prev-icon"></span>
-</button>
-<button class="carousel-control-next" data-bs-slide="next" data-bs-target="#carousel-a" type="button">
-<span class="carousel-control-next-icon"></span>
-</button>
-</div>
+<img src="menu06.png" alt="礦區探勘" class="representative-img rounded-lg shadow-lg" data-bs-toggle="modal" data-bs-target="#slideshowModal-a">
 </div>
 <!-- 親子尋寶之旅 -->
 <div class="carousel-container">
 <h2 class="text-xl font-bold carousel-title text-center mb-2">親子尋寶之旅</h2>
-<div class="carousel slide" data-bs-interval="2000" data-bs-ride="carousel" id="carousel-ab">
-<div class="carousel-inner rounded shadow"></div>
-<button class="carousel-control-prev" data-bs-slide="prev" data-bs-target="#carousel-ab" type="button">
-<span class="carousel-control-prev-icon"></span>
-</button>
-<button class="carousel-control-next" data-bs-slide="next" data-bs-target="#carousel-ab" type="button">
-<span class="carousel-control-next-icon"></span>
-</button>
-</div>
+<img src="menu02.png" alt="親子尋寶之旅" class="representative-img rounded-lg shadow-lg" data-bs-toggle="modal" data-bs-target="#slideshowModal-ab">
 </div>
 <!-- 月洞玉石之旅 -->
 <div class="carousel-container">
 <h2 class="text-xl font-bold carousel-title text-center mb-2">月洞玉石之旅</h2>
-<div class="carousel slide" data-bs-interval="2000" data-bs-ride="carousel" id="carousel-cd">
-<div class="carousel-inner rounded shadow"></div>
-<button class="carousel-control-prev" data-bs-slide="prev" data-bs-target="#carousel-cd" type="button">
-<span class="carousel-control-prev-icon"></span>
-</button>
-<button class="carousel-control-next" data-bs-slide="next" data-bs-target="#carousel-cd" type="button">
-<span class="carousel-control-next-icon"></span>
-</button>
-</div>
+<img src="menu03.png" alt="月洞玉石之旅" class="representative-img rounded-lg shadow-lg" data-bs-toggle="modal" data-bs-target="#slideshowModal-cd">
 </div>
 </div>
 <!-- Second Row: 屏東文化中心參展, 高雄大統百貨展覽, 2003 藍色絲路記者會 -->
@@ -302,41 +250,17 @@
 <!-- 屏東文化中心參展 -->
 <div class="carousel-container">
 <h2 class="text-xl font-bold carousel-title text-center mb-2">屏東文化中心參展</h2>
-<div class="carousel slide" data-bs-interval="2000" data-bs-ride="carousel" id="carousel-g">
-<div class="carousel-inner rounded shadow"></div>
-<button class="carousel-control-prev" data-bs-slide="prev" data-bs-target="#carousel-g" type="button">
-<span class="carousel-control-prev-icon"></span>
-</button>
-<button class="carousel-control-next" data-bs-slide="next" data-bs-target="#carousel-g" type="button">
-<span class="carousel-control-next-icon"></span>
-</button>
-</div>
+<img src="menu08.png" alt="屏東文化中心參展" class="representative-img rounded-lg shadow-lg" data-bs-toggle="modal" data-bs-target="#slideshowModal-g">
 </div>
 <!-- 高雄大統百貨展覽 -->
 <div class="carousel-container">
 <h2 class="text-xl font-bold carousel-title text-center mb-2">高雄大統百貨展覽</h2>
-<div class="carousel slide" data-bs-interval="2000" data-bs-ride="carousel" id="carousel-i">
-<div class="carousel-inner rounded shadow"></div>
-<button class="carousel-control-prev" data-bs-slide="prev" data-bs-target="#carousel-i" type="button">
-<span class="carousel-control-prev-icon"></span>
-</button>
-<button class="carousel-control-next" data-bs-slide="next" data-bs-target="#carousel-i" type="button">
-<span class="carousel-control-next-icon"></span>
-</button>
-</div>
+<img src="menu09.png" alt="高雄大統百貨展覽" class="representative-img rounded-lg shadow-lg" data-bs-toggle="modal" data-bs-target="#slideshowModal-i">
 </div>
 <!-- 2003 藍色絲路記者會 -->
 <div class="carousel-container">
 <h2 class="text-xl font-bold carousel-title text-center mb-2">2003 藍色絲路記者會</h2>
-<div class="carousel slide" data-bs-interval="2000" data-bs-ride="carousel" id="carousel-h">
-<div class="carousel-inner rounded shadow"></div>
-<button class="carousel-control-prev" data-bs-slide="prev" data-bs-target="#carousel-h" type="button">
-<span class="carousel-control-prev-icon"></span>
-</button>
-<button class="carousel-control-next" data-bs-slide="next" data-bs-target="#carousel-h" type="button">
-<span class="carousel-control-next-icon"></span>
-</button>
-</div>
+<img src="menu13.png" alt="2003 藍色絲路記者會" class="representative-img rounded-lg shadow-lg" data-bs-toggle="modal" data-bs-target="#slideshowModal-h">
 </div>
 </div>
 <!-- Third Row: 2008石藝嘉年華, 文化局展覽, 玉石培訓班 -->
@@ -344,41 +268,17 @@
 <!-- 2008石藝嘉年華 -->
 <div class="carousel-container">
 <h2 class="text-xl font-bold carousel-title text-center mb-2">2008石藝嘉年華</h2>
-<div class="carousel slide" data-bs-interval="2000" data-bs-ride="carousel" id="carousel-ef">
-<div class="carousel-inner rounded shadow"></div>
-<button class="carousel-control-prev" data-bs-slide="prev" data-bs-target="#carousel-ef" type="button">
-<span class="carousel-control-prev-icon"></span>
-</button>
-<button class="carousel-control-next" data-bs-slide="next" data-bs-target="#carousel-ef" type="button">
-<span class="carousel-control-next-icon"></span>
-</button>
-</div>
+<img src="menu04.png" alt="2008石藝嘉年華" class="representative-img rounded-lg shadow-lg" data-bs-toggle="modal" data-bs-target="#slideshowModal-ef">
 </div>
 <!-- 文化局展覽 -->
 <div class="carousel-container">
 <h2 class="text-xl font-bold carousel-title text-center mb-2">文化局展覽</h2>
-<div class="carousel slide" data-bs-interval="2000" data-bs-ride="carousel" id="carousel-gh">
-<div class="carousel-inner rounded shadow"></div>
-<button class="carousel-control-prev" data-bs-slide="prev" data-bs-target="#carousel-gh" type="button">
-<span class="carousel-control-prev-icon"></span>
-</button>
-<button class="carousel-control-next" data-bs-slide="next" data-bs-target="#carousel-gh" type="button">
-<span class="carousel-control-next-icon"></span>
-</button>
-</div>
+<img src="menu14.png" alt="文化局展覽" class="representative-img rounded-lg shadow-lg" data-bs-toggle="modal" data-bs-target="#slideshowModal-gh">
 </div>
 <!-- 玉石培訓班 -->
 <div class="carousel-container">
 <h2 class="text-xl font-bold carousel-title text-center mb-2">玉石培訓班</h2>
-<div class="carousel slide" data-bs-interval="2000" data-bs-ride="carousel" id="carousel-ij">
-<div class="carousel-inner rounded shadow"></div>
-<button class="carousel-control-prev" data-bs-slide="prev" data-bs-target="#carousel-ij" type="button">
-<span class="carousel-control-prev-icon"></span>
-</button>
-<button class="carousel-control-next" data-bs-slide="next" data-bs-target="#carousel-ij" type="button">
-<span class="carousel-control-next-icon"></span>
-</button>
-</div>
+<img src="menu07.png" alt="玉石培訓班" class="representative-img rounded-lg shadow-lg" data-bs-toggle="modal" data-bs-target="#slideshowModal-ij">
 </div>
 </div>
 <!-- Fourth Row: 兆豐玉石展覽, 綜合成果展, 巡迴展 -->
@@ -386,41 +286,17 @@
 <!-- 兆豐玉石展覽 -->
 <div class="carousel-container">
 <h2 class="text-xl font-bold carousel-title text-center mb-2">兆豐玉石展覽</h2>
-<div class="carousel slide" data-bs-interval="2000" data-bs-ride="carousel" id="carousel-d">
-<div class="carousel-inner rounded shadow"></div>
-<button class="carousel-control-prev" data-bs-slide="prev" data-bs-target="#carousel-d" type="button">
-<span class="carousel-control-prev-icon"></span>
-</button>
-<button class="carousel-control-next" data-bs-slide="next" data-bs-target="#carousel-d" type="button">
-<span class="carousel-control-next-icon"></span>
-</button>
-</div>
+<img src="menu05.png" alt="兆豐玉石展覽" class="representative-img rounded-lg shadow-lg" data-bs-toggle="modal" data-bs-target="#slideshowModal-d">
 </div>
 <!-- 綜合成果展 -->
 <div class="carousel-container">
 <h2 class="text-xl font-bold carousel-title text-center mb-2">綜合成果展</h2>
-<div class="carousel slide" data-bs-interval="2000" data-bs-ride="carousel" id="carousel-kl">
-<div class="carousel-inner rounded shadow"></div>
-<button class="carousel-control-prev" data-bs-slide="prev" data-bs-target="#carousel-kl" type="button">
-<span class="carousel-control-prev-icon"></span>
-</button>
-<button class="carousel-control-next" data-bs-slide="next" data-bs-target="#carousel-kl" type="button">
-<span class="carousel-control-next-icon"></span>
-</button>
-</div>
+<img src="menu15.png" alt="綜合成果展" class="representative-img rounded-lg shadow-lg" data-bs-toggle="modal" data-bs-target="#slideshowModal-kl">
 </div>
 <!-- 巡迴展 -->
 <div class="carousel-container">
 <h2 class="text-xl font-bold carousel-title text-center mb-2">巡迴展</h2>
-<div class="carousel slide" data-bs-interval="2000" data-bs-ride="carousel" id="carousel-mn">
-<div class="carousel-inner rounded shadow"></div>
-<button class="carousel-control-prev" data-bs-slide="prev" data-bs-target="#carousel-mn" type="button">
-<span class="carousel-control-prev-icon"></span>
-</button>
-<button class="carousel-control-next" data-bs-slide="next" data-bs-target="#carousel-mn" type="button">
-<span class="carousel-control-next-icon"></span>
-</button>
-</div>
+<img src="menu16.png" alt="巡迴展" class="representative-img rounded-lg shadow-lg" data-bs-toggle="modal" data-bs-target="#slideshowModal-mn">
 </div>
 </div>
 <!-- Fifth Row: 戶外教學, 受邀演講, 友會來訪 -->
@@ -428,103 +304,18 @@
 <!-- 戶外教學 -->
 <div class="carousel-container">
 <h2 class="text-xl font-bold carousel-title text-center mb-2">戶外教學</h2>
-<div class="carousel slide" data-bs-interval="2000" data-bs-ride="carousel" id="carousel-l">
-<div class="carousel-inner rounded shadow"></div>
-<button class="carousel-control-prev" data-bs-slide="prev" data-bs-target="#carousel-l" type="button">
-<span class="carousel-control-prev-icon"></span>
-</button>
-<button class="carousel-control-next" data-bs-slide="next" data-bs-target="#carousel-l" type="button">
-<span class="carousel-control-next-icon"></span>
-</button>
-</div>
+<img src="menu10.png" alt="戶外教學" class="representative-img rounded-lg shadow-lg" data-bs-toggle="modal" data-bs-target="#slideshowModal-l">
 </div>
 <!-- 受邀演講 -->
 <div class="carousel-container">
 <h2 class="text-xl font-bold carousel-title text-center mb-2">受邀演講</h2>
-<div class="carousel slide" data-bs-interval="2000" data-bs-ride="carousel" id="carousel-e">
-<div class="carousel-inner rounded shadow"></div>
-<button class="carousel-control-prev" data-bs-slide="prev" data-bs-target="#carousel-e" type="button">
-<span class="carousel-control-prev-icon"></span>
-</button>
-<button class="carousel-control-next" data-bs-slide="next" data-bs-target="#carousel-e" type="button">
-<span class="carousel-control-next-icon"></span>
-</button>
-</div>
+<img src="menu11.png" alt="受邀演講" class="representative-img rounded-lg shadow-lg" data-bs-toggle="modal" data-bs-target="#slideshowModal-e">
 </div>
 <!-- 友會來訪 -->
 <div class="carousel-container">
 <h2 class="text-xl font-bold carousel-title text-center mb-2">友會來訪</h2>
-<div class="carousel slide" data-bs-interval="2000" data-bs-ride="carousel" id="carousel-b">
-<div class="carousel-inner rounded shadow"></div>
-<button class="carousel-control-prev" data-bs-slide="prev" data-bs-target="#carousel-b" type="button">
-<span class="carousel-control-prev-icon"></span>
-</button>
-<button class="carousel-control-next" data-bs-slide="next" data-bs-target="#carousel-b" type="button">
-<span class="carousel-control-next-icon"></span>
-</button>
+<img src="menu12.png" alt="友會來訪" class="representative-img rounded-lg shadow-lg" data-bs-toggle="modal" data-bs-target="#slideshowModal-b">
 </div>
-</div>
-</div>
-<!-- Sixth Row: 台灣全紀錄專訪, 基隆社區大學來訪交流, 學習與成果 -->
-<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-<!-- 台灣全紀錄專訪 -->
-<div class="carousel-container">
-<h2 class="text-xl font-bold carousel-title text-center mb-2">台灣全紀錄專訪</h2>
-<div class="carousel slide" data-bs-interval="2000" data-bs-ride="carousel" id="carousel-c">
-<div class="carousel-inner rounded shadow"></div>
-<button class="carousel-control-prev" data-bs-slide="prev" data-bs-target="#carousel-c" type="button">
-<span class="carousel-control-prev-icon"></span>
-</button>
-<button class="carousel-control-next" data-bs-slide="next" data-bs-target="#carousel-c" type="button">
-<span class="carousel-control-next-icon"></span>
-</button>
-</div>
-</div>
-<!-- 基隆社區大學來訪交流 -->
-<div class="carousel-container">
-<h2 class="text-xl font-bold carousel-title text-center mb-2">基隆社區大學來訪交流</h2>
-<div class="carousel slide" data-bs-interval="2000" data-bs-ride="carousel" id="carousel-j">
-<div class="carousel-inner rounded shadow"></div>
-<button class="carousel-control-prev" data-bs-slide="prev" data-bs-target="#carousel-j" type="button">
-<span class="carousel-control-prev-icon"></span>
-</button>
-<button class="carousel-control-next" data-bs-slide="next" data-bs-target="#carousel-j" type="button">
-<span class="carousel-control-next-icon"></span>
-</button>
-</div>
-</div>
-<!-- 學習與成果 -->
-<div class="carousel-container">
-<h2 class="text-xl font-bold carousel-title text-center mb-2">學習與成果</h2>
-<div class="carousel slide" data-bs-interval="2000" data-bs-ride="carousel" id="carousel-k">
-<div class="carousel-inner rounded shadow"></div>
-<button class="carousel-control-prev" data-bs-slide="prev" data-bs-target="#carousel-k" type="button">
-<span class="carousel-control-prev-icon"></span>
-</button>
-<button class="carousel-control-next" data-bs-slide="next" data-bs-target="#carousel-k" type="button">
-<span class="carousel-control-next-icon"></span>
-</button>
-</div>
-</div>
-</div>
-<!-- Seventh Row: 東海岸玉石展 -->
-<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-<!-- 東海岸玉石展 -->
-<div class="carousel-container">
-<h2 class="text-xl font-bold carousel-title text-center mb-2">東海岸玉石展</h2>
-<div class="carousel slide" data-bs-interval="2000" data-bs-ride="carousel" id="carousel-f">
-<div class="carousel-inner rounded shadow"></div>
-<button class="carousel-control-prev" data-bs-slide="prev" data-bs-target="#carousel-f" type="button">
-<span class="carousel-control-prev-icon"></span>
-</button>
-<button class="carousel-control-next" data-bs-slide="next" data-bs-target="#carousel-f" type="button">
-<span class="carousel-control-next-icon"></span>
-</button>
-</div>
-</div>
-<!-- Empty divs to maintain 3-column layout on desktop -->
-<div class="hidden lg:block"></div>
-<div class="hidden lg:block"></div>
 </div>
 <!-- Jade Festival Section -->
 <section id="jade-festival" class="text-center mb-12">
@@ -572,17 +363,17 @@
 <footer class="bg-gray-800 text-white text-center p-4">
 <p>© 石中玉工作室 Jade Artisan Studio</p>
 </footer>
-<!-- Modal for full-screen image view -->
-<div class="modal fade" id="imageModal" tabindex="-1" aria-labelledby="imageModalLabel" aria-hidden="true">
+<!-- Modals for slideshows -->
+<div class="modal fade slideshow-modal" id="slideshowModal-a" tabindex="-1" aria-hidden="true">
 <div class="modal-dialog modal-dialog-centered modal-xl">
 <div class="modal-content">
 <div class="modal-body text-center">
-<div id="modalCarousel" class="carousel slide" data-bs-interval="2000" data-bs-ride="carousel">
+<div id="carousel-a" class="carousel slide" data-bs-interval="2000" data-bs-ride="carousel">
 <div class="carousel-inner"></div>
-<button class="carousel-control-prev" data-bs-slide="prev" data-bs-target="#modalCarousel" type="button">
+<button class="carousel-control-prev" data-bs-slide="prev" data-bs-target="#carousel-a" type="button">
 <span class="carousel-control-prev-icon"></span>
 </button>
-<button class="carousel-control-next" data-bs-slide="next" data-bs-target="#modalCarousel" type="button">
+<button class="carousel-control-next" data-bs-slide="next" data-bs-target="#carousel-a" type="button">
 <span class="carousel-control-next-icon"></span>
 </button>
 </div>
@@ -590,73 +381,277 @@
 </div>
 </div>
 </div>
-<script type="text/javascript">
-var gk_isXlsx = false;
-var gk_xlsxFileLookup = {};
-var gk_fileData = {};
-function filledCell(cell) {
-  return cell !== '' && cell != null;
-}
-function loadFileData(filename) {
-if (gk_isXlsx && gk_xlsxFileLookup[filename]) {
-    try {
-        var workbook = XLSX.read(gk_fileData[filename], { type: 'base64' });
-        var firstSheetName = workbook.SheetNames[0];
-        var worksheet = workbook.Sheets[firstSheetName];
-        var jsonData = XLSX.utils.sheet_to_json(worksheet, { header: 1, blankrows: false, defval: '' });
-        var filteredData = jsonData.filter(row => row.some(filledCell));
-        var headerRowIndex = filteredData.findIndex((row, index) =>
-          row.filter(filledCell).length >= filteredData[index + 1]?.filter(filledCell).length
-        );
-        if (headerRowIndex === -1 || headerRowIndex > 25) {
-          headerRowIndex = 0;
-        }
-        var csv = XLSX.utils.aoa_to_sheet(filteredData.slice(headerRowIndex));
-        csv = XLSX.utils.sheet_to_csv(csv, { header: 1 });
-        return csv;
-    } catch (e) {
-        console.error(e);
-        return "";
-    }
-}
-return gk_fileData[filename] || "";
-}
-</script>
+<div class="modal fade slideshow-modal" id="slideshowModal-ab" tabindex="-1" aria-hidden="true">
+<div class="modal-dialog modal-dialog-centered modal-xl">
+<div class="modal-content">
+<div class="modal-body text-center">
+<div id="carousel-ab" class="carousel slide" data-bs-interval="2000" data-bs-ride="carousel">
+<div class="carousel-inner"></div>
+<button class="carousel-control-prev" data-bs-slide="prev" data-bs-target="#carousel-ab" type="button">
+<span class="carousel-control-prev-icon"></span>
+</button>
+<button class="carousel-control-next" data-bs-slide="next" data-bs-target="#carousel-ab" type="button">
+<span class="carousel-control-next-icon"></span>
+</button>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="modal fade slideshow-modal" id="slideshowModal-cd" tabindex="-1" aria-hidden="true">
+<div class="modal-dialog modal-dialog-centered modal-xl">
+<div class="modal-content">
+<div class="modal-body text-center">
+<div id="carousel-cd" class="carousel slide" data-bs-interval="2000" data-bs-ride="carousel">
+<div class="carousel-inner"></div>
+<button class="carousel-control-prev" data-bs-slide="prev" data-bs-target="#carousel-cd" type="button">
+<span class="carousel-control-prev-icon"></span>
+</button>
+<button class="carousel-control-next" data-bs-slide="next" data-bs-target="#carousel-cd" type="button">
+<span class="carousel-control-next-icon"></span>
+</button>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="modal fade slideshow-modal" id="slideshowModal-g" tabindex="-1" aria-hidden="true">
+<div class="modal-dialog modal-dialog-centered modal-xl">
+<div class="modal-content">
+<div class="modal-body text-center">
+<div id="carousel-g" class="carousel slide" data-bs-interval="2000" data-bs-ride="carousel">
+<div class="carousel-inner"></div>
+<button class="carousel-control-prev" data-bs-slide="prev" data-bs-target="#carousel-g" type="button">
+<span class="carousel-control-prev-icon"></span>
+</button>
+<button class="carousel-control-next" data-bs-slide="next" data-bs-target="#carousel-g" type="button">
+<span class="carousel-control-next-icon"></span>
+</button>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="modal fade slideshow-modal" id="slideshowModal-i" tabindex="-1" aria-hidden="true">
+<div class="modal-dialog modal-dialog-centered modal-xl">
+<div class="modal-content">
+<div class="modal-body text-center">
+<div id="carousel-i" class="carousel slide" data-bs-interval="2000" data-bs-ride="carousel">
+<div class="carousel-inner"></div>
+<button class="carousel-control-prev" data-bs-slide="prev" data-bs-target="#carousel-i" type="button">
+<span class="carousel-control-prev-icon"></span>
+</button>
+<button class="carousel-control-next" data-bs-slide="next" data-bs-target="#carousel-i" type="button">
+<span class="carousel-control-next-icon"></span>
+</button>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="modal fade slideshow-modal" id="slideshowModal-h" tabindex="-1" aria-hidden="true">
+<div class="modal-dialog modal-dialog-centered modal-xl">
+<div class="modal-content">
+<div class="modal-body text-center">
+<div id="carousel-h" class="carousel slide" data-bs-interval="2000" data-bs-ride="carousel">
+<div class="carousel-inner"></div>
+<button class="carousel-control-prev" data-bs-slide="prev" data-bs-target="#carousel-h" type="button">
+<span class="carousel-control-prev-icon"></span>
+</button>
+<button class="carousel-control-next" data-bs-slide="next" data-bs-target="#carousel-h" type="button">
+<span class="carousel-control-next-icon"></span>
+</button>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="modal fade slideshow-modal" id="slideshowModal-ef" tabindex="-1" aria-hidden="true">
+<div class="modal-dialog modal-dialog-centered modal-xl">
+<div class="modal-content">
+<div class="modal-body text-center">
+<div id="carousel-ef" class="carousel slide" data-bs-interval="2000" data-bs-ride="carousel">
+<div class="carousel-inner"></div>
+<button class="carousel-control-prev" data-bs-slide="prev" data-bs-target="#carousel-ef" type="button">
+<span class="carousel-control-prev-icon"></span>
+</button>
+<button class="carousel-control-next" data-bs-slide="next" data-bs-target="#carousel-ef" type="button">
+<span class="carousel-control-next-icon"></span>
+</button>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="modal fade slideshow-modal" id="slideshowModal-gh" tabindex="-1" aria-hidden="true">
+<div class="modal-dialog modal-dialog-centered modal-xl">
+<div class="modal-content">
+<div class="modal-body text-center">
+<div id="carousel-gh" class="carousel slide" data-bs-interval="2000" data-bs-ride="carousel">
+<div class="carousel-inner"></div>
+<button class="carousel-control-prev" data-bs-slide="prev" data-bs-target="#carousel-gh" type="button">
+<span class="carousel-control-prev-icon"></span>
+</button>
+<button class="carousel-control-next" data-bs-slide="next" data-bs-target="#carousel-gh" type="button">
+<span class="carousel-control-next-icon"></span>
+</button>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="modal fade slideshow-modal" id="slideshowModal-ij" tabindex="-1" aria-hidden="true">
+<div class="modal-dialog modal-dialog-centered modal-xl">
+<div class="modal-content">
+<div class="modal-body text-center">
+<div id="carousel-ij" class="carousel slide" data-bs-interval="2000" data-bs-ride="carousel">
+<div class="carousel-inner"></div>
+<button class="carousel-control-prev" data-bs-slide="prev" data-bs-target="#carousel-ij" type="button">
+<span class="carousel-control-prev-icon"></span>
+</button>
+<button class="carousel-control-next" data-bs-slide="next" data-bs-target="#carousel-ij" type="button">
+<span class="carousel-control-next-icon"></span>
+</button>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="modal fade slideshow-modal" id="slideshowModal-d" tabindex="-1" aria-hidden="true">
+<div class="modal-dialog modal-dialog-centered modal-xl">
+<div class="modal-content">
+<div class="modal-body text-center">
+<div id="carousel-d" class="carousel slide" data-bs-interval="2000" data-bs-
+
+ride="carousel">
+<div class="carousel-inner"></div>
+<button class="carousel-control-prev" data-bs-slide="prev" data-bs-target="#carousel-d" type="button">
+<span class="carousel-control-prev-icon"></span>
+</button>
+<button class="carousel-control-next" data-bs-slide="next" data-bs-target="#carousel-d" type="button">
+<span class="carousel-control-next-icon"></span>
+</button>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="modal fade slideshow-modal" id="slideshowModal-kl" tabindex="-1" aria-hidden="true">
+<div class="modal-dialog modal-dialog-centered modal-xl">
+<div class="modal-content">
+<div class="modal-body text-center">
+<div id="carousel-kl" class="carousel slide" data-bs-interval="2000" data-bs-ride="carousel">
+<div class="carousel-inner"></div>
+<button class="carousel-control-prev" data-bs-slide="prev" data-bs-target="#carousel-kl" type="button">
+<span class="carousel-control-prev-icon"></span>
+</button>
+<button class="carousel-control-next" data-bs-slide="next" data-bs-target="#carousel-kl" type="button">
+<span class="carousel-control-next-icon"></span>
+</button>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="modal fade slideshow-modal" id="slideshowModal-mn" tabindex="-1" aria-hidden="true">
+<div class="modal-dialog modal-dialog-centered modal-xl">
+<div class="modal-content">
+<div class="modal-body text-center">
+<div id="carousel-mn" class="carousel slide" data-bs-interval="2000" data-bs-ride="carousel">
+<div class="carousel-inner"></div>
+<button class="carousel-control-prev" data-bs-slide="prev" data-bs-target="#carousel-mn" type="button">
+<span class="carousel-control-prev-icon"></span>
+</button>
+<button class="carousel-control-next" data-bs-slide="next" data-bs-target="#carousel-mn" type="button">
+<span class="carousel-control-next-icon"></span>
+</button>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="modal fade slideshow-modal" id="slideshowModal-l" tabindex="-1" aria-hidden="true">
+<div class="modal-dialog modal-dialog-centered modal-xl">
+<div class="modal-content">
+<div class="modal-body text-center">
+<div id="carousel-l" class="carousel slide" data-bs-interval="2000" data-bs-ride="carousel">
+<div class="carousel-inner"></div>
+<button class="carousel-control-prev" data-bs-slide="prev" data-bs-target="#carousel-l" type="button">
+<span class="carousel-control-prev-icon"></span>
+</button>
+<button class="carousel-control-next" data-bs-slide="next" data-bs-target="#carousel-l" type="button">
+<span class="carousel-control-next-icon"></span>
+</button>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="modal fade slideshow-modal" id="slideshowModal-e" tabindex="-1" aria-hidden="true">
+<div class="modal-dialog modal-dialog-centered modal-xl">
+<div class="modal-content">
+<div class="modal-body text-center">
+<div id="carousel-e" class="carousel slide" data-bs-interval="2000" data-bs-ride="carousel">
+<div class="carousel-inner"></div>
+<button class="carousel-control-prev" data-bs-slide="prev" data-bs-target="#carousel-e" type="button">
+<span class="carousel-control-prev-icon"></span>
+</button>
+<button class="carousel-control-next" data-bs-slide="next" data-bs-target="#carousel-e" type="button">
+<span class="carousel-control-next-icon"></span>
+</button>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="modal fade slideshow-modal" id="slideshowModal-b" tabindex="-1" aria-hidden="true">
+<div class="modal-dialog modal-dialog-centered modal-xl">
+<div class="modal-content">
+<div class="modal-body text-center">
+<div id="carousel-b" class="carousel slide" data-bs-interval="2000" data-bs-ride="carousel">
+<div class="carousel-inner"></div>
+<button class="carousel-control-prev" data-bs-slide="prev" data-bs-target="#carousel-b" type="button">
+<span class="carousel-control-prev-icon"></span>
+</button>
+<button class="carousel-control-next" data-bs-slide="next" data-bs-target="#carousel-b" type="button">
+<span class="carousel-control-next-icon"></span>
+</button>
+</div>
+</div>
+</div>
+</div>
+</div>
 <script>
 document.addEventListener('DOMContentLoaded', function() {
-    // Configuration object for carousels
+    // Configuration object for carousels and modals
     const carouselConfig = [
-        { id: 'carousel-a', title: '礦區探勘', prefix: 'a', count: 29 },
-        { id: 'carousel-ab', title: '親子尋寶之旅', prefix: 'ab', count: 48 },
-        { id: 'carousel-cd', title: '月洞玉石之旅', prefix: 'cd', count: 27 },
-        { id: 'carousel-g', title: '屏東文化中心參展', prefix: 'g', count: 9 },
-        { id: 'carousel-i', title: '高雄大統百貨展覽', prefix: 'i', count: 9 },
-        { id: 'carousel-h', title: '2003 藍色絲路記者會', prefix: 'h', count: 13 },
-        { id: 'carousel-ef', title: '2008石藝嘉年華', prefix: 'ef', count: 66 },
-        { id: 'carousel-gh', title: '文化局展覽', prefix: 'gh', count: 29 },
-        { id: 'carousel-ij', title: '玉石培訓班', prefix: 'ij', count: 80 },
-        { id: 'carousel-d', title: '兆豐玉石展覽', prefix: 'd', count: 16 },
-        { id: 'carousel-kl', title: '綜合成果展', prefix: 'kl', count: 6 },
-        { id: 'carousel-mn', title: '巡迴展', prefix: 'mn', count: 2 },
-        { id: 'carousel-l', title: '戶外教學', prefix: 'l', count: 35 },
-        { id: 'carousel-e', title: '受邀演講', prefix: 'e', count: 18 },
-        { id: 'carousel-b', title: '友會來訪', prefix: 'b', count: 66 },
-        { id: 'carousel-c', title: '台灣全紀錄專訪', prefix: 'c', count: 134 },
-        { id: 'carousel-j', title: '基隆社區大學來訪交流', prefix: 'j', count: 24 },
-        { id: 'carousel-k', title: '學習與成果', prefix: 'k', count: 9 },
-        { id: 'carousel-f', title: '東海岸玉石展', prefix: 'f', count: 35 },
-        { id: 'carousel-op', title: '玉石祭', prefix: 'op', count: 132 }
+        { id: 'carousel-a', modalId: 'slideshowModal-a', title: '礦區探勘', prefix: 'a', count: 29, baseUrl: 'https://raw.githubusercontent.com/zhongyu0906/jadeartisan-treasure01/main/' },
+        { id: 'carousel-ab', modalId: 'slideshowModal-ab', title: '親子尋寶之旅', prefix: 'ab', count: 48, baseUrl: 'https://raw.githubusercontent.com/zhongyu0906/jadeartisan-treasure01/main/' },
+        { id: 'carousel-cd', modalId: 'slideshowModal-cd', title: '月洞玉石之旅', prefix: 'cd', count: 27, baseUrl: 'https://raw.githubusercontent.com/zhongyu0906/jadeartisan-treasure01/main/' },
+        { id: 'carousel-g', modalId: 'slideshowModal-g', title: '屏東文化中心參展', prefix: 'g', count: 9, baseUrl: 'https://raw.githubusercontent.com/zhongyu0906/jadeartisan-treasure02/main/' },
+        { id: 'carousel-i', modalId: 'slideshowModal-i', title: '高雄大統百貨展覽', prefix: 'i', count: 9, baseUrl: 'https://raw.githubusercontent.com/zhongyu0906/jadeartisan-treasure02/main/' },
+        { id: 'carousel-h', modalId: 'slideshowModal-h', title: '2003 藍色絲路記者會', prefix: 'h', count: 13, baseUrl: 'https://raw.githubusercontent.com/zhongyu0906/jadeartisan-treasure02/main/' },
+        { id: 'carousel-ef', modalId: 'slideshowModal-ef', title: '2008石藝嘉年華', prefix: 'ef', count: 66, baseUrl: 'https://raw.githubusercontent.com/zhongyu0906/jadeartisan-treasure01/main/' },
+        { id: 'carousel-gh', modalId: 'slideshowModal-gh', title: '文化局展覽', prefix: 'gh', count: 29, baseUrl: 'https://raw.githubusercontent.com/zhongyu0906/jadeartisan-treasure02/main/' },
+        { id: 'carousel-ij', modalId: 'slideshowModal-ij', title: '玉石培訓班', prefix: 'ij', count: 80, baseUrl: 'https://raw.githubusercontent.com/zhongyu0906/jadeartisan-treasure02/main/' },
+        { id: 'carousel-d', modalId: 'slideshowModal-d', title: '兆豐玉石展覽', prefix: 'd', count: 16, baseUrl: 'https://raw.githubusercontent.com/zhongyu0906/jadeartisan-treasure01/main/' },
+        { id: 'carousel-kl', modalId: 'slideshowModal-kl', title: '綜合成果展', prefix: 'kl', count: 6, baseUrl: 'https://raw.githubusercontent.com/zhongyu0906/jadeartisan-treasure02/main/' },
+        { id: 'carousel-mn', modalId: 'slideshowModal-mn', title: '巡迴展', prefix: 'mn', count: 2, baseUrl: 'https://raw.githubusercontent.com/zhongyu0906/jadeartisan-treasure02/main/' },
+        { id: 'carousel-l', modalId: 'slideshowModal-l', title: '戶外教學', prefix: 'l', count: 35, baseUrl: 'https://raw.githubusercontent.com/zhongyu0906/jadeartisan-treasure02/main/' },
+        { id: 'carousel-e', modalId: 'slideshowModal-e', title: '受邀演講', prefix: 'e', count: 18, baseUrl: 'https://raw.githubusercontent.com/zhongyu0906/jadeartisan-treasure01/main/' },
+        { id: 'carousel-b', modalId: 'slideshowModal-b', title: '友會來訪', prefix: 'b', count: 66, baseUrl: 'https://raw.githubusercontent.com/zhongyu0906/jadeartisan-treasure01/main/' },
+        { id: 'carousel-op', modalId: null, title: '玉石祭', prefix: 'op', count: 132, baseUrl: 'https://zhongyu0906.github.io/jadeartisan/treasure/' }
     ];
 
     // Function to generate carousel items
-    function generateCarouselItems(carouselId, prefix, count, title) {
+    function generateCarouselItems(carouselId, prefix, count, title, baseUrl) {
         const carouselInner = document.querySelector(`#${carouselId} .carousel-inner`);
         for (let i = 1; i <= count; i++) {
             const item = document.createElement('div');
             item.className = `carousel-item ${i === 1 ? 'active' : ''}`;
             const img = document.createElement('img');
             const paddedIndex = i.toString().padStart(2, '0');
-            img.src = `https://zhongyu0906.github.io/jadeartisan/treasure/${prefix}_${paddedIndex}.jpg`;
+            img.src = `${baseUrl}${prefix}_${paddedIndex}.jpg`;
             img.alt = `${title} ${i}`;
             img.className = 'd-block w-100 rounded-lg shadow-lg';
             item.appendChild(img);
@@ -666,59 +661,38 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Initialize carousels
     carouselConfig.forEach(config => {
-        generateCarouselItems(config.id, config.prefix, config.count, config.title);
-        const carousel = document.getElementById(config.id);
-        const bsCarousel = new bootstrap.Carousel(carousel, {
-            interval: 2000,
-            pause: 'hover'
-        });
-        carousel.addEventListener('click', function(e) {
-            if (e.target.classList.contains('carousel-control-prev') || e.target.classList.contains('carousel-control-next')) {
-                return;
-            }
-            if (bsCarousel._isPaused) {
-                bsCarousel.cycle();
-            } else {
-                bsCarousel.pause();
-            }
-        });
-    });
-
-    // Modal for full-screen carousel
-    const modal = new bootstrap.Modal(document.getElementById('imageModal'));
-    const modalCarousel = document.getElementById('modalCarousel');
-    const modalCarouselInner = modalCarousel.querySelector('.carousel-inner');
-    document.querySelectorAll('.carousel-item img').forEach(img => {
-        img.addEventListener('click', function() {
-            const parentCarousel = img.closest('.carousel');
-            const carouselId = parentCarousel.id;
-            const config = carouselConfig.find(c => c.id === carouselId);
-            modalCarouselInner.innerHTML = '';
-            for (let i = 1; i <= config.count; i++) {
-                const item = document.createElement('div');
-                item.className = `carousel-item ${i === parseInt(img.alt.match(/\d+$/)[0]) ? 'active' : ''}`;
-                const modalImg = document.createElement('img');
-                const paddedIndex = i.toString().padStart(2, '0');
-                modalImg.src = `https://zhongyu0906.github.io/jadeartisan/treasure/${config.prefix}_${paddedIndex}.jpg`;
-                modalImg.alt = `${config.title} ${i}`;
-                modalImg.className = 'modal-image';
-                item.appendChild(modalImg);
-                modalCarouselInner.appendChild(item);
-            }
-            modal.show();
-            const bsModalCarousel = new bootstrap.Carousel(modalCarousel, {
+        if (config.modalId) {
+            generateCarouselItems(config.id, config.prefix, config.count, config.title, config.baseUrl);
+            const carousel = document.getElementById(config.id);
+            const bsCarousel = new bootstrap.Carousel(carousel, {
                 interval: 2000,
                 ride: 'carousel'
             });
-        });
-    });
-
-    // Close modal on click
-    document.getElementById('imageModal').addEventListener('click', function(e) {
-        if (e.target.classList.contains('modal-image') || e.target.classList.contains('carousel-control-prev') || e.target.classList.contains('carousel-control-next')) {
-            return;
+            const modal = document.getElementById(config.modalId);
+            modal.addEventListener('hidden.bs.modal', function () {
+                bsCarousel.cycle();
+            });
+            modal.addEventListener('shown.bs.modal', function () {
+                bsCarousel.cycle();
+            });
+            // Auto-close modal after last slide
+            carousel.addEventListener('slid.bs.carousel', function (e) {
+                const totalItems = config.count;
+                const currentIndex = parseInt(e.to) + 1;
+                if (currentIndex === totalItems) {
+                    setTimeout(() => {
+                        bootstrap.Modal.getInstance(modal).hide();
+                    }, 2000);
+                }
+            });
+        } else {
+            generateCarouselItems(config.id, config.prefix, config.count, config.title, config.baseUrl);
+            const carousel = document.getElementById(config.id);
+            new bootstrap.Carousel(carousel, {
+                interval: 2000,
+                pause: 'hover'
+            });
         }
-        modal.hide();
     });
 
     // Audio playback for sound icons
@@ -736,16 +710,5 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 });
 </script>
-<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'93d88165eff77b一级域名',t:'MTc0Njg3MDM0NC4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script>
-<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'93d88eb7590312e5',t:'MTc0Njg3MDg5MC4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script>
-<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'93d92eb3abd5bd37',t:'MTc0Njg3NzQ0My4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script>
-<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'93d94450da9244e4',t:'MTc0Njg3ODMyOC4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.weight=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script>
-<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'93d95aa698c7bcf6',t:'MTc0Njg3OTI0My4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script>
-<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'93d967edd9166789',t:'MTc0Njg3OTc4Ny4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script>
-<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'93d976b04b1d452d',t:'MTc0Njg4MDM5MS4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script>
-<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'93d990a16c2c6762',t:'MTc0Njg4MTQ1NC4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script>
-<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'93d99b7cae2244d9',t:'MTc0Njg4MTg5OS4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script>
-<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'93da652459f0b078',t:'MTc0Njg5MDE1OC4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script>
-<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'93daaf94feb5bf9b',t:'MTc0Njg5MzIwNy4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script>
 </body>
 </html>
