@@ -138,14 +138,19 @@
 <main class="max-w-6xl mx-auto px-6 py-10 space-y-12">
 <section id="introSection" class="text-center mb-12">
 <div class="text-lg text-gray-700 leading-relaxed">
-<p>玉石，本自天地而來，各有其質、色、紋、性。</p>
-<p>而當不同的玉相遇，便展開另一場靜謐的對話。</p>
-<p>複合式創作，是將各異其趣的玉石組合、搭配、嵌合，</p>
-<p>在對比與呼應之間，尋找新的形貌與意象。</p>
+<p>玉石，本自天地而來，</p>
+<p>各有其質、色、紋、性。</p>
+<p>而當不同的玉相遇，</p>
+<p>便展開另一場靜謐的對話。</p>
+<p>複合式創作，</p>
+<p>是將各異其趣的玉石組合、搭配、嵌合，</p>
+<p>在對比與呼應之間，</p>
+<p>尋找新的形貌與意象。</p>
 <p>有如山與雲的層疊，水與石的交融，</p>
 <p>於玉中見形，於形中見意。</p>
 <p>每一件複合創作，都是一次新的構築，</p>
-<p>在有限中尋無限，在多重材質裡完成一體之美。</p>
+<p>在有限中尋無限，</p>
+<p>在多重材質裡完成一體之美。</p>
 </div>
 <h2 class="text-2xl font-bold text-[#29582a] mt-12 mb-4">複合式創作</h2>
 </section>
@@ -163,6 +168,38 @@
 <footer class="bg-gray-800 text-white text-center p-4">
 <p>© 石中玉工作室 Jade Artisan Studio</p>
 </footer>
+<script>
+var gk_isXlsx = false;
+var gk_xlsxFileLookup = {};
+var gk_fileData = {};
+function filledCell(cell) {
+  return cell !== '' && cell != null;
+}
+function loadFileData(filename) {
+  if (gk_isXlsx && gk_xlsxFileLookup[filename]) {
+    try {
+      var workbook = XLSX.read(gk_fileData[filename], { type: 'base64' });
+      var firstSheetName = workbook.SheetNames[0];
+      var worksheet = workbook.Sheets[firstSheetName];
+      var jsonData = XLSX.utils.sheet_to_json(worksheet, { header: 1, blankrows: false, defval: '' });
+      var filteredData = jsonData.filter(row => row.some(filledCell));
+      var headerRowIndex = filteredData.findIndex((row, index) =>
+        row.filter(filledCell).length >= filteredData[index + 1]?.filter(filledCell).length
+      );
+      if (headerRowIndex === -1 || headerRowIndex > 25) {
+        headerRowIndex = 0;
+      }
+      var csv = XLSX.utils.aoa_to_sheet(filteredData.slice(headerRowIndex));
+      csv = XLSX.utils.sheet_to_csv(csv, { header: 1 });
+      return csv;
+    } catch (e) {
+      console.error(e);
+      return "";
+    }
+  }
+  return gk_fileData[filename] || "";
+}
+</script>
 <script>
 document.addEventListener('DOMContentLoaded', () => {
     const gallery = document.getElementById('gallery');
