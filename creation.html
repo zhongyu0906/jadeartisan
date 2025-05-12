@@ -175,7 +175,7 @@ body {
 <a class="nav-button text-white px-5 py-3 rounded-lg font-semibold text-sm md:text-base" href="combo.html">複合式創作</a>
 <a class="nav-button text-white px-5 py-3 rounded-lg font-semibold text-sm md:text-base" href="treasure.html">石中影記</a>
 <a class="nav-button text-white px-5 py-3 rounded-lg font-semibold text-sm md:text-base flex items-center" href="exhibition.html">
-  <img src="YouTube.svg" alt="YouTube" class="h-7 w-7">
+  <img src="YouTube.svg" alt="YouTube" class="h-14 w-14">
 </a>
 </div>
 </nav>
@@ -339,7 +339,6 @@ document.addEventListener('DOMContentLoaded', () => {
         window.history.pushState({}, '', newUrl);
         loadImages(currentPage);
         renderPagination();
-        // 隱藏第2頁及之後的介紹文字
         if (currentPage > 1) {
             introText.classList.add('hidden-content');
             introText.classList.remove('visible-content');
@@ -360,7 +359,6 @@ document.addEventListener('DOMContentLoaded', () => {
         console.error('載入圖片時發生錯誤:', err);
     });
     renderPagination();
-    // 初始檢查頁數，決定是否顯示介紹文字
     if (currentPage > 1) {
         introText.classList.add('hidden-content');
         introText.classList.remove('visible-content');
