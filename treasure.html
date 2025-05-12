@@ -37,6 +37,45 @@
         }
         return gk_fileData[filename] || "";
         }
+        </script><script type="text/javascript">
+        var gk_isXlsx = false;
+        var gk_xlsxFileLookup = {};
+        var gk_fileData = {};
+        function filledCell(cell) {
+          return cell !== '' && cell != null;
+        }
+        function loadFileData(filename) {
+        if (gk_isXlsx && gk_xlsxFileLookup[filename]) {
+            try {
+                var workbook = XLSX.read(gk_fileData[filename], { type: 'base64' });
+                var firstSheetName = workbook.SheetNames[0];
+                var worksheet = workbook.Sheets[firstSheetName];
+
+                // Convert sheet to JSON to filter blank rows
+                var jsonData = XLSX.utils.sheet_to_json(worksheet, { header: 1, blankrows: false, defval: '' });
+                // Filter out blank rows (rows where all cells are empty, null, or undefined)
+                var filteredData = jsonData.filter(row => row.some(filledCell));
+
+                // Heuristic to find the header row by ignoring rows with fewer filled cells than the next row
+                var headerRowIndex = filteredData.findIndex((row, index) =>
+                  row.filter(filledCell).length >= filteredData[index + 1]?.filter(filledCell).length
+                );
+                // Fallback
+                if (headerRowIndex === -1 || headerRowIndex > 25) {
+                  headerRowIndex = 0;
+                }
+
+                // Convert filtered JSON back to CSV
+                var csv = XLSX.utils.aoa_to_sheet(filteredData.slice(headerRowIndex)); // Create a new sheet from filtered array of arrays
+                csv = XLSX.utils.sheet_to_csv(csv, { header: 1 });
+                return csv;
+            } catch (e) {
+                console.error(e);
+                return "";
+            }
+        }
+        return gk_fileData[filename] || "";
+        }
         </script><!DOCTYPE html>
 <html lang="zh-TW">
 <head>
@@ -58,16 +97,6 @@
     .nav-button:hover {
       transform: scale(1.05);
       background: linear-gradient(to right, rgb(84, 108, 49), rgb(104, 128, 69));
-      box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
-    }
-    .youtube-button {
-      background-color: #29582a;
-      transition: transform 0.3s ease, background-color 0.3s ease;
-      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-    }
-    .youtube-button:hover {
-      transform: scale(1.05);
-      background-color: #1a3c1b;
       box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
     }
     .contact-bg { background-color: #688045; }
@@ -176,10 +205,18 @@
       width: 100%;
       max-width: 560px;
     }
-    .youtube-icon {
-      height: 1.5em;
-      width: auto;
-      vertical-align: middle;
+    .youtube-container {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 16px;
+      width: 100%;
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+    .youtube-container iframe {
+      flex: 1 1 45%;
+      max-width: 560px;
     }
     .intro-image {
       max-height: 266.67px;
@@ -204,14 +241,15 @@
 <a class="nav-button text-white px-4 py-2 rounded-lg font-semibold text-sm md:text-base" href="carving.html">雕刻作品</a>
 <a class="nav-button text-white px-4 py-2 rounded-lg font-semibold text-sm md:text-base" href="creation.html">玉石創作</a>
 <a class="nav-button text-white px-4 py-2 rounded-lg font-semibold text-sm md:text-base" href="combo.html">複合式創作</a>
-<a class="nav-button text-white px-5 py-3 rounded-lg font-semibold text-sm md:text-base" href="treasure.html">石中影記</a>
-<a class="youtube-button text-white px-5 py-3 rounded-lg font-semibold text-sm md:text-base" href="exhibition.html"><img src="YouTube.svg" alt="YouTube" class="youtube-icon"></a>
+<a class="nav-button text-white px-4 py-2 rounded-lg font-semibold text-sm md:text-base" href="treasure.html">石中影記</a>
+<a class="nav-button text-white px-4 py-2 rounded-lg font-semibold text-sm md:text-base flex items-center" href="exhibition.html">
+  <img src="YouTube.svg" alt="YouTube" class="h-6 w-16">
+</a>
 </div>
 </nav>
 <main class="max-w-7xl mx-auto px-6 py-10 space-y-12">
 <section class="text-center mb-12 flex flex-col md:flex-row items-center justify-center gap-8">
 <div class="md:w-1/2">
-<h2 class="text-2xl font-bold blink">玉旅足跡｜走過的每一場玉石故事</h2>
 <p class="text-lg mt-4">
 從山林間的礦區探訪，<br>
 到展覽廳裡的璀璨光影，<br>
@@ -229,17 +267,14 @@
 </section>
 <!-- First Row: 礦區探勘, 親子尋寶之旅, 月洞玉石之旅 -->
 <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-<!-- 礦區探勘 -->
 <div class="carousel-container">
 <h2 class="text-xl font-bold carousel-title text-center mb-2">礦區探勘</h2>
 <img src="menu06.png" alt="礦區探勘" class="representative-img rounded-lg shadow-lg" data-bs-toggle="modal" data-bs-target="#slideshowModal-a">
 </div>
-<!-- 親子尋寶之旅 -->
 <div class="carousel-container">
 <h2 class="text-xl font-bold carousel-title text-center mb-2">親子尋寶之旅</h2>
 <img src="menu02.png" alt="親子尋寶之旅" class="representative-img rounded-lg shadow-lg" data-bs-toggle="modal" data-bs-target="#slideshowModal-ab">
 </div>
-<!-- 月洞玉石之旅 -->
 <div class="carousel-container">
 <h2 class="text-xl font-bold carousel-title text-center mb-2">月洞玉石之旅</h2>
 <img src="menu03.png" alt="月洞玉石之旅" class="representative-img rounded-lg shadow-lg" data-bs-toggle="modal" data-bs-target="#slideshowModal-cd">
@@ -247,17 +282,14 @@
 </div>
 <!-- Second Row: 屏東文化中心參展, 高雄大統百貨展覽, 2003 藍色絲路記者會 -->
 <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-<!-- 屏東文化中心參展 -->
 <div class="carousel-container">
 <h2 class="text-xl font-bold carousel-title text-center mb-2">屏東文化中心參展</h2>
 <img src="menu08.png" alt="屏東文化中心參展" class="representative-img rounded-lg shadow-lg" data-bs-toggle="modal" data-bs-target="#slideshowModal-g">
 </div>
-<!-- 高雄大統百貨展覽 -->
 <div class="carousel-container">
 <h2 class="text-xl font-bold carousel-title text-center mb-2">高雄大統百貨展覽</h2>
 <img src="menu09.png" alt="高雄大統百貨展覽" class="representative-img rounded-lg shadow-lg" data-bs-toggle="modal" data-bs-target="#slideshowModal-i">
 </div>
-<!-- 2003 藍色絲路記者會 -->
 <div class="carousel-container">
 <h2 class="text-xl font-bold carousel-title text-center mb-2">2003 藍色絲路記者會</h2>
 <img src="menu13.png" alt="2003 藍色絲路記者會" class="representative-img rounded-lg shadow-lg" data-bs-toggle="modal" data-bs-target="#slideshowModal-h">
@@ -265,17 +297,14 @@
 </div>
 <!-- Third Row: 2008石藝嘉年華, 文化局展覽, 玉石培訓班 -->
 <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-<!-- 2008石藝嘉年華 -->
 <div class="carousel-container">
 <h2 class="text-xl font-bold carousel-title text-center mb-2">2008石藝嘉年華</h2>
 <img src="menu04.png" alt="2008石藝嘉年華" class="representative-img rounded-lg shadow-lg" data-bs-toggle="modal" data-bs-target="#slideshowModal-ef">
 </div>
-<!-- 文化局展覽 -->
 <div class="carousel-container">
 <h2 class="text-xl font-bold carousel-title text-center mb-2">文化局展覽</h2>
 <img src="menu14.png" alt="文化局展覽" class="representative-img rounded-lg shadow-lg" data-bs-toggle="modal" data-bs-target="#slideshowModal-gh">
 </div>
-<!-- 玉石培訓班 -->
 <div class="carousel-container">
 <h2 class="text-xl font-bold carousel-title text-center mb-2">玉石培訓班</h2>
 <img src="menu07.png" alt="玉石培訓班" class="representative-img rounded-lg shadow-lg" data-bs-toggle="modal" data-bs-target="#slideshowModal-ij">
@@ -283,17 +312,14 @@
 </div>
 <!-- Fourth Row: 兆豐玉石展覽, 綜合成果展, 巡迴展 -->
 <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-<!-- 兆豐玉石展覽 -->
 <div class="carousel-container">
 <h2 class="text-xl font-bold carousel-title text-center mb-2">兆豐玉石展覽</h2>
 <img src="menu05.png" alt="兆豐玉石展覽" class="representative-img rounded-lg shadow-lg" data-bs-toggle="modal" data-bs-target="#slideshowModal-d">
 </div>
-<!-- 綜合成果展 -->
 <div class="carousel-container">
 <h2 class="text-xl font-bold carousel-title text-center mb-2">綜合成果展</h2>
 <img src="menu15.png" alt="綜合成果展" class="representative-img rounded-lg shadow-lg" data-bs-toggle="modal" data-bs-target="#slideshowModal-kl">
 </div>
-<!-- 巡迴展 -->
 <div class="carousel-container">
 <h2 class="text-xl font-bold carousel-title text-center mb-2">巡迴展</h2>
 <img src="menu16.png" alt="巡迴展" class="representative-img rounded-lg shadow-lg" data-bs-toggle="modal" data-bs-target="#slideshowModal-mn">
@@ -301,17 +327,14 @@
 </div>
 <!-- Fifth Row: 戶外教學, 受邀演講, 友會來訪 -->
 <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-<!-- 戶外教學 -->
 <div class="carousel-container">
 <h2 class="text-xl font-bold carousel-title text-center mb-2">戶外教學</h2>
 <img src="menu10.png" alt="戶外教學" class="representative-img rounded-lg shadow-lg" data-bs-toggle="modal" data-bs-target="#slideshowModal-l">
 </div>
-<!-- 受邀演講 -->
 <div class="carousel-container">
 <h2 class="text-xl font-bold carousel-title text-center mb-2">受邀演講</h2>
 <img src="menu11.png" alt="受邀演講" class="representative-img rounded-lg shadow-lg" data-bs-toggle="modal" data-bs-target="#slideshowModal-e">
 </div>
-<!-- 友會來訪 -->
 <div class="carousel-container">
 <h2 class="text-xl font-bold carousel-title text-center mb-2">友會來訪</h2>
 <img src="menu12.png" alt="友會來訪" class="representative-img rounded-lg shadow-lg" data-bs-toggle="modal" data-bs-target="#slideshowModal-b">
@@ -323,21 +346,22 @@
 <img src="110262.jpg" alt="玉石祭特別報導" class="responsive-img rounded-lg shadow-lg mb-8">
 <div class="flex flex-col lg:flex-row gap-8">
 <div class="lg:w-2/3">
-<!-- 玉石祭 Representative Image -->
-<div class="carousel-container">
-<h2 class="text-xl font-bold carousel-title text-center mb-2">玉石祭</h2>
-<img src="menu081.png" alt="玉石祭" class="representative-img rounded-lg shadow-lg" data-bs-toggle="modal" data-bs-target="#slideshowModal-op">
+<h2 class="text-xl font-bold carousel-title text-center mb-2">玉石祭活動影像</h2>
+<div class="youtube-container">
+<iframe class="youtube-iframe" src="https://www.youtube.com/embed/YWfZw9WnbXQ" title="YouTube video" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+<iframe class="youtube-iframe" src="https://www.youtube.com/embed/-oZnmAg3YF0" title="YouTube video" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
 </div>
 </div>
 <div class="lg:w-1/3">
 <div class="space-y-4">
-<div class="sound-container">
+<div class="carousel-container">
+<h2 class="text-xl font-bold carousel-title text-center mb-2">玉石祭</h2>
+<img src="menu081.png" alt="玉石祭" class="representative-img rounded-lg shadow-lg" data-bs-toggle="modal" data-bs-target="#slideshowModal-op">
+</div>
+<h2 class="text-xl font-bold carousel-title text-center mb-2">玉石祭專訪錄音檔</h2>
+<div class="sound-container flex flex-row justify-center gap-8">
 <img src="sound.png" alt="Play mu01" class="sound-icon" data-audio="mu01.mp3">
 <img src="sound.png" alt="Play mu02" class="sound-icon" data-audio="mu02.mp3">
-</div>
-<div class="space-y-4 flex flex-col items-center">
-<iframe class="youtube-iframe" src="https://www.youtube.com/embed/YWfZw9WnbXQ" title="YouTube video" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
-<iframe class="youtube-iframe" src="https://www.youtube.com/embed/-oZnmAg3YF0" title="YouTube video" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
 </div>
 </div>
 </div>
@@ -360,7 +384,7 @@
 <div class="modal-dialog modal-dialog-centered modal-xl">
 <div class="modal-content">
 <div class="modal-body text-center">
-<div id="carousel-a" class="carousel slide" data-bs-interval="2000" data-bs-ride="carousel">
+<div id="carousel-a" class="carousel slide" data-bs-interval="1300" data-bs-ride="carousel">
 <div class="carousel-inner"></div>
 <button class="carousel-control-prev" data-bs-slide="prev" data-bs-target="#carousel-a" type="button">
 <span class="carousel-control-prev-icon"></span>
@@ -377,12 +401,9 @@
 <div class="modal-dialog modal-dialog-centered modal-xl">
 <div class="modal-content">
 <div class="modal-body text-center">
-<div id="carousel-ab" class="carousel slide" data-bs-interval="2000" data-bs-ride="carousel">
+<div id="carousel-ab" class="carousel slide" data-bs-interval="1300" data-bs-ride="carousel">
 <div class="carousel-inner"></div>
 <button class="carousel-control-prev" data-bs-slide="prev" data-bs-target="#carousel-ab" type="button">
-<span class="carousel-control-prev-icon"></span>
-</button>
-<button class="carousel-control-next" data-bs-slide="next" data-bs-target="#carousel-ab" type="button">
 <span class="carousel-control-prev-icon"></span>
 </button>
 <button class="carousel-control-next" data-bs-slide="next" data-bs-target="#carousel-ab" type="button">
@@ -397,7 +418,7 @@
 <div class="modal-dialog modal-dialog-centered modal-xl">
 <div class="modal-content">
 <div class="modal-body text-center">
-<div id="carousel-cd" class="carousel slide" data-bs-interval="2000" data-bs-ride="carousel">
+<div id="carousel-cd" class="carousel slide" data-bs-interval="1300" data-bs-ride="carousel">
 <div class="carousel-inner"></div>
 <button class="carousel-control-prev" data-bs-slide="prev" data-bs-target="#carousel-cd" type="button">
 <span class="carousel-control-prev-icon"></span>
@@ -414,7 +435,7 @@
 <div class="modal-dialog modal-dialog-centered modal-xl">
 <div class="modal-content">
 <div class="modal-body text-center">
-<div id="carousel-g" class="carousel slide" data-bs-interval="2000" data-bs-ride="carousel">
+<div id="carousel-g" class="carousel slide" data-bs-interval="1300" data-bs-ride="carousel">
 <div class="carousel-inner"></div>
 <button class="carousel-control-prev" data-bs-slide="prev" data-bs-target="#carousel-g" type="button">
 <span class="carousel-control-prev-icon"></span>
@@ -431,7 +452,7 @@
 <div class="modal-dialog modal-dialog-centered modal-xl">
 <div class="modal-content">
 <div class="modal-body text-center">
-<div id="carousel-i" class="carousel slide" data-bs-interval="2000" data-bs-ride="carousel">
+<div id="carousel-i" class="carousel slide" data-bs-interval="1300" data-bs-ride="carousel">
 <div class="carousel-inner"></div>
 <button class="carousel-control-prev" data-bs-slide="prev" data-bs-target="#carousel-i" type="button">
 <span class="carousel-control-prev-icon"></span>
@@ -448,7 +469,7 @@
 <div class="modal-dialog modal-dialog-centered modal-xl">
 <div class="modal-content">
 <div class="modal-body text-center">
-<div id="carousel-h" class="carousel slide" data-bs-interval="2000" data-bs-ride="carousel">
+<div id="carousel-h" class="carousel slide" data-bs-interval="1300" data-bs-ride="carousel">
 <div class="carousel-inner"></div>
 <button class="carousel-control-prev" data-bs-slide="prev" data-bs-target="#carousel-h" type="button">
 <span class="carousel-control-prev-icon"></span>
@@ -465,7 +486,7 @@
 <div class="modal-dialog modal-dialog-centered modal-xl">
 <div class="modal-content">
 <div class="modal-body text-center">
-<div id="carousel-ef" class="carousel slide" data-bs-interval="2000" data-bs-ride="carousel">
+<div id="carousel-ef" class="carousel slide" data-bs-interval="1300" data-bs-ride="carousel">
 <div class="carousel-inner"></div>
 <button class="carousel-control-prev" data-bs-slide="prev" data-bs-target="#carousel-ef" type="button">
 <span class="carousel-control-prev-icon"></span>
@@ -482,7 +503,7 @@
 <div class="modal-dialog modal-dialog-centered modal-xl">
 <div class="modal-content">
 <div class="modal-body text-center">
-<div id="carousel-gh" class="carousel slide" data-bs-interval="2000" data-bs-ride="carousel">
+<div id="carousel-gh" class="carousel slide" data-bs-interval="1300" data-bs-ride="carousel">
 <div class="carousel-inner"></div>
 <button class="carousel-control-prev" data-bs-slide="prev" data-bs-target="#carousel-gh" type="button">
 <span class="carousel-control-prev-icon"></span>
@@ -499,7 +520,7 @@
 <div class="modal-dialog modal-dialog-centered modal-xl">
 <div class="modal-content">
 <div class="modal-body text-center">
-<div id="carousel-ij" class="carousel slide" data-bs-interval="2000" data-bs-ride="carousel">
+<div id="carousel-ij" class="carousel slide" data-bs-interval="1300" data-bs-ride="carousel">
 <div class="carousel-inner"></div>
 <button class="carousel-control-prev" data-bs-slide="prev" data-bs-target="#carousel-ij" type="button">
 <span class="carousel-control-prev-icon"></span>
@@ -516,7 +537,7 @@
 <div class="modal-dialog modal-dialog-centered modal-xl">
 <div class="modal-content">
 <div class="modal-body text-center">
-<div id="carousel-d" class="carousel slide" data-bs-interval="2000" data-bs-ride="carousel">
+<div id="carousel-d" class="carousel slide" data-bs-interval="1300" data-bs-ride="carousel">
 <div class="carousel-inner"></div>
 <button class="carousel-control-prev" data-bs-slide="prev" data-bs-target="#carousel-d" type="button">
 <span class="carousel-control-prev-icon"></span>
@@ -533,7 +554,7 @@
 <div class="modal-dialog modal-dialog-centered modal-xl">
 <div class="modal-content">
 <div class="modal-body text-center">
-<div id="carousel-kl" class="carousel slide" data-bs-interval="2000" data-bs-ride="carousel">
+<div id="carousel-kl" class="carousel slide" data-bs-interval="1300" data-bs-ride="carousel">
 <div class="carousel-inner"></div>
 <button class="carousel-control-prev" data-bs-slide="prev" data-bs-target="#carousel-kl" type="button">
 <span class="carousel-control-prev-icon"></span>
@@ -550,7 +571,7 @@
 <div class="modal-dialog modal-dialog-centered modal-xl">
 <div class="modal-content">
 <div class="modal-body text-center">
-<div id="carousel-mn" class="carousel slide" data-bs-interval="2000" data-bs-ride="carousel">
+<div id="carousel-mn" class="carousel slide" data-bs-interval="1300" data-bs-ride="carousel">
 <div class="carousel-inner"></div>
 <button class="carousel-control-prev" data-bs-slide="prev" data-bs-target="#carousel-mn" type="button">
 <span class="carousel-control-prev-icon"></span>
@@ -567,7 +588,7 @@
 <div class="modal-dialog modal-dialog-centered modal-xl">
 <div class="modal-content">
 <div class="modal-body text-center">
-<div id="carousel-l" class="carousel slide" data-bs-interval="2000" data-bs-ride="carousel">
+<div id="carousel-l" class="carousel slide" data-bs-interval="1300" data-bs-ride="carousel">
 <div class="carousel-inner"></div>
 <button class="carousel-control-prev" data-bs-slide="prev" data-bs-target="#carousel-l" type="button">
 <span class="carousel-control-prev-icon"></span>
@@ -584,7 +605,7 @@
 <div class="modal-dialog modal-dialog-centered modal-xl">
 <div class="modal-content">
 <div class="modal-body text-center">
-<div id="carousel-e" class="carousel slide" data-bs-interval="2000" data-bs-ride="carousel">
+<div id="carousel-e" class="carousel slide" data-bs-interval="1300" data-bs-ride="carousel">
 <div class="carousel-inner"></div>
 <button class="carousel-control-prev" data-bs-slide="prev" data-bs-target="#carousel-e" type="button">
 <span class="carousel-control-prev-icon"></span>
@@ -601,7 +622,7 @@
 <div class="modal-dialog modal-dialog-centered modal-xl">
 <div class="modal-content">
 <div class="modal-body text-center">
-<div id="carousel-b" class="carousel slide" data-bs-interval="2000" data-bs-ride="carousel">
+<div id="carousel-b" class="carousel slide" data-bs-interval="1300" data-bs-ride="carousel">
 <div class="carousel-inner"></div>
 <button class="carousel-control-prev" data-bs-slide="prev" data-bs-target="#carousel-b" type="button">
 <span class="carousel-control-prev-icon"></span>
@@ -618,7 +639,7 @@
 <div class="modal-dialog modal-dialog-centered modal-xl">
 <div class="modal-content">
 <div class="modal-body text-center">
-<div id="carousel-op" class="carousel slide" data-bs-interval="2000" data-bs-ride="carousel">
+<div id="carousel-op" class="carousel slide" data-bs-interval="1300" data-bs-ride="carousel">
 <div class="carousel-inner"></div>
 <button class="carousel-control-prev" data-bs-slide="prev" data-bs-target="#carousel-op" type="button">
 <span class="carousel-control-prev-icon"></span>
@@ -633,7 +654,6 @@
 </div>
 <script>
 document.addEventListener('DOMContentLoaded', function() {
-    // Configuration object for carousels and modals
     const carouselConfig = [
         { id: 'carousel-a', modalId: 'slideshowModal-a', title: '礦區探勘', prefix: 'a', count: 29, baseUrl: 'https://raw.githubusercontent.com/zhongyu0906/jadeartisan-treasure01/main/' },
         { id: 'carousel-ab', modalId: 'slideshowModal-ab', title: '親子尋寶之旅', prefix: 'ab', count: 48, baseUrl: 'https://raw.githubusercontent.com/zhongyu0906/jadeartisan-treasure01/main/' },
@@ -653,7 +673,6 @@ document.addEventListener('DOMContentLoaded', function() {
         { id: 'carousel-op', modalId: 'slideshowModal-op', title: '玉石祭', prefix: 'op', count: 132, baseUrl: 'https://raw.githubusercontent.com/zhongyu0906/jadeartisan-treasure02/main/' }
     ];
 
-    // Function to generate carousel items
     function generateCarouselItems(carouselId, prefix, count, title, baseUrl) {
         const carouselInner = document.querySelector(`#${carouselId} .carousel-inner`);
         for (let i = 1; i <= count; i++) {
@@ -669,13 +688,12 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
 
-    // Initialize carousels
     carouselConfig.forEach(config => {
         if (config.modalId) {
             generateCarouselItems(config.id, config.prefix, config.count, config.title, config.baseUrl);
             const carousel = document.getElementById(config.id);
             const bsCarousel = new bootstrap.Carousel(carousel, {
-                interval: 2000,
+                interval: 1300,
                 ride: 'carousel'
             });
             const modal = document.getElementById(config.modalId);
@@ -685,20 +703,18 @@ document.addEventListener('DOMContentLoaded', function() {
             modal.addEventListener('shown.bs.modal', function () {
                 bsCarousel.cycle();
             });
-            // Auto-close modal after last slide
             carousel.addEventListener('slid.bs.carousel', function (e) {
                 const totalItems = config.count;
                 const currentIndex = parseInt(e.to) + 1;
                 if (currentIndex === totalItems) {
                     setTimeout(() => {
                         bootstrap.Modal.getInstance(modal).hide();
-                    }, 2000);
+                    }, 1500);
                 }
             });
         }
     });
 
-    // Audio playback for sound icons
     const soundIcons = document.querySelectorAll('.sound-icon');
     soundIcons.forEach(icon => {
         const audio = new Audio(icon.dataset.audio);
@@ -713,5 +729,5 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 });
 </script>
-</body>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'93ea14a30bdd454b',t:'MTc0NzA1NDYzMy4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>
