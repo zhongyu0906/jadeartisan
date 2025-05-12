@@ -175,12 +175,12 @@ body {
 <a class="nav-button text-white px-5 py-3 rounded-lg font-semibold text-sm md:text-base" href="combo.html">複合式創作</a>
 <a class="nav-button text-white px-5 py-3 rounded-lg font-semibold text-sm md:text-base" href="treasure.html">石中影記</a>
 <a class="nav-button text-white px-5 py-3 rounded-lg font-semibold text-sm md:text-base flex items-center" href="exhibition.html">
-  <img src="YouTube.svg" alt="YouTube" class="h-5 w-5 mr-2"> YouTube
+  <img src="YouTube.svg" alt="YouTube" class="h-7 w-7">
 </a>
 </div>
 </nav>
 <main class="max-w-6xl mx-auto px-6 py-10 space-y-12">
-<section class="text-center mb-12">
+<section class="text-center mb-12" id="introText">
 <div class="text-lg text-gray-700 leading-relaxed">
 <p>每一塊玉石，皆由天地孕育，</p>
 <p>歷經歲月雕琢。</p>
@@ -204,7 +204,6 @@ body {
 </div>
 </section>
 </main>
-<!-- 頁腳 -->
 <div class="footer-bg">
 <h2 class="text-2xl font-semibold mb-4" data-aos="fade-up">聯絡我們</h2>
 <p class="text-lg mb-2" data-aos="fade">台11線 東海岸線上。　聯絡電話：0933-798966 0910-123893</p>
@@ -250,8 +249,9 @@ document.addEventListener('DOMContentLoaded', () => {
     const imageGrid = document.getElementById('imageGrid');
     const pagination = document.getElementById('pagination');
     const titleSection = document.getElementById('titleSection');
+    const introText = document.getElementById('introText');
     const imagesPerPage = 9;
-    const totalImages = 39;
+    const totalImages = 39; // 可自行修改此數值以調整圖片總數
     const totalPages = Math.ceil(totalImages / imagesPerPage);
     const prefix = 'creation_';
     const extension = '.jpg';
@@ -339,10 +339,17 @@ document.addEventListener('DOMContentLoaded', () => {
         window.history.pushState({}, '', newUrl);
         loadImages(currentPage);
         renderPagination();
+        // 隱藏第2頁及之後的介紹文字
+        if (currentPage > 1) {
+            introText.classList.add('hidden-content');
+            introText.classList.remove('visible-content');
+        } else {
+            introText.classList.remove('hidden-content');
+            introText.classList.add('visible-content');
+        }
         window.scrollTo({ top: 0, behavior: 'smooth' });
     }
 
-    // 立即顯示下方內容（因為文字動畫已移除）
     titleSection.classList.remove('hidden-content');
     titleSection.classList.add('visible-content');
     imageGrid.classList.remove('hidden-content');
@@ -353,10 +360,12 @@ document.addEventListener('DOMContentLoaded', () => {
         console.error('載入圖片時發生錯誤:', err);
     });
     renderPagination();
+    // 初始檢查頁數，決定是否顯示介紹文字
+    if (currentPage > 1) {
+        introText.classList.add('hidden-content');
+        introText.classList.remove('visible-content');
+    }
 });
 </script>
-<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'93db02641f1a53ce',t:'MTc0Njg5NjU5OS4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script>
-<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'93e1c45f680a1383',t:'MTc0Njk2NzQ1OS4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script>
-<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'93e1d0ac5b616776',t:'MTc0Njk2Nzk2My4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script>
 </body>
 </html>
